@@ -1,0 +1,21 @@
+div#container {
+    display: table;
+    width: max-content;
+}
+
+div#label {
+    display: table-cell;
+    padding: 8px;
+    color: rgb(255, 255, 255);
+    fill: rgb(255, 255, 255);
+}
+
+input#playbackRate {
+    display: table-cell;
+    padding: 8px;
+    width: 40px;
+}
+
+body {
+    background-color: rgb(26, 26, 26);
+}
