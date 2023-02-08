@@ -1,36 +1,44 @@
 import(chrome.runtime.getURL('common.js')).then(common => {
     let playbackRate = common.defaultPlaybackRate;
 
-    chrome.storage.local.get(['playbackRate'], (data) => {
-        playbackRate = common.limitPlaybackRate(data.playbackRate);
-    });
-
-    chrome.storage.onChanged.addListener((changes, namespace) => {
-        chrome.storage.local.get(['playbackRate'], (data) => {
-            playbackRate = common.limitPlaybackRate(data.playbackRate);
-        });
-    });
-
     const app = document.querySelector('ytd-app');
     if (app) {
-        new MutationObserver((mutations, observer) => {
-            for (const m of mutations) {
-                const target = m.target;
-                if (target.nodeName === 'BUTTON' && target.classList.contains('ytp-live-badge') && target.classList.contains('ytp-button')) {
-                    const video = app.querySelector('video');
-                    if (video) {
-                        if (target.hasAttribute('disabled')) {
-                            video.playbackRate = 1.0;
-                        } else {
-                            video.playbackRate = playbackRate;
-                        }
-                        return;
+        function changePlaybackRate(badge = app.querySelector('.ytp-live-badge')) {
+            if (badge) {
+                const video = app.querySelector('video');
+                if (video) {
+                    if (badge.hasAttribute('disabled')) {
+                        video.playbackRate = 1.0;
+                    } else {
+                        video.playbackRate = playbackRate;
                     }
                 }
             }
+        }
+
+        function initPlaybackRate() {
+            chrome.storage.local.get(['playbackRate'], (data) => {
+                playbackRate = common.limitPlaybackRate(data.playbackRate);
+                changePlaybackRate();
+            });
+        }
+
+        initPlaybackRate();
+
+        chrome.storage.onChanged.addListener((changes, namespace) => {
+            initPlaybackRate();
+        });
+
+        new MutationObserver((mutations, observer) => {
+            for (const m of mutations) {
+                if (m.target.classList.contains('ytp-live-badge')) {
+                    changePlaybackRate(m.target);
+                    return;
+                }
+            }
         }).observe(app, {
+            attributeFilter: ['disabled'],
             subtree: true,
-            childList: true,
         });
     } else {
         console.warn('ytd-app not found');
