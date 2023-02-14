@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "YouTube Live Stream Auto Catch up",
-    "version": "1.0.3",
+    "version": "1.1.0",
     "description": "__MSG_appDesc__",
     "default_locale": "en",
     "icons": {
@@ -23,7 +23,8 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "common.js"
+                "common.js",
+                "api.js"
             ],
             "matches": [
                 "*://www.youtube.com/*"

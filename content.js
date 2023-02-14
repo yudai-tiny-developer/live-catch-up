@@ -5,13 +5,10 @@ import(chrome.runtime.getURL('common.js')).then(common => {
     if (app) {
         function changePlaybackRate(badge = app.querySelector('.ytp-live-badge')) {
             if (badge) {
-                const video = app.querySelector('video');
-                if (video) {
-                    if (badge.hasAttribute('disabled')) {
-                        video.playbackRate = 1.0;
-                    } else {
-                        video.playbackRate = playbackRate;
-                    }
+                if (badge.hasAttribute('disabled')) {
+                    setPlaybackRate(1.0);
+                } else {
+                    setPlaybackRate(playbackRate);
                 }
             }
         }
@@ -23,6 +20,20 @@ import(chrome.runtime.getURL('common.js')).then(common => {
             });
         }
 
+        function setPlaybackRate(playbackRate) {
+            window.postMessage({ playbackRate: playbackRate }, '*');
+        }
+
+        function insertAPI() {
+            const script = document.createElement('script');
+            script.src = chrome.runtime.getURL('api.js');
+            script.onLoad = () => {
+                this.remove();
+            };
+            document.head.appendChild(script);
+        }
+
+        insertAPI();
         initPlaybackRate();
 
         chrome.storage.onChanged.addListener((changes, namespace) => {
