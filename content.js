@@ -17,19 +17,12 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         }
 
         function setPlaybackRate(playbackRate) {
-            window.postMessage({ playbackRate: playbackRate }, '*');
+            const video = app.querySelector('video');
+            if (video) {
+                video.playbackRate = playbackRate;
+            }
         }
 
-        function insertAPI() {
-            const script = document.createElement('script');
-            script.src = chrome.runtime.getURL('api.js');
-            script.onLoad = () => {
-                this.remove();
-            };
-            document.head.appendChild(script);
-        }
-
-        insertAPI();
         initPlaybackRate();
 
         chrome.storage.onChanged.addListener((changes, namespace) => {

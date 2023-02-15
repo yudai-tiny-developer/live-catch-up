@@ -1,6 +1,6 @@
 export const defaultPlaybackRate = 1.25;
 export const minPlaybackRate = 1.0;
-export const maxPlaybackRate = 2.0;
+export const maxPlaybackRate = 5.0;
 export const stepPlaybackRate = 0.05;
 
 export function limitPlaybackRate(value) {
