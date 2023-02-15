@@ -4,8 +4,12 @@ import(chrome.runtime.getURL('common.js')).then(common => {
     const app = document.querySelector('ytd-app');
     if (app) {
         function changePlaybackRate(badge = app.querySelector('.ytp-live-badge')) {
-            if (badge?.hasAttribute('disabled') === false) {
-                setPlaybackRate(playbackRate);
+            if (badge) {
+                if (badge.hasAttribute('disabled')) {
+                    setPlaybackRate(1.0);
+                } else {
+                    setPlaybackRate(playbackRate);
+                }
             }
         }
 
