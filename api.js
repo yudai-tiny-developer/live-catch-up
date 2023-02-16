@@ -1,3 +1,6 @@
 window.addEventListener('message', event => {
-    document.querySelector('div#movie_player')?.setPlaybackRate(event.data.playbackRate);
+    const player = document.querySelector('div#movie_player');
+    if (player) {
+        player.setPlaybackRate(event.data.playbackRate);
+    }
 });
