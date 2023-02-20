@@ -1,8 +1,7 @@
 import(chrome.runtime.getURL('common.js')).then(common => {
-    function createLabel(data) {
+    function createLabel() {
         const div = document.createElement('div');
         div.id = 'label';
-        div.type = 'number';
         div.innerHTML = `Playback Rate (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`;
         return div;
     }
@@ -23,7 +22,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
 
     chrome.storage.local.get(['playbackRate'], (data) => {
         const div = document.querySelector('div#container');
-        div.appendChild(createLabel(data));
+        div.appendChild(createLabel());
         div.appendChild(createInput(data));
     });
 });
