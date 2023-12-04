@@ -1,20 +1,26 @@
 import(chrome.runtime.getURL('common.js')).then(common => {
+    let enabled = true;
     let playbackRate = common.defaultPlaybackRate;
 
     const app = document.querySelector('ytd-app');
     if (app) {
         function changePlaybackRate(badge = app.querySelector('.ytp-live-badge')) {
-            if (badge) {
-                if (badge.hasAttribute('disabled')) {
-                    setPlaybackRate(1.0);
-                } else {
-                    setPlaybackRate(playbackRate);
+            if (enabled) {
+                if (badge) {
+                    if (badge.hasAttribute('disabled')) {
+                        setPlaybackRate(1.0);
+                    } else {
+                        setPlaybackRate(playbackRate);
+                    }
                 }
+            } else {
+                setPlaybackRate(1.0);
             }
         }
 
         function initPlaybackRate() {
-            chrome.storage.local.get(['playbackRate'], (data) => {
+            chrome.storage.local.get(['enabled', 'playbackRate'], (data) => {
+                enabled = data.enabled;
                 playbackRate = common.limitPlaybackRate(data.playbackRate);
                 changePlaybackRate();
             });
