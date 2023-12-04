@@ -1,8 +1,31 @@
 import(chrome.runtime.getURL('common.js')).then(common => {
-    function createLabel() {
+    function createLabel(label) {
         const div = document.createElement('div');
-        div.id = 'label';
-        div.innerHTML = `Playback Rate (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`;
+        div.classList.add('label');
+        div.innerHTML = label;
+        return div;
+    }
+
+    function createEnabledToggle(checked) {
+        const div = document.createElement('div');
+        div.classList.add('toggle');
+
+        const input = document.createElement('input');
+        input.id = 'enabled';
+        input.classList.add('checkbox');
+        input.type = 'checkbox';
+        input.checked = checked === false ? false : true;
+        input.default = 'true';
+        input.addEventListener('change', () => {
+            chrome.storage.local.set({ 'enabled': input.checked });
+        });
+        div.appendChild(input);
+
+        const label = document.createElement('label');
+        label.classList.add('switch');
+        label.setAttribute('for', 'enabled');
+        div.appendChild(label);
+
         return div;
     }
 
@@ -20,9 +43,13 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         return input;
     }
 
-    chrome.storage.local.get(['playbackRate'], (data) => {
-        const div = document.querySelector('div#container');
-        div.appendChild(createLabel());
-        div.appendChild(createInput(data.playbackRate));
+    chrome.storage.local.get(['enabled', 'playbackRate'], (data) => {
+        const row1 = document.querySelector('div#row1');
+        row1.appendChild(createLabel('Enabled/Disabled'));
+        row1.appendChild(createEnabledToggle(data.enabled));
+
+        const row2 = document.querySelector('div#row2');
+        row2.appendChild(createLabel(`Playback Rate (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`));
+        row2.appendChild(createInput(data.playbackRate));
     });
 });
