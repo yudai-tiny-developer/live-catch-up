@@ -1,5 +1,5 @@
 {
-   "appDesc": {
-      "message": "Automatically catch up after a delay in a DVR-enabled YouTube live stream."
-   }
+    "appDesc": {
+        "message": "This extension syncs YouTube live streams in real-time by accelerating viewer-delayed streams caused by data reception delays."
+    }
 }
