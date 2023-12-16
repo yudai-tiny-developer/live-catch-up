@@ -83,3 +83,9 @@ input#playbackRate {
 body {
     background-color: rgb(26, 26, 26);
 }
+
+div#reset_container {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px;
+}
