@@ -14,8 +14,8 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         input.id = 'enabled';
         input.classList.add('checkbox');
         input.type = 'checkbox';
-        input.checked = checked === false ? false : true;
-        input.default = 'true';
+        input.checked = checked === undefined ? common.defaultEnabled : checked;
+        input.setAttribute('default', 'true');
         input.addEventListener('change', () => {
             chrome.storage.local.set({ 'enabled': input.checked });
         });
@@ -32,11 +32,13 @@ import(chrome.runtime.getURL('common.js')).then(common => {
     function createInput(playbackRate) {
         const input = document.createElement('input');
         input.id = 'playbackRate';
+        input.classList.add('rate');
         input.type = 'number';
         input.min = common.minPlaybackRate;
         input.max = common.maxPlaybackRate;
         input.step = common.stepPlaybackRate;
         input.value = common.limitPlaybackRate(playbackRate);
+        input.setAttribute('default', common.defaultPlaybackRate);
         input.addEventListener('change', () => {
             chrome.storage.local.set({ 'playbackRate': common.limitPlaybackRate(input.value) });
         });
@@ -51,5 +53,16 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         const row2 = document.querySelector('div#row2');
         row2.appendChild(createLabel(`Playback Rate (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`));
         row2.appendChild(createInput(data.playbackRate));
+    });
+
+    document.querySelector('input#reset').addEventListener('click', () => {
+        for (const input of document.querySelectorAll('input.checkbox')) {
+            input.checked = input.getAttribute('default') === 'true';
+        }
+        for (const input of document.querySelectorAll('input.rate')) {
+            input.value = input.getAttribute('default');
+        }
+
+        chrome.storage.local.clear();
     });
 });

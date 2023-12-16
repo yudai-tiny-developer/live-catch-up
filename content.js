@@ -1,5 +1,5 @@
 import(chrome.runtime.getURL('common.js')).then(common => {
-    let enabled = true;
+    let enabled = common.defaultEnabled;
     let playbackRate = common.defaultPlaybackRate;
 
     const app = document.querySelector('ytd-app');
@@ -20,7 +20,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
 
         function initPlaybackRate() {
             chrome.storage.local.get(['enabled', 'playbackRate'], (data) => {
-                enabled = data.enabled;
+                enabled = data.enabled === undefined ? common.defaultEnabled : data.enabled;
                 playbackRate = common.limitPlaybackRate(data.playbackRate);
                 changePlaybackRate();
             });
