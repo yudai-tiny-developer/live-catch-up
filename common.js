@@ -7,11 +7,7 @@ export const minPlaybackRate = 1.0;
 export const maxPlaybackRate = 5.0;
 export const stepPlaybackRate = 0.05;
 
-export function limitPlaybackRate(value) {
-    return limitRate(value, defaultPlaybackRate, minPlaybackRate, maxPlaybackRate, stepPlaybackRate);
-}
-
-function limitRate(value, defaultValue, minRate, maxRate, stepRate) {
+export function limitRate(value, defaultValue, minRate, maxRate, stepRate) {
     return step(range(normalize(value, defaultValue), minRate, maxRate), stepRate);
 }
 
