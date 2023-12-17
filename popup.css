@@ -19,7 +19,7 @@ div.cell {
     fill: rgb(255, 255, 255);
 }
 
-input.checkbox {
+input.toggle {
     display: none;
 }
 
@@ -60,7 +60,7 @@ label.switch:after {
     color: rgb(255, 255, 255);
 }
 
-input.checkbox:checked+label.switch:after {
+input.toggle:checked+label.switch:after {
     left: 24px;
     content: "\2714";
 
@@ -69,7 +69,7 @@ input.checkbox:checked+label.switch:after {
 }
 
 
-input.checkbox:checked+label.switch {
+input.toggle:checked+label.switch {
     background-color: rgb(235, 255, 229);
 }
 
