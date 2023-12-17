@@ -20,7 +20,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         });
 
         function setPlaybackRate(playbackRate) {
-            for (const media of document.querySelectorAll('video, audio')) {
+            for (const media of document.querySelectorAll('video')) {
                 media.playbackRate = playbackRate;
             }
         }
