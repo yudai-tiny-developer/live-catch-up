@@ -69,7 +69,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         input.max = maxRate;
         input.step = stepRate;
         input.addEventListener('change', () => {
-            chrome.storage.local.set({ [key]: common.limitRate(value, defaultValue, minRate, maxRate, stepRate) });
+            chrome.storage.local.set({ [key]: input.value });
         });
         cell.appendChild(input);
 
