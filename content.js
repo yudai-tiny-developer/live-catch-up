@@ -5,7 +5,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         let playbackRate = common.defaultPlaybackRate;
 
         function initSettings() {
-            chrome.storage.local.get(common.storage, (data) => {
+            chrome.storage.local.get(common.storage, data => {
                 enabled = data.enabled === undefined ? common.defaultEnabled : data.enabled;
                 playbackRate = common.limitPlaybackRate(data.playbackRate);
 
@@ -15,7 +15,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
 
         initSettings();
 
-        chrome.storage.onChanged.addListener((changes, namespace) => {
+        chrome.storage.onChanged.addListener(() => {
             initSettings();
         });
 
@@ -28,24 +28,21 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         function changePlaybackRate(badge) {
             if (enabled) {
                 if (badge) {
-                    if (badge.hasAttribute('disabled')) {
-                        setPlaybackRate(1.0);
-                    } else {
-                        setPlaybackRate(playbackRate);
-                    }
+                    setPlaybackRate(badge.hasAttribute('disabled') ? 1.0 : playbackRate);
+                } else {
+                    // do nothing
                 }
             } else {
                 setPlaybackRate(1.0);
             }
         }
 
-        new MutationObserver((mutations, observer) => {
-            for (const m of mutations) {
-                if (m.target.classList.contains('ytp-live-badge')) {
-                    changePlaybackRate(m.target);
-                    return;
-                }
-            }
+        new MutationObserver(mutations => {
+            mutations.filter(m => {
+                return m.target.classList.contains('ytp-live-badge');
+            }).forEach(m => {
+                changePlaybackRate(m.target);
+            });
         }).observe(app, {
             attributeFilter: ['disabled'],
             subtree: true,
