@@ -1,3 +1,7 @@
+body {
+    background-color: rgb(26, 26, 26);
+}
+
 div.table {
     display: table;
     width: max-content;
@@ -7,20 +11,15 @@ div.row {
     display: table-row;
 }
 
-div.label {
+div.cell {
     display: table-cell;
+    vertical-align: middle;
     padding: 8px;
     color: rgb(255, 255, 255);
     fill: rgb(255, 255, 255);
 }
 
-div.toggle {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 8px;
-}
-
-input.checkbox {
+input.toggle {
     display: none;
 }
 
@@ -61,7 +60,7 @@ label.switch:after {
     color: rgb(255, 255, 255);
 }
 
-input.checkbox:checked+label.switch:after {
+input.toggle:checked+label.switch:after {
     left: 24px;
     content: "\2714";
 
@@ -70,18 +69,13 @@ input.checkbox:checked+label.switch:after {
 }
 
 
-input.checkbox:checked+label.switch {
+input.toggle:checked+label.switch {
     background-color: rgb(235, 255, 229);
 }
 
-input#playbackRate {
-    display: table-cell;
+input.rate {
     padding: 8px;
     width: 60px;
-}
-
-body {
-    background-color: rgb(26, 26, 26);
 }
 
 div#reset_container {

@@ -1,64 +1,86 @@
 import(chrome.runtime.getURL('common.js')).then(common => {
-    function createLabel(label) {
-        const div = document.createElement('div');
-        div.classList.add('label');
-        div.innerHTML = label;
-        return div;
+    function createLabel(label = '') {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.innerHTML = label;
+        return cell;
     }
 
-    function createEnabledToggle(checked) {
-        const div = document.createElement('div');
-        div.classList.add('toggle');
+    function createToggle(key, checked, defaultValue) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
 
         const input = document.createElement('input');
-        input.id = 'enabled';
-        input.classList.add('checkbox');
+        input.id = key;
+        input.classList.add('toggle');
         input.type = 'checkbox';
-        input.checked = checked === undefined ? common.defaultEnabled : checked;
-        input.setAttribute('default', 'true');
+        input.checked = checked === undefined ? defaultValue : checked;
+        input.setAttribute('default', defaultValue);
         input.addEventListener('change', () => {
-            chrome.storage.local.set({ 'enabled': input.checked });
+            chrome.storage.local.set({ [key]: input.checked });
         });
-        div.appendChild(input);
+        cell.appendChild(input);
 
         const label = document.createElement('label');
         label.classList.add('switch');
-        label.setAttribute('for', 'enabled');
-        div.appendChild(label);
+        label.setAttribute('for', key);
+        cell.appendChild(label);
 
-        return div;
+        return cell;
     }
 
-    function createInput(playbackRate) {
+    function createInput(playbackRate, defaultValue, minRate, maxRate, stepRate) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+
         const input = document.createElement('input');
         input.id = 'playbackRate';
         input.classList.add('rate');
         input.type = 'number';
-        input.min = common.minPlaybackRate;
-        input.max = common.maxPlaybackRate;
-        input.step = common.stepPlaybackRate;
         input.value = common.limitPlaybackRate(playbackRate);
-        input.setAttribute('default', common.defaultPlaybackRate);
+        input.setAttribute('default', defaultValue);
+        input.min = minRate;
+        input.max = maxRate;
+        input.step = stepRate;
         input.addEventListener('change', () => {
             chrome.storage.local.set({ 'playbackRate': common.limitPlaybackRate(input.value) });
         });
-        return input;
+        cell.appendChild(input);
+
+        return cell;
+    }
+
+    function createRow(container, gen) {
+        const row = document.createElement('div');
+        row.classList.add('row');
+        gen(row);
+        container.appendChild(row);
     }
 
     chrome.storage.local.get(['enabled', 'playbackRate'], (data) => {
-        const row1 = document.querySelector('div#row1');
-        row1.appendChild(createLabel('Enabled/Disabled'));
-        row1.appendChild(createEnabledToggle(data.enabled));
+        const container = document.querySelector('div#container');
 
-        const row2 = document.querySelector('div#row2');
-        row2.appendChild(createLabel(`Playback Rate (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`));
-        row2.appendChild(createInput(data.playbackRate));
+        createRow(container, row => {
+            row.appendChild(createLabel('Enabled/Disabled'));
+            row.appendChild(createToggle('enabled', data.enabled, common.defaultEnabled));
+        });
+
+        createRow(container, row => {
+            row.appendChild(createLabel(`Playback Rate (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`));
+            row.appendChild(createInput(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate));
+        });
+
+        createRow(container, row => {
+            row.appendChild(createLabel());
+            row.appendChild(createLabel());
+        });
     });
 
     document.querySelector('input#reset').addEventListener('click', () => {
-        for (const input of document.querySelectorAll('input.checkbox')) {
+        for (const input of document.querySelectorAll('input.toggle')) {
             input.checked = input.getAttribute('default') === 'true';
         }
+
         for (const input of document.querySelectorAll('input.rate')) {
             input.value = input.getAttribute('default');
         }
