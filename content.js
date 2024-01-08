@@ -6,7 +6,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
 
         function initSettings() {
             chrome.storage.local.get(common.storage, data => {
-                enabled = data.enabled === undefined ? common.defaultEnabled : data.enabled;
+                enabled = common.value(data.enabled, common.defaultEnabled);
                 playbackRate = common.limitRate(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
 
                 changePlaybackRate(app.querySelector('.ytp-live-badge'));

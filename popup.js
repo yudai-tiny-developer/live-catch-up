@@ -40,7 +40,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         input.id = key;
         input.classList.add('toggle');
         input.type = 'checkbox';
-        input.checked = checked === undefined ? defaultValue : checked;
+        input.checked = common.value(checked, defaultValue);
         input.setAttribute('default', defaultValue);
         input.addEventListener('change', () => {
             chrome.storage.local.set({ [key]: input.checked });
