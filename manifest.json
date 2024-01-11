@@ -35,5 +35,10 @@
     },
     "permissions": [
         "storage"
-    ]
+    ],
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "yudai.tiny.developer@gmail.com"
+        }
+    }
 }
