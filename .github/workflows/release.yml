@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: variables
+        run: |
+          REPOSITORY_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
+          VERSION=$(cat manifest.json | jq -r .version)
+          echo "ZIPFILE_NAME=${REPOSITORY_NAME}-${VERSION}.zip" >> $GITHUB_OUTPUT
+          echo "TAG=v${VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Fail if tag exists
+        run: |
+          if git show-ref --tags --verify --quiet "refs/tags/${{ steps.variables.outputs.TAG }}"; then
+            exit 1
+          fi
+
+      - run: zip "${{ steps.variables.outputs.ZIPFILE_NAME }}" *
+
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.variables.outputs.ZIPFILE_NAME }}
+          tag_name: ${{ steps.variables.outputs.TAG }}
+          generate_release_notes: true
