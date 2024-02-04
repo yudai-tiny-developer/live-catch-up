@@ -26,7 +26,7 @@ jobs:
             exit 1
           fi
 
-      - run: zip "${{ steps.variables.outputs.ZIPFILE_NAME }}" *
+      - run: zip -r "${{ steps.variables.outputs.ZIPFILE_NAME }}" *
 
       - uses: softprops/action-gh-release@v1
         with:

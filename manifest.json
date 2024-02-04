@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "YouTube Live Stream Latency Mitigator",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "description": "__MSG_appDesc__",
     "default_locale": "en",
     "icons": {
@@ -16,8 +16,7 @@
             ],
             "run_at": "document_end",
             "matches": [
-                "*://www.youtube.com/*",
-                "*://holodex.net/*"
+                "*://www.youtube.com/*"
             ],
             "all_frames": true
         }
@@ -28,8 +27,7 @@
                 "common.js"
             ],
             "matches": [
-                "*://www.youtube.com/*",
-                "*://holodex.net/*"
+                "*://www.youtube.com/*"
             ]
         }
     ],
