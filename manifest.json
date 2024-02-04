@@ -16,8 +16,10 @@
             ],
             "run_at": "document_end",
             "matches": [
-                "*://www.youtube.com/*"
-            ]
+                "*://www.youtube.com/*",
+                "*://holodex.net/*"
+            ],
+            "all_frames": true
         }
     ],
     "web_accessible_resources": [
@@ -26,7 +28,8 @@
                 "common.js"
             ],
             "matches": [
-                "*://www.youtube.com/*"
+                "*://www.youtube.com/*",
+                "*://holodex.net/*"
             ]
         }
     ],
