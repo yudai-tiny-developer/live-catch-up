@@ -1,6 +1,7 @@
 body {
     display: flex;
     justify-content: center;
+    margin: 0;
     text-wrap: nowrap;
 }
 
@@ -109,6 +110,11 @@ div#reset_progress.done {
 
 @media (prefers-color-scheme: light) {
     body {
+        background-color: rgb(255, 255, 255);
+    }
+
+    div.table,
+    div.footer {
         background-color: rgb(249, 249, 249);
     }
 
@@ -146,6 +152,11 @@ div#reset_progress.done {
 
 @media (prefers-color-scheme: dark) {
     body {
+        background-color: rgb(0, 0, 0);
+    }
+
+    div.table,
+    div.footer {
         background-color: rgb(26, 26, 26);
     }
 
