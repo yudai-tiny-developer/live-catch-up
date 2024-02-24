@@ -83,3 +83,19 @@ div#reset_container {
     justify-content: flex-end;
     padding: 8px;
 }
+
+div#reset_progress {
+    height: 4px;
+    width: 0;
+}
+
+div#reset_progress.progress {
+    background-color: #E53935;
+    width: 100%;
+    transition: width 1000ms linear;
+}
+
+div#reset_progress.done {
+    background-color: #1E88E5;
+    width: 100%;
+}

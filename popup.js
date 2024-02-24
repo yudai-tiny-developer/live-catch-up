@@ -76,15 +76,42 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         return cell;
     }
 
-    document.querySelector('input#reset').addEventListener('click', () => {
-        for (const input of document.querySelectorAll('input.toggle')) {
-            input.checked = input.getAttribute('default') === 'true';
-        }
+    let hold;
+    let holdTimeout;
 
-        for (const input of document.querySelectorAll('input.rate')) {
-            input.value = input.getAttribute('default');
-        }
+    document.querySelector('input#reset').addEventListener('mousedown', () => {
+        clearTimeout(holdTimeout);
+        document.querySelector('div#reset_progress').classList.add('progress');
+        document.querySelector('div#reset_progress').classList.remove('done');
+        hold = false;
 
-        chrome.storage.local.clear();
+        holdTimeout = setTimeout(() => {
+            document.querySelector('div#reset_progress').classList.remove('progress');
+            document.querySelector('div#reset_progress').classList.add('done');
+            hold = true;
+        }, 1000);
+    });
+
+    document.querySelector('input#reset').addEventListener('mouseleave', () => {
+        clearTimeout(holdTimeout);
+        document.querySelector('div#reset_progress').classList.remove('progress', 'done');
+        hold = false;
+    });
+
+    document.querySelector('input#reset').addEventListener('mouseup', () => {
+        clearTimeout(holdTimeout);
+        document.querySelector('div#reset_progress').classList.remove('progress', 'done');
+
+        if (hold) {
+            for (const input of document.querySelectorAll('input.toggle')) {
+                input.checked = input.getAttribute('default') === 'true';
+            }
+
+            for (const input of document.querySelectorAll('input.rate')) {
+                input.value = input.getAttribute('default');
+            }
+
+            chrome.storage.local.clear();
+        }
     });
 });
