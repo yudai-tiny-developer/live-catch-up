@@ -19,6 +19,11 @@ div.cell {
     fill: rgb(255, 255, 255);
 }
 
+div.footer {
+    display: table-caption;
+    caption-side: bottom;
+}
+
 input.toggle {
     display: none;
 }
