@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "YouTube Live Stream Latency Mitigator",
-    "version": "1.5.1",
+    "version": "1.6.0",
     "description": "__MSG_appDesc__",
     "default_locale": "en",
     "icons": {
@@ -24,7 +24,9 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "common.js"
+                "common.js",
+                "settings.js",
+                "progress.js"
             ],
             "matches": [
                 "*://www.youtube.com/*"
@@ -33,6 +35,10 @@
     ],
     "action": {
         "default_popup": "popup.html"
+    },
+    "options_ui": {
+        "page": "popup.html",
+        "open_in_tab": true
     },
     "permissions": [
         "storage"

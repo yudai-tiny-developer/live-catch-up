@@ -4,12 +4,17 @@
 <head>
     <link rel="stylesheet" href="popup.css" />
     <script src="popup.js" defer></script>
-    <title>popup</title>
+    <title>YouTube Live Stream Latency Mitigator / Settings</title>
 </head>
 
 <body>
-    <div id="container" class="table"></div>
-    <div id="reset_container"><input id="reset" type="reset" /></div>
+    <div id="container" class="table">
+        <div class="footer">
+            <div id="reset_container"><input id="reset" type="reset"
+                    title="Press and hold the button for 1 second to reset." /></div>
+            <div id="reset_progress"></div>
+        </div>
+    </div>
 </body>
 
 </html>

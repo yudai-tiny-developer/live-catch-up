@@ -1,5 +1,8 @@
 body {
-    background-color: rgb(26, 26, 26);
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    text-wrap: nowrap;
 }
 
 div.table {
@@ -15,8 +18,11 @@ div.cell {
     display: table-cell;
     vertical-align: middle;
     padding: 8px;
-    color: rgb(255, 255, 255);
-    fill: rgb(255, 255, 255);
+}
+
+div.footer {
+    display: table-caption;
+    caption-side: bottom;
 }
 
 input.toggle {
@@ -32,9 +38,6 @@ label.switch {
     display: block;
     position: relative;
     transition: all 75ms cubic-bezier(0.4, 0, 0.2, 1);
-
-    background-color: rgb(157, 157, 157);
-    border-color: rgb(123, 123, 123);
 }
 
 label.switch:after {
@@ -54,23 +57,11 @@ label.switch:after {
     display: flex;
     justify-content: center;
     align-items: flex-end;
-
-    background-color: rgb(85, 85, 85);
-    border-color: rgb(123, 123, 123);
-    color: rgb(255, 255, 255);
 }
 
 input.toggle:checked+label.switch:after {
     left: 24px;
     content: "\2714";
-
-    background-color: rgb(108, 255, 87);
-    color: rgb(3, 3, 3);
-}
-
-
-input.toggle:checked+label.switch {
-    background-color: rgb(235, 255, 229);
 }
 
 input.rate {
@@ -82,4 +73,118 @@ div#reset_container {
     display: flex;
     justify-content: flex-end;
     padding: 8px;
+}
+
+div#reset_progress {
+    height: 4px;
+    width: 0;
+}
+
+div#reset_progress.progress {
+    width: 100%;
+    transition: width 1000ms linear;
+}
+
+div#reset_progress.done {
+    width: 100%;
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: rgb(255, 255, 255);
+    }
+
+    div.table,
+    div.footer {
+        background-color: rgb(249, 249, 249);
+    }
+
+    div.cell {
+        color: rgb(3, 3, 3);
+        fill: rgb(3, 3, 3);
+    }
+
+    label.switch {
+        background-color: rgb(157, 157, 157);
+        border-color: rgb(123, 123, 123);
+    }
+
+    input.toggle:checked+label.switch:after {
+        background-color: rgb(108, 255, 87);
+        color: rgb(3, 3, 3);
+    }
+
+    input.toggle:checked+label.switch {
+        background-color: rgb(235, 255, 229);
+    }
+
+    label.switch:after {
+        background-color: rgb(85, 85, 85);
+        border-color: rgb(123, 123, 123);
+        color: rgb(255, 255, 255);
+    }
+
+    input#reset {
+        background-color: rgb(238, 238, 238);
+        border-color: rgb(123, 123, 123);
+        color: rgb(3, 3, 3);
+    }
+
+    div#reset_progress.progress {
+        background-color: #E53935;
+    }
+
+    div#reset_progress.done {
+        background-color: #1E88E5;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: rgb(0, 0, 0);
+    }
+
+    div.table,
+    div.footer {
+        background-color: rgb(26, 26, 26);
+    }
+
+    div.cell {
+        color: rgb(255, 255, 255);
+        fill: rgb(255, 255, 255);
+    }
+
+    label.switch {
+        background-color: rgb(157, 157, 157);
+        border-color: rgb(123, 123, 123);
+    }
+
+    input.toggle:checked+label.switch:after {
+        background-color: rgb(108, 255, 87);
+        color: rgb(3, 3, 3);
+    }
+
+    input.toggle:checked+label.switch {
+        background-color: rgb(235, 255, 229);
+    }
+
+    label.switch:after {
+        background-color: rgb(85, 85, 85);
+        border-color: rgb(123, 123, 123);
+        color: rgb(255, 255, 255);
+    }
+
+    input#reset {
+        background-color: rgb(85, 85, 85);
+        border-color: rgb(123, 123, 123);
+        color: rgb(255, 255, 255);
+    }
+
+    div#reset_progress.progress {
+        background-color: #E53935;
+    }
+
+    div#reset_progress.done {
+        background-color: #1E88E5;
+    }
 }
