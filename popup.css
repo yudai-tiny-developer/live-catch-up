@@ -1,5 +1,7 @@
 body {
-    background-color: rgb(26, 26, 26);
+    display: flex;
+    justify-content: center;
+    text-wrap: nowrap;
 }
 
 div.table {
@@ -103,4 +105,78 @@ div#reset_progress.progress {
 div#reset_progress.done {
     background-color: #1E88E5;
     width: 100%;
+}
+
+@media (prefers-color-scheme: light) {
+    body {
+        background-color: rgb(249, 249, 249);
+    }
+
+    div.cell {
+        color: rgb(3, 3, 3);
+        fill: rgb(3, 3, 3);
+    }
+
+    label.switch {
+        background-color: rgb(157, 157, 157);
+        border-color: rgb(123, 123, 123);
+    }
+
+    input.checkbox:checked+label.switch {
+        background-color: rgb(235, 255, 229);
+    }
+
+    label.switch:after {
+        background-color: rgb(85, 85, 85);
+        border-color: rgb(123, 123, 123);
+        color: rgb(255, 255, 255);
+    }
+
+    input.checkbox:checked+label.switch:after {
+        background-color: rgb(108, 255, 87);
+        color: rgb(3, 3, 3);
+    }
+
+    input#reset {
+        background-color: rgb(238, 238, 238);
+        border-color: rgb(123, 123, 123);
+        color: rgb(3, 3, 3);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: rgb(26, 26, 26);
+    }
+
+    div.cell {
+        color: rgb(255, 255, 255);
+        fill: rgb(255, 255, 255);
+    }
+
+    label.switch {
+        background-color: rgb(157, 157, 157);
+        border-color: rgb(123, 123, 123);
+    }
+
+    input.checkbox:checked+label.switch {
+        background-color: rgb(235, 255, 229);
+    }
+
+    label.switch:after {
+        background-color: rgb(85, 85, 85);
+        border-color: rgb(123, 123, 123);
+        color: rgb(255, 255, 255);
+    }
+
+    input.checkbox:checked+label.switch:after {
+        background-color: rgb(108, 255, 87);
+        color: rgb(3, 3, 3);
+    }
+
+    input#reset {
+        background-color: rgb(85, 85, 85);
+        border-color: rgb(123, 123, 123);
+        color: rgb(255, 255, 255);
+    }
 }
