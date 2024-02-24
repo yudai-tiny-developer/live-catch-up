@@ -1,4 +1,10 @@
-import(chrome.runtime.getURL('common.js')).then(common => {
+import(chrome.runtime.getURL('common.js')).then(common =>
+    import(chrome.runtime.getURL('progress.js')).then(progress =>
+        main(common, progress)
+    )
+);
+
+function main(common, progress) {
     chrome.storage.local.get(common.storage, data => {
         const container = document.querySelector('div#container');
 
@@ -76,33 +82,24 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         return cell;
     }
 
-    let hold;
-    let holdTimeout;
+    const reset_button = document.querySelector('input#reset');
 
-    document.querySelector('input#reset').addEventListener('mousedown', () => {
-        clearTimeout(holdTimeout);
-        document.querySelector('div#reset_progress').classList.add('progress');
-        document.querySelector('div#reset_progress').classList.remove('done');
-        hold = false;
-
-        holdTimeout = setTimeout(() => {
-            document.querySelector('div#reset_progress').classList.remove('progress');
-            document.querySelector('div#reset_progress').classList.add('done');
-            hold = true;
-        }, 1000);
+    reset_button.addEventListener('mousedown', () => progress.startProgress());
+    reset_button.addEventListener('touchstart', () => progress.startProgress());
+    reset_button.addEventListener('mouseleave', () => progress.cancelProgress());
+    reset_button.addEventListener('touchmove', event => {
+        const touch = event.touches[0];
+        const target = document.elementFromPoint(touch.clientX, touch.clientY);
+        if (target !== reset_button) {
+            progress.cancelProgress();
+        }
     });
+    reset_button.addEventListener('touchcancel', () => progress.cancelProgress());
+    reset_button.addEventListener('mouseup', () => progress.endProgress(resetSettings));
+    reset_button.addEventListener('touchend', () => progress.endProgress(resetSettings));
 
-    document.querySelector('input#reset').addEventListener('mouseleave', () => {
-        clearTimeout(holdTimeout);
-        document.querySelector('div#reset_progress').classList.remove('progress', 'done');
-        hold = false;
-    });
-
-    document.querySelector('input#reset').addEventListener('mouseup', () => {
-        clearTimeout(holdTimeout);
-        document.querySelector('div#reset_progress').classList.remove('progress', 'done');
-
-        if (hold) {
+    function resetSettings() {
+        if (progress.isDone()) {
             for (const input of document.querySelectorAll('input.toggle')) {
                 input.checked = input.getAttribute('default') === 'true';
             }
@@ -113,5 +110,5 @@ import(chrome.runtime.getURL('common.js')).then(common => {
 
             chrome.storage.local.clear();
         }
-    });
-});
+    }
+}

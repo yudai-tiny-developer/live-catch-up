@@ -24,7 +24,8 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "common.js"
+                "common.js",
+                "progress.js"
             ],
             "matches": [
                 "*://www.youtube.com/*"
