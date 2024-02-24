@@ -25,6 +25,7 @@
         {
             "resources": [
                 "common.js",
+                "settings.js",
                 "progress.js"
             ],
             "matches": [
