@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "YouTube Live Stream Latency Mitigator",
-    "version": "1.6.0",
+    "version": "1.6.0.1",
     "description": "__MSG_appDesc__",
     "default_locale": "en",
     "icons": {
