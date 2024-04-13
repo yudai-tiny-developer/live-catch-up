@@ -1,51 +1,46 @@
 {
-    "manifest_version": 3,
-    "name": "YouTube Live Stream Latency Mitigator",
-    "version": "1.6.0.3",
-    "description": "__MSG_appDesc__",
-    "default_locale": "en",
-    "icons": {
-        "16": "icons/16.png",
-        "48": "icons/48.png",
-        "128": "icons/128.png"
-    },
-    "content_scripts": [
-        {
-            "js": [
-                "content.js"
-            ],
-            "run_at": "document_end",
-            "matches": [
-                "*://www.youtube.com/*"
-            ],
-            "all_frames": true
-        }
-    ],
-    "web_accessible_resources": [
-        {
-            "resources": [
-                "common.js",
-                "settings.js",
-                "progress.js"
-            ],
-            "matches": [
-                "*://www.youtube.com/*"
-            ]
-        }
-    ],
-    "action": {
-        "default_popup": "popup.html"
-    },
-    "options_ui": {
-        "page": "popup.html",
-        "open_in_tab": true
-    },
-    "permissions": [
-        "storage"
-    ],
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "{1b27261f-e4e8-4c8b-86cf-fc30168e2e6d}"
-        }
+  "manifest_version": 3,
+  "name": "YouTube Live Stream Latency Mitigator",
+  "version": "1.6.1",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  },
+  "content_scripts": [
+    {
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_end",
+      "matches": [
+        "*://www.youtube.com/*"
+      ],
+      "all_frames": true
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "common.js",
+        "settings.js",
+        "progress.js"
+      ],
+      "matches": [
+        "*://www.youtube.com/*"
+      ]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "popup.html",
+    "open_in_tab": true
+  },
+  "permissions": [
+    "storage"
+  ]
 }

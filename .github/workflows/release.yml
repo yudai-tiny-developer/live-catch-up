@@ -2,34 +2,45 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   Release:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - id: variables
         run: |
           REPOSITORY_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}
           VERSION=$(cat manifest.json | jq -r .version)
-          echo "ZIPFILE_NAME=${REPOSITORY_NAME}-${VERSION}.zip" >> $GITHUB_OUTPUT
+          echo "ZIPFILE_NAME_CHROME=/tmp/${REPOSITORY_NAME}-${VERSION}-chrome.zip" >> $GITHUB_OUTPUT
+          echo "ZIPFILE_NAME_FIREFOX=/tmp/${REPOSITORY_NAME}-${VERSION}-firefox.zip" >> $GITHUB_OUTPUT
           echo "TAG=v${VERSION}" >> $GITHUB_OUTPUT
 
-      - name: Fail if tag exists
+      - name: zip for chrome
+        run: zip -r "${{ steps.variables.outputs.ZIPFILE_NAME_CHROME }}" * -x browser_specific_settings.json
+    
+      - name: zip for firefox
         run: |
-          if git show-ref --tags --verify --quiet "refs/tags/${{ steps.variables.outputs.TAG }}"; then
-            exit 1
-          fi
+          jq -s add manifest.json browser_specific_settings.json > manifest-firefox.json
+          rm manifest.json
+          mv manifest-firefox.json manifest.json
+          zip -r "${{ steps.variables.outputs.ZIPFILE_NAME_FIREFOX }}" * -x browser_specific_settings.json
 
-      - run: zip -r "${{ steps.variables.outputs.ZIPFILE_NAME }}" *
+      - name: remove release and tag if exists
+        run: |
+          gh release delete ${{ steps.variables.outputs.TAG }} --cleanup-tag --yes || true
+          git push --delete origin tag ${{ steps.variables.outputs.TAG }}
 
-      - uses: softprops/action-gh-release@v1
+      - uses: softprops/action-gh-release@v2
         with:
-          files: ${{ steps.variables.outputs.ZIPFILE_NAME }}
+          files: |
+            ${{ steps.variables.outputs.ZIPFILE_NAME_CHROME }}
+            ${{ steps.variables.outputs.ZIPFILE_NAME_FIREFOX }}
           tag_name: ${{ steps.variables.outputs.TAG }}
           generate_release_notes: true
