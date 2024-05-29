@@ -16,7 +16,7 @@
       ],
       "run_at": "document_end",
       "matches": [
-        "https://www.youtube.com/watch*"
+        "https://www.youtube.com/*"
       ],
       "all_frames": true
     }
