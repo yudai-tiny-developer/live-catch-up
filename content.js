@@ -7,7 +7,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
             enabled = common.value(data.enabled, common.defaultEnabled);
             playbackRate = common.limitRate(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
 
-            changePlaybackRate(document.querySelector('.ytp-live-badge'));
+            changePlaybackRate(document.body.querySelector('.ytp-live-badge'));
         });
     }
 
@@ -18,7 +18,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
     });
 
     function setPlaybackRate(playbackRate) {
-        for (const media of document.querySelectorAll('video')) {
+        for (const media of document.body.querySelectorAll('video')) {
             media.playbackRate = playbackRate;
         }
     }

@@ -17,9 +17,9 @@ function main(common, settings, progress, data) {
     const progress_class = 'progress';
     const done_class = 'done';
 
-    const container = document.querySelector('div#container');
-    const reset_button = document.querySelector('input#reset');
-    const progress_div = document.querySelector('div#reset_progress');
+    const container = document.body.querySelector('div#container');
+    const reset_button = document.body.querySelector('input#reset');
+    const progress_div = document.body.querySelector('div#reset_progress');
 
     {
         const row = settings.createRow(row_class);
