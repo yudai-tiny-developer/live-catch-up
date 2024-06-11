@@ -46,9 +46,7 @@ function main(common) {
         const target = app.querySelector('button.ytp-live-badge');
         if (target) {
             observer.disconnect();
-            new MutationObserver(mutations => {
-                changePlaybackRate(target);
-            }).observe(target, { attributeFilter: ['disabled'] });
+            new MutationObserver(() => changePlaybackRate(target)).observe(target, { attributeFilter: ['disabled'] });
         }
     }).observe(app, { childList: true, subtree: true });
 }
