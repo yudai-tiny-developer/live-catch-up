@@ -80,11 +80,11 @@ export function registerResetButton(reset_button, progress_div, progress_class, 
 }
 
 function resetSettings(args) {
-    for (const input of document.querySelectorAll('input.' + args.toggle_class)) {
+    for (const input of document.body.querySelectorAll('input.' + args.toggle_class)) {
         input.checked = input.getAttribute('defaultValue') === 'true';
     }
 
-    for (const input of document.querySelectorAll('input.' + args.input_class)) {
+    for (const input of document.body.querySelectorAll('input.' + args.input_class)) {
         input.value = input.getAttribute('defaultValue');
     }
 

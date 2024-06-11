@@ -1,4 +1,11 @@
-import(chrome.runtime.getURL('common.js')).then(common => {
+const app = document.querySelector('ytd-app');
+if (app) {
+    import(chrome.runtime.getURL('common.js')).then(common => {
+        main(common);
+    });
+}
+
+function main(common) {
     let enabled = common.defaultEnabled;
     let playbackRate = common.defaultPlaybackRate;
 
@@ -7,7 +14,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
             enabled = common.value(data.enabled, common.defaultEnabled);
             playbackRate = common.limitRate(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
 
-            changePlaybackRate(document.querySelector('.ytp-live-badge'));
+            changePlaybackRate(app.querySelector('.ytp-live-badge'));
         });
     }
 
@@ -18,7 +25,7 @@ import(chrome.runtime.getURL('common.js')).then(common => {
     });
 
     function setPlaybackRate(playbackRate) {
-        for (const media of document.querySelectorAll('video')) {
+        for (const media of app.querySelectorAll('video')) {
             media.playbackRate = playbackRate;
         }
     }
@@ -35,14 +42,11 @@ import(chrome.runtime.getURL('common.js')).then(common => {
         }
     }
 
-    new MutationObserver(mutations => {
-        mutations.filter(m => {
-            return m.target.classList.contains('ytp-live-badge');
-        }).forEach(m => {
-            changePlaybackRate(m.target);
-        });
-    }).observe(document, {
-        attributeFilter: ['disabled'],
-        subtree: true,
-    });
-});
+    new MutationObserver((mutations, observer) => {
+        const target = app.querySelector('button.ytp-live-badge');
+        if (target) {
+            observer.disconnect();
+            new MutationObserver(() => changePlaybackRate(target)).observe(target, { attributeFilter: ['disabled'] });
+        }
+    }).observe(app, { childList: true, subtree: true });
+}

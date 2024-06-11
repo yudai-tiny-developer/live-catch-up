@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "YouTube Live Stream Latency Mitigator",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "description": "__MSG_appDesc__",
   "default_locale": "en",
   "icons": {
@@ -16,7 +16,7 @@
       ],
       "run_at": "document_end",
       "matches": [
-        "*://www.youtube.com/*"
+        "https://www.youtube.com/*"
       ],
       "all_frames": true
     }
@@ -29,7 +29,7 @@
         "progress.js"
       ],
       "matches": [
-        "*://www.youtube.com/*"
+        "https://www.youtube.com/*"
       ]
     }
   ],
