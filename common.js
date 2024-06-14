@@ -11,10 +11,10 @@ export const defaultSmooth = false;
 
 export const defaultSmoothRate = 250;
 export const minSmoothRate = 50;
-export const maxSmoothRate = 1000;
+export const maxSmoothRate = 10000;
 export const stepSmoothRate = 50;
 
-export const defaultSmoothThreathold = 10;
+export const defaultSmoothThreathold = 5;
 export const minSmoothThreathold = 0.5;
 export const maxSmoothThreathold = 60;
 export const stepSmoothThreathold = 0.5;

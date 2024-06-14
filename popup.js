@@ -69,7 +69,7 @@ function main(common, settings, progress, data) {
         row.appendChild(settings.createLabel(cell_class,
             `&nbsp;&nbsp;&nbsp;&nbsp;${common.maxSmoothThreathold.toFixed(0)} s: Higher Latency Threathold`
             + '<br>' +
-            `&nbsp;&nbsp;&nbsp;&nbsp;${common.minSmoothThreathold.toFixed(0)} s: Lower Latency Threathold`
+            `&nbsp;&nbsp;&nbsp;&nbsp;${common.minSmoothThreathold.toFixed(1)} s: Lower Latency Threathold`
         ));
         row.appendChild(settings.createLabel(cell_class));
         container.appendChild(row);

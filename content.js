@@ -7,6 +7,8 @@ if (app) {
 
 function main(common) {
     function initSettings() {
+        reset();
+
         chrome.storage.local.get(common.storage, data => {
             const enabled = common.value(data.enabled, common.defaultEnabled);
             const playbackRate = common.limitValue(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
@@ -15,13 +17,7 @@ function main(common) {
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
 
             if (enabled) {
-                if (smooth) {
-                    search_badge_interval(playbackRate, smoothRate, smoothThreathold * 1000);
-                } else {
-                    search_badge_observer(playbackRate);
-                }
-            } else {
-                reset_search();
+                observeBadgeElement(smooth, playbackRate, smoothRate, smoothThreathold);
             }
         });
     }
@@ -34,57 +30,73 @@ function main(common) {
         initSettings();
     });
 
-    function changePlaybackRate(disabled, playbackRate) {
-        const media = app.querySelector('video');
-        if (media) {
-            media.playbackRate = disabled ? 1.0 : playbackRate;
+    let badge_element_observer;
+    let badge_attribute_observer;
+
+    function observeBadgeElement(smooth, playbackRate, smoothRate, smoothThreathold) {
+        badge_element_observer = new MutationObserver(() => {
+            startPlaybackRateChanging(smooth, playbackRate, smoothRate, smoothThreathold);
+        });
+        badge_element_observer.observe(app, { childList: true, subtree: true });
+        startPlaybackRateChanging(smooth, playbackRate, smoothRate, smoothThreathold);
+    }
+
+    function disconnectBadgeElementObserver() {
+        badge_element_observer?.disconnect();
+        badge_element_observer = undefined;
+    }
+
+    function startPlaybackRateChanging(smooth, playbackRate, smoothRate, smoothThreathold) {
+        const badge = app.querySelector('button.ytp-live-badge');
+        if (badge) {
+            disconnectBadgeElementObserver();
+            if (smooth) {
+                sendStartEvent(playbackRate, smoothRate, smoothThreathold);
+            } else {
+                observeBadgeAttribute(playbackRate, badge);
+            }
         }
     }
 
-    let parent_observer;
-    let badge_observer;
+    function observeBadgeAttribute(playbackRate, badge) {
+        const media = app.querySelector('video');
+        if (media) {
+            badge_attribute_observer = new MutationObserver(() => {
+                media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
+            });
+            badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
+        }
+    }
 
-    function reset_search() {
-        parent_observer?.disconnect();
-        parent_observer = undefined;
+    function disconnectBadgeAttributeObserver() {
+        badge_attribute_observer?.disconnect();
+        badge_attribute_observer = undefined;
+    }
 
-        badge_observer?.disconnect();
-        badge_observer = undefined;
+    function sendStartEvent(playbackRate, smoothRate, smoothThreathold) {
+        document.dispatchEvent(new CustomEvent('_live_catch_up_start', { detail: { playbackRate, smoothRate, smoothThreathold } }));
+    }
 
+    function sendStopEvent(playbackRate, smoothRate, smoothThreathold) {
         document.dispatchEvent(new CustomEvent('_live_catch_up_stop'));
     }
 
-    function observe_badge(playbackRate) {
-        const target = app.querySelector('button.ytp-live-badge');
-        if (target) {
-            changePlaybackRate(target.hasAttribute('disabled'), playbackRate);
-            parent_observer?.disconnect();
-            parent_observer = undefined;
-            badge_observer = new MutationObserver(() => {
-                changePlaybackRate(target.hasAttribute('disabled'), playbackRate);
-            });
-            badge_observer.observe(target, { attributeFilter: ['disabled'] });
-        }
+    function reset() {
+        disconnectBadgeElementObserver();
+        disconnectBadgeAttributeObserver();
+        sendStopEvent();
+        resetPlaybackRate();
     }
 
-    function search_badge_observer(playbackRate) {
-        reset_search();
-        observe_badge(playbackRate);
-        if (!badge_observer) {
-            parent_observer = new MutationObserver((mutations, observer) => {
-                observe_badge(playbackRate);
-            });
-            parent_observer.observe(app, { childList: true, subtree: true });
+    function resetPlaybackRate() {
+        const media = app.querySelector('video');
+        if (media) {
+            media.playbackRate = 1.0;
         }
-    }
-
-    function search_badge_interval(playbackRate, smoothRate, smoothThreathold) {
-        document.dispatchEvent(new CustomEvent('_live_catch_up_start', { detail: { playbackRate, smoothRate, smoothThreathold } }));
     }
 
     const s = document.createElement('script');
     s.src = chrome.runtime.getURL('inject.js');
     s.onload = () => s.remove();
     (document.head || document.documentElement).append(s);
-
 }
