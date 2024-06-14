@@ -26,6 +26,11 @@ function main(common) {
         initSettings();
     });
 
+    document.addEventListener('_live_catch_up_reinit', e => {
+        reset();
+        initSettings();
+    });
+
     chrome.storage.onChanged.addListener(() => {
         reset();
         initSettings();
@@ -118,7 +123,7 @@ function main(common) {
     }
 
     function resetPlaybackRate() {
-        for (const media of app.querySelector('video')) {
+        for (const media of app.querySelectorAll('video')) {
             media.playbackRate = 1.0;
         }
     }

@@ -1,14 +1,23 @@
 let _live_catch_up_interval;
 
 document.addEventListener('_live_catch_up_start', e => {
+    const playbackRate = e.detail.playbackRate;
+    const smoothRate = e.detail.smoothRate;
+    const smoothThreathold = e.detail.smoothThreathold;
+
     const player = document.querySelector('div#movie_player');
-    if (player && player.isAtLiveHead && player.getVideoStats && player.getVideoStats().live) {
+    if (player) {
         const media = player.querySelector('video');
         if (media) {
             clearInterval(_live_catch_up_interval);
             _live_catch_up_interval = setInterval(() => {
-                media.playbackRate = player.isAtLiveHead() && player.getVideoStats().lat < e.detail.smoothThreathold ? 1.0 : e.detail.playbackRate;
-            }, e.detail.smoothRate);
+                if (player.getVideoStats && player.isAtLiveHead) {
+                    const stats = player.getVideoStats();
+                    if (stats.live) {
+                        media.playbackRate = player.isAtLiveHead() && stats.lat < smoothThreathold ? 1.0 : playbackRate;
+                    }
+                }
+            }, smoothRate);
         } else {
             console.warn('video not found');
         }
