@@ -44,17 +44,31 @@ function main(common, settings, progress, data) {
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mitigation');
+        const note = settings.createLabel(cell_class,
+            '<strong>CAUTION</strong>'
+            + '<br>' +
+            'Aggressive mitigation mode may cause frequent video pauses.'
+        );
+        note.classList.add('note');
+        row.appendChild(note);
+        row.appendChild(settings.createLabel(cell_class));
+        container.appendChild(row);
+    } {
+        const row = settings.createRow(row_class);
+        row.classList.add('aggressive-mitigation');
         row.appendChild(settings.createLabel(cell_class, 'Latency check interval (ms)'));
         row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'smoothRate', data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mitigation');
-        row.appendChild(settings.createLabel(cell_class,
-            `&nbsp;&nbsp;&nbsp;&nbsp;${common.maxSmoothRate.toFixed(0)} ms: Lower CPU load`
+        row.classList.add('aggressive-mitigation', 'note');
+        const note = settings.createLabel(cell_class,
+            `${common.maxSmoothRate.toFixed(0)} ms: Lower CPU load`
             + '<br>' +
-            `&nbsp;&nbsp;&nbsp;&nbsp;${common.minSmoothRate.toFixed(0)} ms: Higher CPU load`
-        ));
+            `${common.minSmoothRate.toFixed(0)} ms: Higher CPU load`
+        );
+        note.classList.add('note');
+        row.appendChild(note);
         row.appendChild(settings.createLabel(cell_class));
         container.appendChild(row);
     } {
@@ -65,12 +79,14 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mitigation');
-        row.appendChild(settings.createLabel(cell_class,
-            `&nbsp;&nbsp;&nbsp;&nbsp;${common.maxSmoothThreathold.toFixed(0)} s: Higher latency`
+        row.classList.add('aggressive-mitigation', 'note');
+        const note = settings.createLabel(cell_class,
+            `${common.maxSmoothThreathold.toFixed(0)} s: Higher latency`
             + '<br>' +
-            `&nbsp;&nbsp;&nbsp;&nbsp;${common.minSmoothThreathold.toFixed(1)} s: Lower latency`
-        ));
+            `${common.minSmoothThreathold.toFixed(1)} s: Lower latency`
+        );
+        note.classList.add('note');
+        row.appendChild(note);
         row.appendChild(settings.createLabel(cell_class));
         container.appendChild(row);
     }
