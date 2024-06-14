@@ -75,7 +75,29 @@ function main(common) {
     }
 
     function sendStartEvent(playbackRate, smoothRate, smoothThreathold) {
-        document.dispatchEvent(new CustomEvent('_live_catch_up_start', { detail: { playbackRate, smoothRate, smoothThreathold } }));
+        if (navigator.userAgent.includes('Firefox')) {
+            document.dispatchEvent(new CustomEvent('_live_catch_up_start',
+                {
+                    detail: cloneInto(
+                        {
+                            playbackRate,
+                            smoothRate,
+                            smoothThreathold
+                        },
+                        document.defaultView)
+                }
+            ));
+        } else {
+            document.dispatchEvent(new CustomEvent('_live_catch_up_start',
+                {
+                    detail: {
+                        playbackRate,
+                        smoothRate,
+                        smoothThreathold
+                    }
+                }
+            ));
+        }
     }
 
     function sendStopEvent(playbackRate, smoothRate, smoothThreathold) {
@@ -97,7 +119,8 @@ function main(common) {
     }
 
     const s = document.createElement('script');
+    s.id = '_live_catch_up';
     s.src = chrome.runtime.getURL('inject.js');
-    s.onload = () => s.remove();
+    //s.onload = () => s.remove();
     (document.head || document.documentElement).append(s);
 }
