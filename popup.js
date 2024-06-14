@@ -38,16 +38,16 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class, 'Aggressive mitigation (High CPU load)'));
-        row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'smooth', data.smooth, common.defaultSmooth, common.value, 'div.aggressive-mitigation'));
+        row.appendChild(settings.createLabel(cell_class, 'Aggressive mode (High CPU load)'));
+        row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'smooth', data.smooth, common.defaultSmooth, common.value, 'div.aggressive-mode'));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mitigation');
+        row.classList.add('aggressive-mode');
         const note = settings.createLabel(cell_class,
             '<strong>CAUTION</strong>'
             + '<br>' +
-            'Aggressive mitigation mode may cause frequent video pauses.'
+            'Aggressive mode may cause frequent video pauses.'
         );
         note.classList.add('note');
         row.appendChild(note);
@@ -55,13 +55,13 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mitigation');
+        row.classList.add('aggressive-mode');
         row.appendChild(settings.createLabel(cell_class, 'Latency check interval (ms)'));
         row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'smoothRate', data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mitigation', 'note');
+        row.classList.add('aggressive-mode', 'note');
         const note = settings.createLabel(cell_class,
             `${common.maxSmoothRate.toFixed(0)} ms: Lower CPU load`
             + '<br>' +
@@ -73,13 +73,13 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mitigation');
+        row.classList.add('aggressive-mode');
         row.appendChild(settings.createLabel(cell_class, 'Latency Allowed (s)'));
         row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mitigation', 'note');
+        row.classList.add('aggressive-mode', 'note');
         const note = settings.createLabel(cell_class,
             `${common.maxSmoothThreathold.toFixed(0)} s: Higher latency`
             + '<br>' +
@@ -93,7 +93,7 @@ function main(common, settings, progress, data) {
 
     settings.registerResetButton(reset_button, progress_div, progress_class, done_class, toggle_class, input_class, progress);
 
-    for (const div of document.querySelectorAll('div.aggressive-mitigation')) {
+    for (const div of document.querySelectorAll('div.aggressive-mode')) {
         div.style.display = data.smooth ? '' : 'none';
     }
 }

@@ -65,6 +65,7 @@ function main(common) {
                 media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
             });
             badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
+            media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
         }
     }
 

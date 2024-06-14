@@ -83,7 +83,7 @@ export function registerResetButton(reset_button, progress_div, progress_class, 
     });
 }
 
-function resetSettings(args) {
+function resetSettings(args) { // FIXME: selector args
     for (const input of document.body.querySelectorAll('input.' + args.toggle_class)) {
         input.checked = input.getAttribute('defaultValue') === 'true';
     }
@@ -92,7 +92,7 @@ function resetSettings(args) {
         input.value = input.getAttribute('defaultValue');
     }
 
-    for (const div of document.body.querySelectorAll('div.aggressive-mitigation')) {
+    for (const div of document.body.querySelectorAll('div.aggressive-mode')) {
         div.style.display = 'none';
     }
 
