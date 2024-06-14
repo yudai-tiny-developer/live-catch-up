@@ -123,7 +123,7 @@ function main(common) {
     }
 
     function resetPlaybackRate() {
-        for (const media of app.querySelector('video')) {
+        for (const media of app.querySelectorAll('video')) {
             media.playbackRate = 1.0;
         }
     }

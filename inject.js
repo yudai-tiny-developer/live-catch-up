@@ -1,6 +1,10 @@
 let _live_catch_up_interval;
 
 document.addEventListener('_live_catch_up_start', e => {
+    const playbackRate = e.detail.playbackRate;
+    const smoothRate = e.detail.smoothRate;
+    const smoothThreathold = e.detail.smoothThreathold;
+
     const player = document.querySelector('div#movie_player');
     if (player) {
         const media = player.querySelector('video');
@@ -10,10 +14,10 @@ document.addEventListener('_live_catch_up_start', e => {
                 if (player.getVideoStats && player.isAtLiveHead) {
                     const stats = player.getVideoStats();
                     if (stats.live) {
-                        media.playbackRate = player.isAtLiveHead() && stats.lat < e.detail.smoothThreathold ? 1.0 : e.detail.playbackRate;
+                        media.playbackRate = player.isAtLiveHead() && stats.lat < smoothThreathold ? 1.0 : playbackRate;
                     }
                 }
-            }, e.detail.smoothRate);
+            }, smoothRate);
         } else {
             console.warn('video not found');
         }
