@@ -5,25 +5,21 @@ document.addEventListener('_live_catch_up_start', e => {
     const smoothRate = e.detail.smoothRate;
     const smoothThreathold = e.detail.smoothThreathold;
 
-    const player = document.querySelector('div#movie_player');
-    if (player) {
-        const media = player.querySelector('video');
-        if (media) {
-            clearInterval(_live_catch_up_interval);
-            _live_catch_up_interval = setInterval(() => {
-                if (player.getVideoStats && player.isAtLiveHead) {
-                    const stats = player.getVideoStats();
-                    if (stats.live) {
-                        media.playbackRate = player.isAtLiveHead() && stats.lat < smoothThreathold ? 1.0 : playbackRate;
-                    }
+    clearInterval(_live_catch_up_interval);
+    _live_catch_up_interval.push(setInterval(() => {
+        const player = document.querySelector('div#movie_player');
+        if (player && player.getVideoStats && player.isAtLiveHead) {
+            const media = player.querySelector('video');
+            if (media) {
+                const stats = player.getVideoStats();
+                if (stats.live) {
+                    media.playbackRate = player.isAtLiveHead() && stats.lat < smoothThreathold ? 1.0 : playbackRate;
+                } else {
+                    clearInterval(_live_catch_up_interval);
                 }
-            }, smoothRate);
-        } else {
-            console.warn('video not found');
+            }
         }
-    } else {
-        console.warn('div#movie_player not found');
-    }
+    }, smoothRate));
 });
 
 document.addEventListener('_live_catch_up_stop', e => {
