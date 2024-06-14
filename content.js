@@ -45,11 +45,15 @@ function main(common) {
 
     function observeBadgeElement(playbackRate) {
         badge_element_observer = new MutationObserver(() => {
-            const badge = app.querySelector('button.ytp-live-badge');
+            const player = document.querySelector('div#movie_player');
+            const badge = player.querySelector('button.ytp-live-badge');
             if (badge) {
                 disconnectBadgeElementObserver();
                 badge_attribute_observer = new MutationObserver(() => {
-                    changePlaybackRate(playbackRate, badge);
+                    const media = player.querySelector('video');
+                    if (media) {
+                        media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
+                    }
                 });
                 badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
             }
@@ -60,20 +64,6 @@ function main(common) {
     function disconnectBadgeElementObserver() {
         badge_element_observer?.disconnect();
         badge_element_observer = undefined;
-    }
-
-    function changePlaybackRate(playbackRate, badge) {
-        if (badge) {
-            setPlaybackRate(badge.hasAttribute('disabled') ? 1.0 : playbackRate);
-        } else {
-            // do nothing
-        }
-    }
-
-    function setPlaybackRate(playbackRate) {
-        for (const media of app.querySelectorAll('video')) {
-            media.playbackRate = playbackRate;
-        }
     }
 
     function disconnectBadgeAttributeObserver() {
