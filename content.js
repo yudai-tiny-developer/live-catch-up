@@ -7,7 +7,6 @@ if (app) {
 
 function main(common) {
     function initSettings() {
-        console.log('initSettings');
         chrome.storage.local.get(common.storage, data => {
             const enabled = common.value(data.enabled, common.defaultEnabled);
             const playbackRate = common.limitValue(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
@@ -28,18 +27,15 @@ function main(common) {
     }
 
     document.addEventListener('_live_catch_up_init', e => {
-        console.log('_live_catch_up_init');
         initSettings();
     });
 
     document.addEventListener('_live_catch_up_reinit', e => {
-        console.log('_live_catch_up_reinit');
         reset();
         initSettings();
     });
 
     chrome.storage.onChanged.addListener(() => {
-        console.log('onChanged');
         reset();
         initSettings();
     });
@@ -48,62 +44,39 @@ function main(common) {
     let badge_attribute_observer;
 
     function observeBadgeElement(playbackRate) {
-        console.log('observeBadgeElement');
         badge_element_observer = new MutationObserver(() => {
-            observeBadgeElement2(playbackRate);
+            const badge = app.querySelector('button.ytp-live-badge');
+            if (badge) {
+                disconnectBadgeElementObserver();
+                badge_attribute_observer = new MutationObserver(() => {
+                    changePlaybackRate(playbackRate, badge);
+                });
+                badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
+            }
         });
         badge_element_observer.observe(app, { childList: true, subtree: true });
-        observeBadgeElement2(playbackRate);
-    }
-
-    function observeBadgeElement2(playbackRate) {
-        console.log('observeBadgeElement2');
-        const player = app.querySelector('div#movie_player');
-        if (player) {
-            const media = player.querySelector('video');
-            if (media) {
-                const badge = player.querySelector('button.ytp-live-badge');
-                if (badge) {
-                    disconnectBadgeElementObserver();
-                    observeBadgeAttribute(playbackRate);
-                } else {
-                    // continue observing
-                }
-            }
-        }
     }
 
     function disconnectBadgeElementObserver() {
-        console.log('disconnectBadgeElementObserver');
         badge_element_observer?.disconnect();
         badge_element_observer = undefined;
     }
 
-    function observeBadgeAttribute(playbackRate) {
-        console.log('observeBadgeAttribute');
-        const player = app.querySelectorAll('div#movie_player');
-        if (player) {
-            const media = player.querySelector('video');
-            if (media) {
-                const badge = player.querySelector('button.ytp-live-badge');
-                if (badge) {
-                    badge_attribute_observer = new MutationObserver(() => {
-                        changePlaybackRate(playbackRate, media, badge);
-                    });
-                    badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
-                    changePlaybackRate(playbackRate, media, badge);
-                }
-            }
+    function changePlaybackRate(playbackRate, badge) {
+        if (badge) {
+            setPlaybackRate(badge.hasAttribute('disabled') ? 1.0 : playbackRate);
+        } else {
+            // do nothing
         }
     }
 
-    function changePlaybackRate(playbackRate, media, badge) {
-        console.log('changePlaybackRate');
-        media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
+    function setPlaybackRate(playbackRate) {
+        for (const media of app.querySelectorAll('video')) {
+            media.playbackRate = playbackRate;
+        }
     }
 
     function disconnectBadgeAttributeObserver() {
-        console.log('disconnectBadgeAttributeObserver');
         badge_attribute_observer?.disconnect();
         badge_attribute_observer = undefined;
     }
@@ -139,7 +112,6 @@ function main(common) {
     }
 
     function reset() {
-        console.log('reset');
         disconnectBadgeElementObserver();
         disconnectBadgeAttributeObserver();
         sendStopEvent();
@@ -147,7 +119,6 @@ function main(common) {
     }
 
     function resetPlaybackRate() {
-        console.log('resetPlaybackRate');
         for (const media of app.querySelectorAll('video')) {
             media.playbackRate = 1.0;
         }
