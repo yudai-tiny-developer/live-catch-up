@@ -68,11 +68,12 @@ function main(common) {
             setPlaybackRate(playbackRate, media, badge);
         });
         badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
-        setPlaybackRate(playbackRate, media, badge);
+        //setPlaybackRate(playbackRate, media, badge);
     }
 
     function setPlaybackRate(playbackRate, media, badge) {
         media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
+        console.log(`setPlaybackRate: ${media.playbackRate}`);
     }
 
     function disconnectBadgeAttributeObserver() {
