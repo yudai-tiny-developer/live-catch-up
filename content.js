@@ -15,11 +15,7 @@ function main(common) {
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
 
             if (enabled) {
-                if (smooth) {
-                    sendStartEvent(playbackRate, smoothRate, smoothThreathold);
-                } else {
-                    observeBadgeElement(playbackRate);
-                }
+                observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold);
             } else {
                 reset();
             }
@@ -27,11 +23,6 @@ function main(common) {
     }
 
     document.addEventListener('_live_catch_up_init', e => {
-        initSettings();
-    });
-
-    document.addEventListener('_live_catch_up_reinit', e => {
-        reset();
         initSettings();
     });
 
@@ -43,19 +34,24 @@ function main(common) {
     let badge_element_observer;
     let badge_attribute_observer;
 
-    function observeBadgeElement(playbackRate) {
+    function observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold) {
         badge_element_observer = new MutationObserver(() => {
             const player = document.querySelector('div#movie_player');
-            const badge = player.querySelector('button.ytp-live-badge');
-            if (badge) {
-                disconnectBadgeElementObserver();
-                badge_attribute_observer = new MutationObserver(() => {
-                    const media = player.querySelector('video');
-                    if (media) {
-                        media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
+            if (player) {
+                const media = player.querySelector('video');
+                const badge = player.querySelector('button.ytp-live-badge');
+                if (media && badge) {
+                    disconnectBadgeElementObserver();
+                    disconnectBadgeAttributeObserver();
+                    if (smooth) {
+                        sendStartEvent(playbackRate, smoothRate, smoothThreathold);
+                    } else {
+                        sendStopEvent();
+                        badge_attribute_observer = new MutationObserver(() => {
+                            media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
+                        });
                     }
-                });
-                badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
+                } badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
             }
         });
         badge_element_observer.observe(app, { childList: true, subtree: true });
