@@ -46,9 +46,11 @@ function main(common) {
         }
 
         const badge = player.querySelector('button.ytp-live-badge');
-        if (!badge) {
+        if (!badge || !badge.checkVisibility()) {
             return;
         }
+
+        disconnectBadgeElementObserver();
 
         if (smooth) {
             sendStartEvent(playbackRate, smoothRate, smoothThreathold);
@@ -68,12 +70,12 @@ function main(common) {
             setPlaybackRate(playbackRate, media, badge);
         });
         badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
-        //setPlaybackRate(playbackRate, media, badge);
+        setPlaybackRate(playbackRate, media, badge);
     }
 
     function setPlaybackRate(playbackRate, media, badge) {
         media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
-        console.log(`setPlaybackRate: ${media.playbackRate}`);
+        media.classList.add('_live_catch_up');
     }
 
     function disconnectBadgeAttributeObserver() {
@@ -119,8 +121,9 @@ function main(common) {
     }
 
     function resetPlaybackRate() {
-        for (const media of app.querySelectorAll('video')) {
+        for (const media of app.querySelectorAll('video._live_catch_up')) {
             media.playbackRate = 1.0;
+            media.classList.remove('_live_catch_up');
         }
     }
 
