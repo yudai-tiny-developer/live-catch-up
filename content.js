@@ -26,6 +26,11 @@ function main(common) {
         initSettings();
     });
 
+    document.addEventListener('_live_catch_up_reinit', e => {
+        reset();
+        initSettings();
+    });
+
     chrome.storage.onChanged.addListener(() => {
         reset();
         initSettings();
