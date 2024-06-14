@@ -20,6 +20,12 @@ div.cell {
     padding: 8px;
 }
 
+div.note {
+    padding-left: 24px !important;
+    width: 180px !important;
+    text-wrap: wrap !important;
+}
+
 div.footer {
     display: table-caption;
     caption-side: bottom;
