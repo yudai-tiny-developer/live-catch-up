@@ -1,3 +1,7 @@
+let uninitialized = true;
+let badge_element_observer;
+let badge_attribute_observer;
+
 const app = document.querySelector('ytd-app');
 if (app) {
     import(chrome.runtime.getURL('common.js')).then(common => {
@@ -6,7 +10,7 @@ if (app) {
 }
 
 function main(common) {
-    function initSettings() {
+    function loadSettings() {
         chrome.storage.local.get(common.storage, data => {
             const enabled = common.value(data.enabled, common.defaultEnabled);
             const playbackRate = common.limitValue(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
@@ -21,17 +25,6 @@ function main(common) {
             }
         });
     }
-
-    document.addEventListener('_live_catch_up_init', e => {
-        initSettings();
-    });
-
-    chrome.storage.onChanged.addListener(() => {
-        initSettings();
-    });
-
-    let badge_element_observer;
-    let badge_attribute_observer;
 
     function observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold) {
         badge_element_observer = new MutationObserver(() => {
@@ -129,6 +122,17 @@ function main(common) {
             media.playbackRate = 1.0;
         }
     }
+
+    document.addEventListener('_live_catch_up_init', e => {
+        if (uninitialized) {
+            uninitialized = false;
+            loadSettings();
+        }
+    });
+
+    chrome.storage.onChanged.addListener(() => {
+        loadSettings();
+    });
 
     const s = document.createElement('script');
     s.id = '_live_catch_up';
