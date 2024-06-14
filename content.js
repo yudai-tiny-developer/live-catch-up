@@ -14,10 +14,10 @@ function main(common) {
             const smoothRate = common.limitValue(data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
 
+            reset();
+
             if (enabled) {
                 observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold);
-            } else {
-                reset();
             }
         });
     }
@@ -27,7 +27,6 @@ function main(common) {
     });
 
     chrome.storage.onChanged.addListener(() => {
-        reset();
         initSettings();
     });
 
@@ -36,30 +35,51 @@ function main(common) {
 
     function observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold) {
         badge_element_observer = new MutationObserver(() => {
-            const player = document.querySelector('div#movie_player');
-            if (player) {
-                const media = player.querySelector('video');
-                const badge = player.querySelector('button.ytp-live-badge');
-                if (media && badge) {
-                    disconnectBadgeElementObserver();
-                    disconnectBadgeAttributeObserver();
-                    if (smooth) {
-                        sendStartEvent(playbackRate, smoothRate, smoothThreathold);
-                    } else {
-                        sendStopEvent();
-                        badge_attribute_observer = new MutationObserver(() => {
-                            media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
-                        });
-                    }
-                } badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
-            }
+            checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold);
         });
         badge_element_observer.observe(app, { childList: true, subtree: true });
+        checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold);
+    }
+
+    function checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold) {
+        const player = document.querySelector('div#movie_player');
+        if (!player) {
+            return;
+        }
+
+        const media = player.querySelector('video');
+        if (!media) {
+            return;
+        }
+
+        const badge = player.querySelector('button.ytp-live-badge');
+        if (!badge) {
+            return;
+        }
+
+        if (smooth) {
+            sendStartEvent(playbackRate, smoothRate, smoothThreathold);
+        } else {
+            sendStopEvent();
+            observeBadgeAttribute(playbackRate, media, badge);
+        }
     }
 
     function disconnectBadgeElementObserver() {
         badge_element_observer?.disconnect();
         badge_element_observer = undefined;
+    }
+
+    function observeBadgeAttribute(playbackRate, media, badge) {
+        badge_attribute_observer = new MutationObserver(() => {
+            setPlaybackRate(playbackRate, media, badge);
+        });
+        badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
+        setPlaybackRate(playbackRate, media, badge);
+    }
+
+    function setPlaybackRate(playbackRate, media, badge) {
+        media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
     }
 
     function disconnectBadgeAttributeObserver() {
