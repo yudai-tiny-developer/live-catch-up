@@ -7,8 +7,6 @@ if (app) {
 
 function main(common) {
     function initSettings() {
-        reset();
-
         chrome.storage.local.get(common.storage, data => {
             const enabled = common.value(data.enabled, common.defaultEnabled);
             const playbackRate = common.limitValue(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
@@ -27,6 +25,7 @@ function main(common) {
     });
 
     chrome.storage.onChanged.addListener(() => {
+        reset();
         initSettings();
     });
 
@@ -100,7 +99,7 @@ function main(common) {
         }
     }
 
-    function sendStopEvent(playbackRate, smoothRate, smoothThreathold) {
+    function sendStopEvent() {
         document.dispatchEvent(new CustomEvent('_live_catch_up_stop'));
     }
 
@@ -121,6 +120,6 @@ function main(common) {
     const s = document.createElement('script');
     s.id = '_live_catch_up';
     s.src = chrome.runtime.getURL('inject.js');
-    //s.onload = () => s.remove();
+    s.onload = () => s.remove();
     (document.head || document.documentElement).append(s);
 }
