@@ -16,6 +16,8 @@ function main(common) {
 
             if (enabled) {
                 observeBadgeElement(smooth, playbackRate, smoothRate, smoothThreathold);
+            } else {
+                // do nothing
             }
         });
     }
@@ -46,26 +48,31 @@ function main(common) {
     }
 
     function startPlaybackRateChanging(smooth, playbackRate, smoothRate, smoothThreathold) {
-        const badge = app.querySelector('button.ytp-live-badge');
-        if (badge) {
-            disconnectBadgeElementObserver();
-            if (smooth) {
-                sendStartEvent(playbackRate, smoothRate, smoothThreathold);
+        const player = app.querySelector('div#movie_player');
+        if (player) {
+            const media = player.querySelector('video');
+            const badge = player.querySelector('button.ytp-live-badge');
+            if (media && badge) {
+                disconnectBadgeElementObserver();
+                if (smooth) {
+                    sendStartEvent(playbackRate, smoothRate, smoothThreathold);
+                } else {
+                    observeBadgeAttribute(playbackRate, media, badge);
+                }
             } else {
-                observeBadgeAttribute(playbackRate, badge);
+                // continue observing
             }
+        } else {
+            // continue observing
         }
     }
 
-    function observeBadgeAttribute(playbackRate, badge) {
-        const media = app.querySelector('video');
-        if (media) {
-            badge_attribute_observer = new MutationObserver(() => {
-                media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
-            });
-            badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
+    function observeBadgeAttribute(playbackRate, media, badge) {
+        badge_attribute_observer = new MutationObserver(() => {
             media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
-        }
+        });
+        badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
+        media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
     }
 
     function disconnectBadgeAttributeObserver() {
@@ -111,8 +118,7 @@ function main(common) {
     }
 
     function resetPlaybackRate() {
-        const media = app.querySelector('video');
-        if (media) {
+        for (const media of app.querySelector('video')) {
             media.playbackRate = 1.0;
         }
     }
