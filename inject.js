@@ -7,8 +7,7 @@ document.addEventListener('_live_catch_up_start', e => {
         const media = player.querySelector('video');
         if (media) {
             _live_catch_up_interval = setInterval(() => {
-                const stats = player.getVideoStats();
-                media.playbackRate = stats.isAtLiveHead() || stats.lat < e.detail.smoothThreathold ? 1.0 : e.detail.playbackRate;
+                media.playbackRate = player.isAtLiveHead() && player.getVideoStats().lat < e.detail.smoothThreathold ? 1.0 : e.detail.playbackRate;
             }, e.detail.smoothRate);
         }
     }

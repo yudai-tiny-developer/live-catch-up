@@ -38,38 +38,38 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class, 'Aggressive Mitigation (High CPU load)'));
+        row.appendChild(settings.createLabel(cell_class, 'Aggressive mitigation (High CPU load)'));
         row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'smooth', data.smooth, common.defaultSmooth, common.value, 'div.aggressive-mitigation'));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mitigation');
-        row.appendChild(settings.createLabel(cell_class, 'Check Interval (ms)'));
+        row.appendChild(settings.createLabel(cell_class, 'Latency check interval (ms)'));
         row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'smoothRate', data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mitigation');
         row.appendChild(settings.createLabel(cell_class,
-            `&nbsp;&nbsp;&nbsp;&nbsp;${common.maxSmoothRate.toFixed(0)} ms: Lower Load Interval`
+            `&nbsp;&nbsp;&nbsp;&nbsp;${common.maxSmoothRate.toFixed(0)} ms: Lower CPU load`
             + '<br>' +
-            `&nbsp;&nbsp;&nbsp;&nbsp;${common.minSmoothRate.toFixed(0)} ms: Higher Load Interval`
+            `&nbsp;&nbsp;&nbsp;&nbsp;${common.minSmoothRate.toFixed(0)} ms: Higher CPU load`
         ));
         row.appendChild(settings.createLabel(cell_class));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mitigation');
-        row.appendChild(settings.createLabel(cell_class, 'Latency Threathold (s)'));
+        row.appendChild(settings.createLabel(cell_class, 'Latency Allowed (s)'));
         row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mitigation');
         row.appendChild(settings.createLabel(cell_class,
-            `&nbsp;&nbsp;&nbsp;&nbsp;${common.maxSmoothThreathold.toFixed(0)} s: Higher Latency Threathold`
+            `&nbsp;&nbsp;&nbsp;&nbsp;${common.maxSmoothThreathold.toFixed(0)} s: Higher latency`
             + '<br>' +
-            `&nbsp;&nbsp;&nbsp;&nbsp;${common.minSmoothThreathold.toFixed(1)} s: Lower Latency Threathold`
+            `&nbsp;&nbsp;&nbsp;&nbsp;${common.minSmoothThreathold.toFixed(1)} s: Lower latency`
         ));
         row.appendChild(settings.createLabel(cell_class));
         container.appendChild(row);
