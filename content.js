@@ -1,3 +1,7 @@
+let uninitialized = true;
+let badge_element_observer;
+let badge_attribute_observer;
+
 const app = document.querySelector('ytd-app');
 if (app) {
     import(chrome.runtime.getURL('common.js')).then(common => {
@@ -6,47 +10,133 @@ if (app) {
 }
 
 function main(common) {
-    let enabled = common.defaultEnabled;
-    let playbackRate = common.defaultPlaybackRate;
-
-    function initSettings() {
+    function loadSettings() {
         chrome.storage.local.get(common.storage, data => {
-            enabled = common.value(data.enabled, common.defaultEnabled);
-            playbackRate = common.limitRate(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
+            const enabled = common.value(data.enabled, common.defaultEnabled);
+            const playbackRate = common.limitValue(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
+            const smooth = common.value(data.smooth, common.defaultSmooth);
+            const smoothRate = common.limitValue(data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate);
+            const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
 
-            changePlaybackRate(app.querySelector('.ytp-live-badge'));
+            reset();
+
+            if (enabled) {
+                observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold);
+            }
         });
     }
 
-    initSettings();
+    function observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold) {
+        badge_element_observer = new MutationObserver(() => {
+            checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold);
+        });
+        badge_element_observer.observe(app, { childList: true, subtree: true });
+        checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold);
+    }
 
-    chrome.storage.onChanged.addListener(() => {
-        initSettings();
+    function checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold) {
+        const player = document.querySelector('div#movie_player');
+        if (!player) {
+            return;
+        }
+
+        const media = player.querySelector('video');
+        if (!media) {
+            return;
+        }
+
+        const badge = player.querySelector('button.ytp-live-badge');
+        if (!badge) {
+            return;
+        }
+
+        if (smooth) {
+            sendStartEvent(playbackRate, smoothRate, smoothThreathold);
+        } else {
+            sendStopEvent();
+            observeBadgeAttribute(playbackRate, media, badge);
+        }
+    }
+
+    function disconnectBadgeElementObserver() {
+        badge_element_observer?.disconnect();
+        badge_element_observer = undefined;
+    }
+
+    function observeBadgeAttribute(playbackRate, media, badge) {
+        badge_attribute_observer = new MutationObserver(() => {
+            setPlaybackRate(playbackRate, media, badge);
+        });
+        badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
+        setPlaybackRate(playbackRate, media, badge);
+    }
+
+    function setPlaybackRate(playbackRate, media, badge) {
+        media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
+    }
+
+    function disconnectBadgeAttributeObserver() {
+        badge_attribute_observer?.disconnect();
+        badge_attribute_observer = undefined;
+    }
+
+    function sendStartEvent(playbackRate, smoothRate, smoothThreathold) {
+        if (navigator.userAgent.includes('Firefox')) {
+            document.dispatchEvent(new CustomEvent('_live_catch_up_start',
+                {
+                    detail: cloneInto(
+                        {
+                            playbackRate,
+                            smoothRate,
+                            smoothThreathold
+                        },
+                        document.defaultView)
+                }
+            ));
+        } else {
+            document.dispatchEvent(new CustomEvent('_live_catch_up_start',
+                {
+                    detail: {
+                        playbackRate,
+                        smoothRate,
+                        smoothThreathold
+                    }
+                }
+            ));
+        }
+    }
+
+    function sendStopEvent() {
+        document.dispatchEvent(new CustomEvent('_live_catch_up_stop'));
+    }
+
+    function reset() {
+        disconnectBadgeElementObserver();
+        disconnectBadgeAttributeObserver();
+        sendStopEvent();
+        resetPlaybackRate();
+    }
+
+    function resetPlaybackRate() {
+        for (const media of app.querySelectorAll('video')) {
+            media.playbackRate = 1.0;
+        }
+    }
+
+    document.addEventListener('_live_catch_up_init', e => {
+        if (uninitialized) {
+            uninitialized = false;
+            loadSettings();
+        }
     });
 
-    function setPlaybackRate(playbackRate) {
-        for (const media of app.querySelectorAll('video')) {
-            media.playbackRate = playbackRate;
-        }
-    }
+    chrome.storage.onChanged.addListener(() => {
+        loadSettings();
+    });
 
-    function changePlaybackRate(badge) {
-        if (enabled) {
-            if (badge) {
-                setPlaybackRate(badge.hasAttribute('disabled') ? 1.0 : playbackRate);
-            } else {
-                // do nothing
-            }
-        } else {
-            setPlaybackRate(1.0);
-        }
-    }
-
-    new MutationObserver((mutations, observer) => {
-        const target = app.querySelector('button.ytp-live-badge');
-        if (target) {
-            observer.disconnect();
-            new MutationObserver(() => changePlaybackRate(target)).observe(target, { attributeFilter: ['disabled'] });
-        }
-    }).observe(app, { childList: true, subtree: true });
+    const s = document.createElement('script');
+    s.id = '_live_catch_up';
+    s.src = chrome.runtime.getURL('inject.js');
+    s.onload = () => s.remove();
+    (document.head || document.documentElement).append(s);
 }

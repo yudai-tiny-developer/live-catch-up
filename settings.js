@@ -11,7 +11,7 @@ export function createLabel(cell_class, label = '') {
     return div;
 }
 
-export function createToggle(cell_class, toggle_class, label_class, key, checked, defaultValue, checkForDefault) {
+export function createToggle(cell_class, toggle_class, label_class, key, checked, defaultValue, checkForDefault, selector) {
     const div = document.createElement('div');
     div.classList.add(cell_class);
 
@@ -24,6 +24,10 @@ export function createToggle(cell_class, toggle_class, label_class, key, checked
     input.setAttribute('defaultValue', defaultValue);
     input.addEventListener('change', () => {
         chrome.storage.local.set({ [key]: input.checked });
+
+        for (const div of document.querySelectorAll(selector)) {
+            div.style.display = input.checked ? '' : 'none';
+        }
     });
     div.appendChild(input);
 
@@ -79,13 +83,17 @@ export function registerResetButton(reset_button, progress_div, progress_class, 
     });
 }
 
-function resetSettings(args) {
+function resetSettings(args) { // FIXME: selector args
     for (const input of document.body.querySelectorAll('input.' + args.toggle_class)) {
         input.checked = input.getAttribute('defaultValue') === 'true';
     }
 
     for (const input of document.body.querySelectorAll('input.' + args.input_class)) {
         input.value = input.getAttribute('defaultValue');
+    }
+
+    for (const div of document.body.querySelectorAll('div.aggressive-mode')) {
+        div.style.display = 'none';
     }
 
     chrome.storage.local.clear();
