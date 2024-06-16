@@ -26,6 +26,10 @@ div.note {
     text-wrap: wrap !important;
 }
 
+span.caution {
+    color: #ff8983;
+}
+
 div.footer {
     display: table-caption;
     caption-side: bottom;

@@ -1,4 +1,37 @@
 {
+    "enabled": {
+        "message": "Enabled/Disabled"
+    },
+    "playbackRate": {
+        "message": "Playback rate"
+    },
+    "smooth": {
+        "message": "Aggressive mode (High CPU load)"
+    },
+    "smooth_desc": {
+        "message": "<span class=caution><strong>CAUTION</strong><br>Aggressive mode consumes the buffer as much as possible, so live streams may frequently pause.</span>"
+    },
+    "smoothRate": {
+        "message": "Latency check interval (ms)"
+    },
+    "smoothRate_desc_max": {
+        "message": "Lower CPU load"
+    },
+    "smoothRate_desc_min": {
+        "message": "<span class=caution>Higher CPU load</span>"
+    },
+    "smoothThreathold": {
+        "message": "Latency allowed (s)"
+    },
+    "smoothThreathold_desc_max": {
+        "message": "Higher latency"
+    },
+    "smoothThreathold_desc_min": {
+        "message": "<span class=caution>Lower latency</span>"
+    },
+    "slowdownAtLiveHead": {
+        "message": "Slow down near the live stream head"
+    },
     "appDesc": {
         "message": "This extension syncs YouTube live streams in real-time by accelerating viewer-delayed streams caused by data reception delays."
     }
