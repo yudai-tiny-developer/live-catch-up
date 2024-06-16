@@ -9,15 +9,15 @@ export const stepPlaybackRate = 0.05;
 
 export const defaultSmooth = false;
 
-export const defaultSmoothRate = 250;
+export const defaultSmoothRate = 200;
 export const minSmoothRate = 50;
-export const maxSmoothRate = 10000;
+export const maxSmoothRate = 1000;
 export const stepSmoothRate = 50;
 
-export const defaultSmoothThreathold = 5;
+export const defaultSmoothThreathold = 1.0;
 export const minSmoothThreathold = 0.5;
-export const maxSmoothThreathold = 60;
-export const stepSmoothThreathold = 0.5;
+export const maxSmoothThreathold = 20;
+export const stepSmoothThreathold = 0.25;
 
 export function value(value, default_value) {
     return value ?? default_value;

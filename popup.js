@@ -11,6 +11,7 @@ import(chrome.runtime.getURL('common.js')).then(common =>
 function main(common, settings, progress, data) {
     const row_class = 'row';
     const cell_class = 'cell';
+    const inner_cell_class = 'note';
     const toggle_class = 'toggle';
     const label_class = 'switch';
     const input_class = 'rate';
@@ -80,12 +81,11 @@ function main(common, settings, progress, data) {
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode', 'note');
-        const note = settings.createLabel(cell_class,
+        const note = settings.createNote(cell_class, inner_cell_class,
             `${common.maxSmoothThreathold.toFixed(0)} s: Higher latency`
             + '<br>' +
             `${common.minSmoothThreathold.toFixed(1)} s: Lower latency`
         );
-        note.classList.add('note');
         row.appendChild(note);
         row.appendChild(settings.createLabel(cell_class));
         container.appendChild(row);

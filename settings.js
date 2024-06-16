@@ -11,6 +11,18 @@ export function createLabel(cell_class, label = '') {
     return div;
 }
 
+export function createNote(cell_class, inner_cell_class, label = '') {
+    const div = document.createElement('div');
+    div.classList.add(cell_class);
+
+    const inner_div = document.createElement('div');
+    inner_div.classList.add(inner_cell_class);
+    inner_div.innerHTML = label;
+
+    div.appendChild(inner_div);
+    return div;
+}
+
 export function createToggle(cell_class, toggle_class, label_class, key, checked, defaultValue, checkForDefault, selector) {
     const div = document.createElement('div');
     div.classList.add(cell_class);
