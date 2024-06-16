@@ -24,12 +24,12 @@ function main(common, settings, progress, data) {
 
     {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class, 'Enabled/Disabled'));
+        row.appendChild(settings.createLabel(cell_class, common.label.enabled));
         row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'enabled', data.enabled, common.defaultEnabled, common.value));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class, `Playback rate (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`));
+        row.appendChild(settings.createLabel(cell_class, `${common.label.playbackRate} (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`));
         row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'playbackRate', data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate, common.limitValue));
         container.appendChild(row);
     } {
@@ -39,17 +39,13 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class, 'Aggressive mode (High CPU load)'));
+        row.appendChild(settings.createLabel(cell_class, common.label.smooth));
         row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'smooth', data.smooth, common.defaultSmooth, common.value, 'div.aggressive-mode'));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        const note = settings.createLabel(cell_class,
-            '<strong>CAUTION</strong>'
-            + '<br>' +
-            'Aggressive mode may cause frequent video pauses.'
-        );
+        const note = settings.createLabel(cell_class, common.label.smooth_desc);
         note.classList.add('note');
         row.appendChild(note);
         row.appendChild(settings.createLabel(cell_class));
@@ -57,16 +53,16 @@ function main(common, settings, progress, data) {
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class, 'Latency check interval (ms)'));
+        row.appendChild(settings.createLabel(cell_class, common.label.smoothRate));
         row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'smoothRate', data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode', 'note');
         const note = settings.createLabel(cell_class,
-            `${common.maxSmoothRate.toFixed(0)} ms: Lower CPU load`
+            `${common.maxSmoothRate.toFixed(0)} ms: ${common.label.smoothRate_desc_max}`
             + '<br>' +
-            `${common.minSmoothRate.toFixed(0)} ms: Higher CPU load`
+            `${common.minSmoothRate.toFixed(0)} ms: ${common.label.smoothRate_desc_min}`
         );
         note.classList.add('note');
         row.appendChild(note);
@@ -75,19 +71,25 @@ function main(common, settings, progress, data) {
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class, 'Latency allowed (s)'));
+        row.appendChild(settings.createLabel(cell_class, common.label.smoothThreathold));
         row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode', 'note');
         const note = settings.createNote(cell_class, inner_cell_class,
-            `${common.maxSmoothThreathold.toFixed(0)} s: Higher latency`
+            `${common.maxSmoothThreathold.toFixed(0)} s: ${common.label.smoothThreathold_desc_max}`
             + '<br>' +
-            `${common.minSmoothThreathold.toFixed(1)} s: Lower latency`
+            `${common.minSmoothThreathold.toFixed(1)} s: ${common.label.smoothThreathold_desc_min}`
         );
         row.appendChild(note);
         row.appendChild(settings.createLabel(cell_class));
+        container.appendChild(row);
+    } {
+        const row = settings.createRow(row_class);
+        row.classList.add('aggressive-mode', 'note');
+        row.appendChild(settings.createLabel(cell_class, common.label.slowdownAtLiveHead));
+        row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'slowdownAtLiveHead', data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead, common.value));
         container.appendChild(row);
     }
 

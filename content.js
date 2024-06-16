@@ -1,4 +1,3 @@
-let uninitialized = true;
 let badge_element_observer;
 let badge_attribute_observer;
 let player;
@@ -20,34 +19,36 @@ function main(common) {
             const smooth = common.value(data.smooth, common.defaultSmooth);
             const smoothRate = common.limitValue(data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
+            const slowdownAtLiveHead = common.value(data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead);
 
             reset();
 
             if (enabled) {
-                observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold);
+                observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead);
             }
         });
     }
 
-    function observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold) {
+    function observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead) {
         badge_element_observer = new MutationObserver(() => {
-            checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold);
+            checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead);
         });
         badge_element_observer.observe(app, { childList: true, subtree: true });
-        checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold);
+        checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead);
     }
 
-    function checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold) {
+    function checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead) {
         if (!badge || !media || !player) {
-            badge = undefined;
-            media = undefined;
             player = app.querySelector('div#movie_player');
             if (!player) {
+                badge = undefined;
+                media = undefined;
                 return;
             }
 
             media = player.querySelector('video.video-stream');
             if (!media) {
+                badge = undefined;
                 return;
             }
 
@@ -60,7 +61,7 @@ function main(common) {
         if (badge.checkVisibility()) {
             disconnectBadgeElementObserver();
             if (smooth) {
-                sendStartEvent(playbackRate, smoothRate, smoothThreathold);
+                sendStartEvent(playbackRate, smoothRate, smoothThreathold, slowdownAtLiveHead);
             } else {
                 sendStopEvent();
                 observeBadgeAttribute(playbackRate, media, badge);
@@ -90,7 +91,7 @@ function main(common) {
         badge_attribute_observer = undefined;
     }
 
-    function sendStartEvent(playbackRate, smoothRate, smoothThreathold) {
+    function sendStartEvent(playbackRate, smoothRate, smoothThreathold, slowdownAtLiveHead) {
         if (navigator.userAgent.includes('Firefox')) {
             document.dispatchEvent(new CustomEvent('_live_catch_up_start',
                 {
@@ -98,7 +99,8 @@ function main(common) {
                         {
                             playbackRate,
                             smoothRate,
-                            smoothThreathold
+                            smoothThreathold,
+                            slowdownAtLiveHead
                         },
                         document.defaultView)
                 }
@@ -109,7 +111,8 @@ function main(common) {
                     detail: {
                         playbackRate,
                         smoothRate,
-                        smoothThreathold
+                        smoothThreathold,
+                        slowdownAtLiveHead
                     }
                 }
             ));
@@ -137,10 +140,7 @@ function main(common) {
     }
 
     document.addEventListener('_live_catch_up_init', e => {
-        if (uninitialized) {
-            uninitialized = false;
-            loadSettings();
-        }
+        loadSettings();
     });
 
     chrome.storage.onChanged.addListener(() => {
