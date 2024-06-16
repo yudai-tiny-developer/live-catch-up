@@ -30,7 +30,7 @@
         "message": "<span class=caution>Lower latency</span>"
     },
     "slowdownAtLiveHead": {
-        "message": "Slow down near the live head"
+        "message": "Slow down near the live stream head"
     },
     "appDesc": {
         "message": "This extension syncs YouTube live streams in real-time by accelerating viewer-delayed streams caused by data reception delays."
