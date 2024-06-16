@@ -40,7 +40,7 @@ function main(common) {
             return;
         }
 
-        const media = player.querySelector('video');
+        const media = player.querySelector('video.video-stream');
         if (!media) {
             return;
         }
@@ -75,7 +75,6 @@ function main(common) {
 
     function setPlaybackRate(playbackRate, media, badge) {
         media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
-        media.classList.add('_live_catch_up');
     }
 
     function disconnectBadgeAttributeObserver() {
@@ -121,9 +120,8 @@ function main(common) {
     }
 
     function resetPlaybackRate() {
-        for (const media of app.querySelectorAll('video._live_catch_up')) {
+        for (const media of app.querySelectorAll('video.video-stream')) {
             media.playbackRate = 1.0;
-            media.classList.remove('_live_catch_up');
         }
     }
 

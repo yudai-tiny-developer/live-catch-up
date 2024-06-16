@@ -1,5 +1,6 @@
 let _live_catch_up_interval;
-let _live_catch_up_boost = false;
+
+const app = document.querySelector('ytd-app');
 
 document.addEventListener('_live_catch_up_start', e => {
     const playbackRate = e.detail.playbackRate;
@@ -9,12 +10,12 @@ document.addEventListener('_live_catch_up_start', e => {
     clearInterval(_live_catch_up_interval);
 
     _live_catch_up_interval = setInterval(() => {
-        const player = document.querySelector('div#movie_player');
+        const player = app.querySelector('div#movie_player');
         if (!player || !player.getVideoStats || !player.isAtLiveHead) {
             return;
         }
 
-        const media = player.querySelector('video');
+        const media = player.querySelector('video.video-stream');
         if (!media) {
             return;
         }
@@ -24,7 +25,6 @@ document.addEventListener('_live_catch_up_start', e => {
             const newPlaybackRate = player.isAtLiveHead() && stats.lat < smoothThreathold ? 1.0 : playbackRate;
             if (media.playbackRate !== newPlaybackRate) {
                 media.playbackRate = newPlaybackRate;
-                media.classList.add('_live_catch_up');
             }
         }
     }, smoothRate);
