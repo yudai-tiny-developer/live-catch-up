@@ -1,6 +1,9 @@
 let uninitialized = true;
 let badge_element_observer;
 let badge_attribute_observer;
+let player;
+let media;
+let badge;
 
 const app = document.querySelector('ytd-app');
 if (app) {
@@ -35,28 +38,33 @@ function main(common) {
     }
 
     function checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold) {
-        const player = document.querySelector('div#movie_player');
-        if (!player) {
-            return;
+        if (!badge || !media || !player) {
+            badge = undefined;
+            media = undefined;
+            player = app.querySelector('div#movie_player');
+            if (!player) {
+                return;
+            }
+
+            media = player.querySelector('video.video-stream');
+            if (!media) {
+                return;
+            }
+
+            badge = player.querySelector('button.ytp-live-badge');
+            if (!badge) {
+                return;
+            }
         }
 
-        const media = player.querySelector('video.video-stream');
-        if (!media) {
-            return;
-        }
-
-        const badge = player.querySelector('button.ytp-live-badge');
-        if (!badge || !badge.checkVisibility()) {
-            return;
-        }
-
-        disconnectBadgeElementObserver();
-
-        if (smooth) {
-            sendStartEvent(playbackRate, smoothRate, smoothThreathold);
-        } else {
-            sendStopEvent();
-            observeBadgeAttribute(playbackRate, media, badge);
+        if (badge.checkVisibility()) {
+            disconnectBadgeElementObserver();
+            if (smooth) {
+                sendStartEvent(playbackRate, smoothRate, smoothThreathold);
+            } else {
+                sendStopEvent();
+                observeBadgeAttribute(playbackRate, media, badge);
+            }
         }
     }
 
@@ -113,6 +121,9 @@ function main(common) {
     }
 
     function reset() {
+        badge = undefined;
+        media = undefined;
+        player = undefined;
         disconnectBadgeElementObserver();
         disconnectBadgeAttributeObserver();
         sendStopEvent();
