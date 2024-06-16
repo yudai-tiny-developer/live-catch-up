@@ -1,4 +1,5 @@
 let _live_catch_up_interval;
+let _live_catch_up_boost = false;
 
 document.addEventListener('_live_catch_up_start', e => {
     const playbackRate = e.detail.playbackRate;
@@ -20,8 +21,11 @@ document.addEventListener('_live_catch_up_start', e => {
 
         const stats = player.getVideoStats();
         if (stats.live) {
-            media.playbackRate = player.isAtLiveHead() && stats.lat < smoothThreathold ? 1.0 : playbackRate;
-            media.classList.add('_live_catch_up');
+            const newPlaybackRate = player.isAtLiveHead() && stats.lat < smoothThreathold ? 1.0 : playbackRate;
+            if (media.playbackRate !== newPlaybackRate) {
+                media.playbackRate = newPlaybackRate;
+                media.classList.add('_live_catch_up');
+            }
         }
     }, smoothRate);
 });
