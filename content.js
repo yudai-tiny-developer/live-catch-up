@@ -42,8 +42,8 @@ function main(common) {
         if (!badge || !media || !player) {
             player = app.querySelector('div#movie_player');
             if (!player) {
-                badge = undefined;
                 media = undefined;
+                badge = undefined;
                 return;
             }
 
