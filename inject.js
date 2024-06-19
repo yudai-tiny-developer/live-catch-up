@@ -1,5 +1,7 @@
 let _live_catch_up_interval;
 let _live_catch_up_interval_processing;
+let _live_catch_up_start_processing;
+let _live_catch_up_stop_processing;
 let _live_catch_up_app = document.body.querySelector('ytd-app');
 let _live_catch_up_player;
 let _live_catch_up_media;
@@ -44,41 +46,59 @@ function _live_catch_up_detectPlayer() {
 }
 
 document.addEventListener('_live_catch_up_start', e => {
-    const playbackRate = e.detail.playbackRate;
-    const smoothRate = e.detail.smoothRate;
-    const smoothThreathold = e.detail.smoothThreathold;
-    const slowdownAtLiveHead = e.detail.slowdownAtLiveHead;
+    const startInterval = setInterval(() => {
+        if (!_live_catch_up_stop_processing) {
+            _live_catch_up_start_processing = true;
 
-    clearInterval(_live_catch_up_interval);
+            const playbackRate = e.detail.playbackRate;
+            const smoothRate = e.detail.smoothRate;
+            const smoothThreathold = e.detail.smoothThreathold;
+            const slowdownAtLiveHead = e.detail.slowdownAtLiveHead;
 
-    _live_catch_up_interval = setInterval(() => {
-        _live_catch_up_interval_processing = true;
-        if (_live_catch_up_detectPlayer()) {
-            const stats = _live_catch_up_player.getVideoStats();
-            if (stats && stats.live) {
-                const newPlaybackRate = _live_catch_up_calcPlaybackRate(_live_catch_up_player.isAtLiveHead(), stats.lat, playbackRate, smoothThreathold, slowdownAtLiveHead);
-                if (_live_catch_up_media.playbackRate !== newPlaybackRate) {
-                    _live_catch_up_media.playbackRate = newPlaybackRate;
+            clearInterval(_live_catch_up_interval);
+
+            _live_catch_up_interval = setInterval(() => {
+                _live_catch_up_interval_processing = true;
+                if (_live_catch_up_detectPlayer()) {
+                    const stats = _live_catch_up_player.getVideoStats();
+                    if (stats && stats.live) {
+                        const newPlaybackRate = _live_catch_up_calcPlaybackRate(_live_catch_up_player.isAtLiveHead(), stats.lat, playbackRate, smoothThreathold, slowdownAtLiveHead);
+                        if (_live_catch_up_media.playbackRate !== newPlaybackRate) {
+                            _live_catch_up_media.playbackRate = newPlaybackRate;
+                        }
+                    }
                 }
-            }
+                _live_catch_up_interval_processing = false;
+            }, smoothRate);
+
+            clearInterval(startInterval);
+            _live_catch_up_start_processing = false;
         }
-        _live_catch_up_interval_processing = false;
-    }, smoothRate);
+    });
 });
 
 document.addEventListener('_live_catch_up_stop', e => {
-    const resetPlaybackRate = e.detail.resetPlaybackRate;
+    const stopInterval = setInterval(() => {
+        if (!_live_catch_up_start_processing) {
+            _live_catch_up_stop_processing = true;
 
-    clearInterval(_live_catch_up_interval);
+            const resetPlaybackRate = e.detail.resetPlaybackRate;
 
-    if (resetPlaybackRate && _live_catch_up_detectPlayer()) {
-        const resetInterval = setInterval(() => {
-            if (!_live_catch_up_interval_processing) {
-                _live_catch_up_media.playbackRate = _live_catch_up_player.getPlaybackRate();
-                clearInterval(resetInterval);
+            clearInterval(_live_catch_up_interval);
+
+            if (resetPlaybackRate && _live_catch_up_detectPlayer()) {
+                const resetInterval = setInterval(() => {
+                    if (!_live_catch_up_interval_processing) {
+                        _live_catch_up_media.playbackRate = _live_catch_up_player.getPlaybackRate();
+                        clearInterval(resetInterval);
+                    }
+                }, 100);
             }
-        }, 100);
-    }
+
+            clearInterval(stopInterval);
+            _live_catch_up_stop_processing = false;
+        }
+    });
 });
 
 document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
