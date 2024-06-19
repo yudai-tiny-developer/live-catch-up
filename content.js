@@ -21,10 +21,11 @@ function main(common) {
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
             const slowdownAtLiveHead = common.value(data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead);
 
-            reset();
-
             if (enabled) {
+                reset();
                 observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead);
+            } else {
+                reset(true);
             }
         });
     }
@@ -127,13 +128,13 @@ function main(common) {
         }
     }
 
-    function reset() {
+    function reset(resetPlaybackRate = false) {
         badge = undefined;
         media = undefined;
         player = undefined;
         disconnectBadgeElementObserver();
         disconnectBadgeAttributeObserver();
-        sendStopEvent(true);
+        sendStopEvent(resetPlaybackRate);
     }
 
     document.addEventListener('_live_catch_up_init', e => {
