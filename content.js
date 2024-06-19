@@ -119,8 +119,12 @@ function main(common) {
         }
     }
 
-    function sendStopEvent() {
-        document.dispatchEvent(new CustomEvent('_live_catch_up_stop'));
+    function sendStopEvent(resetPlaybackRate = false) {
+        if (navigator.userAgent.includes('Firefox')) {
+            document.dispatchEvent(new CustomEvent('_live_catch_up_stop', { detail: cloneInto({ resetPlaybackRate }) }));
+        } else {
+            document.dispatchEvent(new CustomEvent('_live_catch_up_stop', { detail: { resetPlaybackRate } }));
+        }
     }
 
     function reset() {
@@ -129,14 +133,7 @@ function main(common) {
         player = undefined;
         disconnectBadgeElementObserver();
         disconnectBadgeAttributeObserver();
-        sendStopEvent();
-        resetPlaybackRate();
-    }
-
-    function resetPlaybackRate() {
-        for (const media of app.querySelectorAll('video.video-stream')) {
-            media.playbackRate = 1.0;
-        }
+        sendStopEvent(true);
     }
 
     document.addEventListener('_live_catch_up_init', e => {
