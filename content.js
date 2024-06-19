@@ -21,10 +21,11 @@ function main(common) {
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
             const slowdownAtLiveHead = common.value(data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead);
 
-            reset();
-
             if (enabled) {
+                reset();
                 observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead);
+            } else {
+                reset(true);
             }
         });
     }
@@ -41,8 +42,8 @@ function main(common) {
         if (!badge || !media || !player) {
             player = app.querySelector('div#movie_player');
             if (!player) {
-                badge = undefined;
                 media = undefined;
+                badge = undefined;
                 return;
             }
 
@@ -119,24 +120,21 @@ function main(common) {
         }
     }
 
-    function sendStopEvent() {
-        document.dispatchEvent(new CustomEvent('_live_catch_up_stop'));
+    function sendStopEvent(resetPlaybackRate = false) {
+        if (navigator.userAgent.includes('Firefox')) {
+            document.dispatchEvent(new CustomEvent('_live_catch_up_stop', { detail: cloneInto({ resetPlaybackRate }) }));
+        } else {
+            document.dispatchEvent(new CustomEvent('_live_catch_up_stop', { detail: { resetPlaybackRate } }));
+        }
     }
 
-    function reset() {
+    function reset(resetPlaybackRate = false) {
         badge = undefined;
         media = undefined;
         player = undefined;
         disconnectBadgeElementObserver();
         disconnectBadgeAttributeObserver();
-        sendStopEvent();
-        resetPlaybackRate();
-    }
-
-    function resetPlaybackRate() {
-        for (const media of app.querySelectorAll('video.video-stream')) {
-            media.playbackRate = 1.0;
-        }
+        sendStopEvent(resetPlaybackRate);
     }
 
     document.addEventListener('_live_catch_up_init', e => {
