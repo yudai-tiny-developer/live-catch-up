@@ -122,7 +122,7 @@ function main(common) {
 
     function sendStopEvent(resetPlaybackRate = false) {
         if (navigator.userAgent.includes('Firefox')) {
-            document.dispatchEvent(new CustomEvent('_live_catch_up_stop', { detail: cloneInto({ resetPlaybackRate }) }));
+            document.dispatchEvent(new CustomEvent('_live_catch_up_stop', { detail: cloneInto({ resetPlaybackRate }, document.defaultView) }));
         } else {
             document.dispatchEvent(new CustomEvent('_live_catch_up_stop', { detail: { resetPlaybackRate } }));
         }
