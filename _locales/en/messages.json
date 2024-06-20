@@ -21,7 +21,7 @@
         "message": "<span class=caution>Higher CPU load</span>"
     },
     "smoothThreathold": {
-        "message": "Latency allowed (s)"
+        "message": "Allowed latency (s)"
     },
     "smoothThreathold_desc_max": {
         "message": "Higher latency"
@@ -30,7 +30,10 @@
         "message": "<span class=caution>Lower latency</span>"
     },
     "slowdownAtLiveHead": {
-        "message": "Slow down near the live stream head"
+        "message": "Set the playback rate to 1.05x near the live stream head."
+    },
+    "adjust": {
+        "message": "Each time a pause occurs, a correction of 0 to 10 seconds is added to the allowed latency."
     },
     "appDesc": {
         "message": "This extension syncs YouTube live streams in real-time by accelerating viewer-delayed streams caused by data reception delays."

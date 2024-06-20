@@ -20,25 +20,26 @@ function main(common) {
             const smoothRate = common.limitValue(data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
             const slowdownAtLiveHead = common.value(data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead);
+            const adjust = common.value(data.adjust, common.defaultAdjust);
 
             if (enabled) {
                 reset();
-                observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead);
+                observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust);
             } else {
                 reset(true);
             }
         });
     }
 
-    function observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead) {
+    function observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust) {
         badge_element_observer = new MutationObserver(() => {
-            checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead);
+            checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust);
         });
         badge_element_observer.observe(app, { childList: true, subtree: true });
-        checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead);
+        checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust);
     }
 
-    function checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead) {
+    function checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust) {
         if (!badge || !media || !player) {
             player = app.querySelector('div#movie_player');
             if (!player) {
@@ -62,7 +63,7 @@ function main(common) {
         if (badge.checkVisibility()) {
             disconnectBadgeElementObserver();
             if (smooth) {
-                sendStartEvent(playbackRate, smoothRate, smoothThreathold, slowdownAtLiveHead);
+                sendStartEvent(playbackRate, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust);
             } else {
                 sendStopEvent();
                 observeBadgeAttribute(playbackRate, media, badge);
@@ -92,7 +93,7 @@ function main(common) {
         badge_attribute_observer = undefined;
     }
 
-    function sendStartEvent(playbackRate, smoothRate, smoothThreathold, slowdownAtLiveHead) {
+    function sendStartEvent(playbackRate, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust) {
         if (navigator.userAgent.includes('Firefox')) {
             document.dispatchEvent(new CustomEvent('_live_catch_up_start',
                 {
@@ -101,7 +102,8 @@ function main(common) {
                             playbackRate,
                             smoothRate,
                             smoothThreathold,
-                            slowdownAtLiveHead
+                            slowdownAtLiveHead,
+                            adjust
                         },
                         document.defaultView)
                 }
@@ -113,7 +115,8 @@ function main(common) {
                         playbackRate,
                         smoothRate,
                         smoothThreathold,
-                        slowdownAtLiveHead
+                        slowdownAtLiveHead,
+                        adjust
                     }
                 }
             ));

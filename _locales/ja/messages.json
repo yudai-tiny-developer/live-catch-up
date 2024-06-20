@@ -3,7 +3,7 @@
         "message": "有効/無効"
     },
     "playbackRate": {
-        "message": "遅延検出時の再生速度"
+        "message": "遅延時の再生速度倍率"
     },
     "smooth": {
         "message": "積極的モード（高負荷）"
@@ -15,10 +15,10 @@
         "message": "遅延検出間隔（ミリ秒）"
     },
     "smoothRate_desc_max": {
-        "message": "低負荷・遅い検出"
+        "message": "低負荷・遅い反応"
     },
     "smoothRate_desc_min": {
-        "message": "<span class=caution>高負荷・早い検出</span>"
+        "message": "<span class=caution>高負荷・早い反応</span>"
     },
     "smoothThreathold": {
         "message": "許容する遅延（秒）"
@@ -30,7 +30,10 @@
         "message": "<span class=caution>低遅延・停止頻度高</span>"
     },
     "slowdownAtLiveHead": {
-        "message": "ライブの先頭付近で速度を落とす"
+        "message": "ライブの先頭付近では再生速度倍率を1.05倍に落とす"
+    },
+    "adjust": {
+        "message": "読み込みのための一時停止が発生したら許容する遅延に0～10秒の補正を加える"
     },
     "appDesc": {
         "message": "DVR が有効な YouTube のライブ配信で遅延が発生したときに、自動で再生速度を上げてリアルタイムに追いつく機能拡張"

@@ -10,7 +10,8 @@ import(chrome.runtime.getURL('common.js')).then(common =>
 
 function main(common, settings, progress, data) {
     const row_class = 'row';
-    const cell_class = 'cell';
+    const cell_class1 = 'cell1';
+    const cell_class2 = 'cell2';
     const inner_cell_class = 'note';
     const toggle_class = 'toggle';
     const label_class = 'switch';
@@ -24,72 +25,78 @@ function main(common, settings, progress, data) {
 
     {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class, common.label.enabled));
-        row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'enabled', data.enabled, common.defaultEnabled, common.value));
+        row.appendChild(settings.createLabel(cell_class1, common.label.enabled));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'enabled', data.enabled, common.defaultEnabled, common.value));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class, `${common.label.playbackRate} (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`));
-        row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'playbackRate', data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate, common.limitValue));
+        row.appendChild(settings.createLabel(cell_class1, `${common.label.playbackRate} (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`));
+        row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'playbackRate', data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class));
-        row.appendChild(settings.createLabel(cell_class));
+        row.appendChild(settings.createLabel(cell_class1));
+        row.appendChild(settings.createLabel(cell_class2));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class, common.label.smooth));
-        row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'smooth', data.smooth, common.defaultSmooth, common.value, 'div.aggressive-mode'));
+        row.appendChild(settings.createLabel(cell_class1, common.label.smooth));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'smooth', data.smooth, common.defaultSmooth, common.value, 'div.aggressive-mode'));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        const note = settings.createLabel(cell_class, common.label.smooth_desc);
+        const note = settings.createLabel(cell_class1, common.label.smooth_desc);
         note.classList.add('note');
         row.appendChild(note);
-        row.appendChild(settings.createLabel(cell_class));
+        row.appendChild(settings.createLabel(cell_class2));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class, common.label.smoothRate));
-        row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'smoothRate', data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate, common.limitValue));
+        row.appendChild(settings.createLabel(cell_class1, common.label.smoothRate));
+        row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'smoothRate', data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode', 'note');
-        const note = settings.createLabel(cell_class,
+        const note = settings.createLabel(cell_class1,
             `${common.maxSmoothRate.toFixed(0)} ms: ${common.label.smoothRate_desc_max}`
             + '<br>' +
             `${common.minSmoothRate.toFixed(0)} ms: ${common.label.smoothRate_desc_min}`
         );
         note.classList.add('note');
         row.appendChild(note);
-        row.appendChild(settings.createLabel(cell_class));
+        row.appendChild(settings.createLabel(cell_class2));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class, common.label.smoothThreathold));
-        row.appendChild(settings.createNumberStepInput(cell_class, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
+        row.appendChild(settings.createLabel(cell_class1, common.label.smoothThreathold));
+        row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode', 'note');
-        const note = settings.createNote(cell_class, inner_cell_class,
+        const note = settings.createNote(cell_class1, inner_cell_class,
             `${common.maxSmoothThreathold.toFixed(0)} s: ${common.label.smoothThreathold_desc_max}`
             + '<br>' +
             `${common.minSmoothThreathold.toFixed(1)} s: ${common.label.smoothThreathold_desc_min}`
         );
         row.appendChild(note);
-        row.appendChild(settings.createLabel(cell_class));
+        row.appendChild(settings.createLabel(cell_class2));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode', 'note');
-        row.appendChild(settings.createLabel(cell_class, common.label.slowdownAtLiveHead));
-        row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'slowdownAtLiveHead', data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead, common.value));
+        row.classList.add('aggressive-mode');
+        row.appendChild(settings.createLabel(cell_class1, common.label.slowdownAtLiveHead));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'slowdownAtLiveHead', data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead, common.value));
+        container.appendChild(row);
+    } {
+        const row = settings.createRow(row_class);
+        row.classList.add('aggressive-mode');
+        row.appendChild(settings.createLabel(cell_class1, common.label.adjust));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'adjust', data.adjust, common.defaultAdjust, common.value));
         container.appendChild(row);
     }
 
