@@ -54,24 +54,6 @@ function main(common, settings, progress, data) {
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class1, common.label.smoothRate));
-        row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'smoothRate', data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate, common.limitValue));
-        container.appendChild(row);
-    } {
-        const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode', 'note');
-        const note = settings.createLabel(cell_class1,
-            `${common.maxSmoothRate.toFixed(0)} ms: ${common.label.smoothRate_desc_max}`
-            + '<br>' +
-            `${common.minSmoothRate.toFixed(0)} ms: ${common.label.smoothRate_desc_min}`
-        );
-        note.classList.add('note');
-        row.appendChild(note);
-        row.appendChild(settings.createLabel(cell_class2));
-        container.appendChild(row);
-    } {
-        const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode');
         row.appendChild(settings.createLabel(cell_class1, common.label.smoothThreathold));
         row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
         container.appendChild(row);
@@ -95,8 +77,8 @@ function main(common, settings, progress, data) {
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class1, common.label.adjust));
-        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'adjust', data.adjust, common.defaultAdjust, common.value));
+        row.appendChild(settings.createLabel(cell_class1, common.label.disablePremiere));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'disablePremiere', data.disablePremiere, common.defaultDisablePremiere, common.value));
         container.appendChild(row);
     }
 

@@ -6,16 +6,13 @@ if (_live_catch_up_app) {
     let _live_catch_up_stop_processing;
     let _live_catch_up_player;
     let _live_catch_up_media;
-    let _live_catch_up_adjust = 0;
 
-    function _live_catch_up_sigmoid_base_adjust(x) {
-        return ((1.0 / (1.0 + Math.exp(-x / 20.0))) - 0.5) * 2.0 * 10.0;
-    }
 
-    function _live_catch_up_calcPlaybackRate(isAtLiveHead, stats_lat, playbackRate, smoothThreathold, slowdownAtLiveHead, adjust) {
-        if (isAtLiveHead) {
-            const adjustedSmoothThreathold = smoothThreathold + (adjust ? _live_catch_up_sigmoid_base_adjust(_live_catch_up_adjust) : 0);
-            if (stats_lat < adjustedSmoothThreathold) {
+    function _live_catch_up_calcPlaybackRate(isAtLiveHead, stats_lat, playbackRate, smoothThreathold, slowdownAtLiveHead, disabled) {
+        if (disabled) {
+            return 1.0;
+        } else if (isAtLiveHead) {
+            if (stats_lat < smoothThreathold) {
                 return 1.0;
             } else if (slowdownAtLiveHead) {
                 return 1.05;
@@ -51,10 +48,9 @@ if (_live_catch_up_app) {
                 _live_catch_up_start_processing = true;
 
                 const playbackRate = e.detail.playbackRate;
-                const smoothRate = e.detail.smoothRate;
                 const smoothThreathold = e.detail.smoothThreathold;
                 const slowdownAtLiveHead = e.detail.slowdownAtLiveHead;
-                const adjust = e.detail.adjust;
+                const disablePremiere = e.detail.disablePremiere;
 
                 clearInterval(_live_catch_up_interval);
 
@@ -63,20 +59,15 @@ if (_live_catch_up_app) {
                     if (_live_catch_up_detectPlayer()) {
                         const stats = _live_catch_up_player.getVideoStats();
                         if (stats && stats.live) {
-                            if (!adjust) {
-                                _live_catch_up_adjust = 0;
-                            } else if (_live_catch_up_media.readyState === 2) {
-                                _live_catch_up_adjust++;
-                            }
-
-                            const newPlaybackRate = _live_catch_up_calcPlaybackRate(_live_catch_up_player.isAtLiveHead(), stats.lat, playbackRate, smoothThreathold, slowdownAtLiveHead, adjust);
+                            const disabled = disablePremiere && stats.live === 'lp';
+                            const newPlaybackRate = _live_catch_up_calcPlaybackRate(_live_catch_up_player.isAtLiveHead(), stats.lat, playbackRate, smoothThreathold, slowdownAtLiveHead, disabled);
                             if (_live_catch_up_media.playbackRate !== newPlaybackRate) {
                                 _live_catch_up_media.playbackRate = newPlaybackRate;
                             }
                         }
                     }
                     _live_catch_up_interval_processing = false;
-                }, smoothRate);
+                }, 200);
 
                 clearInterval(startInterval);
                 _live_catch_up_start_processing = false;
@@ -99,7 +90,7 @@ if (_live_catch_up_app) {
                             _live_catch_up_media.playbackRate = _live_catch_up_player.getPlaybackRate();
                             clearInterval(resetInterval);
                         }
-                    }, 100);
+                    }, 200);
                 }
 
                 clearInterval(stopInterval);

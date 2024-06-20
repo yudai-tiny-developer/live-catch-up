@@ -17,29 +17,28 @@ function main(common) {
             const enabled = common.value(data.enabled, common.defaultEnabled);
             const playbackRate = common.limitValue(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
             const smooth = common.value(data.smooth, common.defaultSmooth);
-            const smoothRate = common.limitValue(data.smoothRate, common.defaultSmoothRate, common.minSmoothRate, common.maxSmoothRate, common.stepSmoothRate);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
             const slowdownAtLiveHead = common.value(data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead);
-            const adjust = common.value(data.adjust, common.defaultAdjust);
+            const disablePremiere = common.value(data.disablePremiere, common.defaultDisablePremiere);
 
             if (enabled) {
                 reset();
-                observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust);
+                observeBadgeElement(playbackRate, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
             } else {
                 reset(true);
             }
         });
     }
 
-    function observeBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust) {
+    function observeBadgeElement(playbackRate, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere) {
         badge_element_observer = new MutationObserver(() => {
-            checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust);
+            checkBadgeElement(playbackRate, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
         });
         badge_element_observer.observe(app, { childList: true, subtree: true });
-        checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust);
+        checkBadgeElement(playbackRate, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
     }
 
-    function checkBadgeElement(playbackRate, smooth, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust) {
+    function checkBadgeElement(playbackRate, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere) {
         if (!badge || !media || !player) {
             player = app.querySelector('div#movie_player');
             if (!player) {
@@ -63,7 +62,7 @@ function main(common) {
         if (badge.checkVisibility()) {
             disconnectBadgeElementObserver();
             if (smooth) {
-                sendStartEvent(playbackRate, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust);
+                sendStartEvent(playbackRate, smoothThreathold, slowdownAtLiveHead, disablePremiere);
             } else {
                 sendStopEvent();
                 observeBadgeAttribute(playbackRate, media, badge);
@@ -93,17 +92,16 @@ function main(common) {
         badge_attribute_observer = undefined;
     }
 
-    function sendStartEvent(playbackRate, smoothRate, smoothThreathold, slowdownAtLiveHead, adjust) {
+    function sendStartEvent(playbackRate, smoothThreathold, slowdownAtLiveHead, disablePremiere) {
         if (navigator.userAgent.includes('Firefox')) {
             document.dispatchEvent(new CustomEvent('_live_catch_up_start',
                 {
                     detail: cloneInto(
                         {
                             playbackRate,
-                            smoothRate,
                             smoothThreathold,
                             slowdownAtLiveHead,
-                            adjust
+                            disablePremiere
                         },
                         document.defaultView)
                 }
@@ -113,10 +111,9 @@ function main(common) {
                 {
                     detail: {
                         playbackRate,
-                        smoothRate,
                         smoothThreathold,
                         slowdownAtLiveHead,
-                        adjust
+                        disablePremiere
                     }
                 }
             ));

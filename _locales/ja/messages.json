@@ -11,15 +11,6 @@
     "smooth_desc": {
         "message": "<span class=caution><strong>注意</strong><br>積極的モードはバッファを可能な限り消費するため、読み込みのための一時停止が頻繁に発生する可能性があります。</span>"
     },
-    "smoothRate": {
-        "message": "遅延検出間隔（ミリ秒）"
-    },
-    "smoothRate_desc_max": {
-        "message": "低負荷・遅い反応"
-    },
-    "smoothRate_desc_min": {
-        "message": "<span class=caution>高負荷・早い反応</span>"
-    },
     "smoothThreathold": {
         "message": "許容する遅延（秒）"
     },
@@ -32,8 +23,8 @@
     "slowdownAtLiveHead": {
         "message": "ライブの先頭付近では再生速度倍率を1.05倍に落とす"
     },
-    "adjust": {
-        "message": "読み込みのための一時停止が発生したら許容する遅延に0～10秒の補正を加える"
+    "disablePremiere": {
+        "message": "プレミア公開では積極的モードを使用しない"
     },
     "appDesc": {
         "message": "DVR が有効な YouTube のライブ配信で遅延が発生したときに、自動で再生速度を上げてリアルタイムに追いつく機能拡張"
