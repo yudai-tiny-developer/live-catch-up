@@ -7,12 +7,11 @@ if (_live_catch_up_app) {
     let _live_catch_up_player;
     let _live_catch_up_media;
 
-
     function _live_catch_up_calcPlaybackRate(isAtLiveHead, stats_lat, playbackRate, smoothThreathold, slowdownAtLiveHead, disabled) {
-        if (disabled) {
-            return 1.0;
-        } else if (isAtLiveHead) {
-            if (stats_lat < smoothThreathold) {
+        if (isAtLiveHead) {
+            if (disabled) {
+                return 1.0;
+            } else if (stats_lat < smoothThreathold) {
                 return 1.0;
             } else if (slowdownAtLiveHead) {
                 return 1.05;
