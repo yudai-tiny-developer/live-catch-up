@@ -30,7 +30,7 @@
         "message": "<span class=caution>低遅延・停止頻度高</span>"
     },
     "slowdownAtLiveHead": {
-        "message": "ライブの先頭付近で再生速度倍率を1.05倍に落とす"
+        "message": "ライブの先頭付近では再生速度倍率を1.05倍に落とす"
     },
     "adjust": {
         "message": "読み込みのための一時停止が発生したら許容する遅延に0～10秒の補正を加える"
