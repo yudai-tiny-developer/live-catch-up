@@ -3,17 +3,14 @@ export const label = {
     playbackRate: chrome.i18n.getMessage('playbackRate'),
     smooth: chrome.i18n.getMessage('smooth'),
     smooth_desc: chrome.i18n.getMessage('smooth_desc'),
-    smoothRate: chrome.i18n.getMessage('smoothRate'),
-    smoothRate_desc_max: chrome.i18n.getMessage('smoothRate_desc_max'),
-    smoothRate_desc_min: chrome.i18n.getMessage('smoothRate_desc_min'),
     smoothThreathold: chrome.i18n.getMessage('smoothThreathold'),
     smoothThreathold_desc_max: chrome.i18n.getMessage('smoothThreathold_desc_max'),
     smoothThreathold_desc_min: chrome.i18n.getMessage('smoothThreathold_desc_min'),
     slowdownAtLiveHead: chrome.i18n.getMessage('slowdownAtLiveHead'),
-    adjust: chrome.i18n.getMessage('adjust'),
+    disablePremiere: chrome.i18n.getMessage('disablePremiere'),
 };
 
-export const storage = ['enabled', 'playbackRate', 'smooth', 'smoothRate', 'smoothThreathold', 'slowdownAtLiveHead', 'adjust'];
+export const storage = ['enabled', 'playbackRate', 'smooth', 'smoothThreathold', 'slowdownAtLiveHead', 'disablePremiere'];
 
 export const defaultEnabled = true;
 
@@ -24,11 +21,6 @@ export const stepPlaybackRate = 0.05;
 
 export const defaultSmooth = false;
 
-export const defaultSmoothRate = 200;
-export const minSmoothRate = 50;
-export const maxSmoothRate = 1000;
-export const stepSmoothRate = 50;
-
 export const defaultSmoothThreathold = 1.25;
 export const minSmoothThreathold = 0.5;
 export const maxSmoothThreathold = 20;
@@ -36,7 +28,7 @@ export const stepSmoothThreathold = 0.25;
 
 export const defaultSlowdownAtLiveHead = true;
 
-export const defaultAdjust = false;
+export const defaultDisablePremiere = true;
 
 export function value(value, default_value) {
     return value ?? default_value;
