@@ -87,9 +87,15 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode', 'note');
+        row.classList.add('aggressive-mode');
         row.appendChild(settings.createLabel(cell_class, common.label.slowdownAtLiveHead));
         row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'slowdownAtLiveHead', data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead, common.value));
+        container.appendChild(row);
+    } {
+        const row = settings.createRow(row_class);
+        row.classList.add('aggressive-mode');
+        row.appendChild(settings.createLabel(cell_class, common.label.adjust));
+        row.appendChild(settings.createToggle(cell_class, toggle_class, label_class, 'adjust', data.adjust, common.defaultAdjust, common.value));
         container.appendChild(row);
     }
 
