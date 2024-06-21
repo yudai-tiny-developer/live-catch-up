@@ -1,9 +1,12 @@
 const _live_catch_up_app = document.body.querySelector('ytd-app');
 if (_live_catch_up_app) {
+    const _LIVE_CATCH_UP_TIMEOUT = 200;
+
     let _live_catch_up_interval;
     let _live_catch_up_interval_processing;
     let _live_catch_up_start_processing;
     let _live_catch_up_stop_processing;
+    let _live_catch_up_reloaded;
     let _live_catch_up_player;
     let _live_catch_up_media;
 
@@ -21,7 +24,6 @@ if (_live_catch_up_app) {
         } else {
             return playbackRate;
         }
-
     }
 
     function _live_catch_up_detectPlayer() {
@@ -63,10 +65,15 @@ if (_live_catch_up_app) {
                             if (_live_catch_up_media.playbackRate !== newPlaybackRate) {
                                 _live_catch_up_media.playbackRate = newPlaybackRate;
                             }
+
+                            if (!_live_catch_up_reloaded && _live_catch_up_media.networkState === 2) {
+                                _live_catch_up_reloaded = true;
+                                _live_catch_up_media.load();
+                            }
                         }
                     }
                     _live_catch_up_interval_processing = false;
-                }, 200);
+                }, _LIVE_CATCH_UP_TIMEOUT);
 
                 clearInterval(startInterval);
                 _live_catch_up_start_processing = false;
@@ -89,7 +96,7 @@ if (_live_catch_up_app) {
                             _live_catch_up_media.playbackRate = _live_catch_up_player.getPlaybackRate();
                             clearInterval(resetInterval);
                         }
-                    }, 200);
+                    }, _LIVE_CATCH_UP_TIMEOUT);
                 }
 
                 clearInterval(stopInterval);
