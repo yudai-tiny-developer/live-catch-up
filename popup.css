@@ -18,7 +18,7 @@ div.cell1 {
     display: table-cell;
     vertical-align: middle;
     padding: 8px;
-    width: 220px !important;
+    width: 240px !important;
     text-wrap: wrap !important;
 }
 
@@ -30,12 +30,16 @@ div.cell2 {
 
 div.note {
     padding-left: 24px !important;
-    width: 155px !important;
+    width: 200px !important;
     text-wrap: wrap !important;
 }
 
 span.caution {
     color: #ff8983;
+}
+
+span.caution-title {
+    text-decoration: underline;
 }
 
 div.footer {
