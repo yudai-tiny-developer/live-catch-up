@@ -4,8 +4,7 @@ export const label = {
     smooth: chrome.i18n.getMessage('smooth'),
     smooth_desc: chrome.i18n.getMessage('smooth_desc'),
     smoothThreathold: chrome.i18n.getMessage('smoothThreathold'),
-    smoothThreathold_desc_max: chrome.i18n.getMessage('smoothThreathold_desc_max'),
-    smoothThreathold_desc_min: chrome.i18n.getMessage('smoothThreathold_desc_min'),
+    smoothThreathold_desc: chrome.i18n.getMessage('smoothThreathold_desc'),
     slowdownAtLiveHead: chrome.i18n.getMessage('slowdownAtLiveHead'),
     disablePremiere: chrome.i18n.getMessage('disablePremiere'),
 };

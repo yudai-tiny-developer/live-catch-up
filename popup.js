@@ -46,8 +46,7 @@ function main(common, settings, progress, data) {
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        const note = settings.createLabel(cell_class1, common.label.smooth_desc);
-        note.classList.add('note');
+        const note = settings.createNote(cell_class1, inner_cell_class, common.label.smooth_desc);
         row.appendChild(note);
         row.appendChild(settings.createLabel(cell_class2));
         container.appendChild(row);
@@ -59,12 +58,8 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode', 'note');
-        const note = settings.createNote(cell_class1, inner_cell_class,
-            `${common.maxSmoothThreathold.toFixed(0)} s: ${common.label.smoothThreathold_desc_max}`
-            + '<br>' +
-            `${common.minSmoothThreathold.toFixed(1)} s: ${common.label.smoothThreathold_desc_min}`
-        );
+        row.classList.add('aggressive-mode');
+        const note = settings.createNote(cell_class1, inner_cell_class, common.label.smoothThreathold_desc);
         row.appendChild(note);
         row.appendChild(settings.createLabel(cell_class2));
         container.appendChild(row);

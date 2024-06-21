@@ -9,16 +9,13 @@
         "message": "Aggressive mode (High CPU load)"
     },
     "smooth_desc": {
-        "message": "<span class=caution><strong>CAUTION</strong><br>Aggressive mode consumes the buffer as much as possible, so live streams may frequently pause.</span>"
+        "message": "<span class=caution><span class=caution-title>CAUTION</span><br>Aggressive mode consumes the buffer as much as possible, so live streams may frequently pause.</span>"
     },
     "smoothThreathold": {
         "message": "Allowed latency (s)"
     },
-    "smoothThreathold_desc_max": {
-        "message": "Higher latency"
-    },
-    "smoothThreathold_desc_min": {
-        "message": "<span class=caution>Lower latency</span>"
+    "smoothThreathold_desc": {
+        "message": "With a stable internet connection, it is possible to achieve even lower latency by further reducing the allowed latency."
     },
     "slowdownAtLiveHead": {
         "message": "Set the playback rate to 1.05x near the live stream head."
