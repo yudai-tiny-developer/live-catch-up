@@ -6,7 +6,6 @@ if (_live_catch_up_app) {
     let _live_catch_up_interval_processing;
     let _live_catch_up_start_processing;
     let _live_catch_up_stop_processing;
-    let _live_catch_up_reloaded;
     let _live_catch_up_player;
     let _live_catch_up_media;
 
@@ -64,11 +63,6 @@ if (_live_catch_up_app) {
                             const newPlaybackRate = _live_catch_up_calcPlaybackRate(_live_catch_up_player.isAtLiveHead(), stats.lat, playbackRate, smoothThreathold, slowdownAtLiveHead, disabled);
                             if (_live_catch_up_media.playbackRate !== newPlaybackRate) {
                                 _live_catch_up_media.playbackRate = newPlaybackRate;
-                            }
-
-                            if (!_live_catch_up_reloaded && _live_catch_up_media.networkState === 2) {
-                                _live_catch_up_reloaded = true;
-                                _live_catch_up_media.load();
                             }
                         }
                     }
