@@ -50,7 +50,7 @@ if (_live_catch_up_app) {
                 _live_catch_up_latency_element.style.cursor = 'default';
                 _live_catch_up_latency_element.style.textAlign = 'center';
                 _live_catch_up_latency_element.style.fill = 'var(--yt-spec-text-primary)';
-                _live_catch_up_badge_element.parentElement.parentElement.insertBefore(_live_catch_up_latency_element, _live_catch_up_badge_element.nextSibling);
+                _live_catch_up_badge_element.parentElement.parentElement.insertBefore(_live_catch_up_latency_element, _live_catch_up_badge_element.parentElement.nextSibling);
             }
         }
 
@@ -62,7 +62,7 @@ if (_live_catch_up_app) {
                 _live_catch_up_playbackrate_element.style.display = 'none';
                 _live_catch_up_playbackrate_element.style.cursor = 'default';
                 _live_catch_up_playbackrate_element.style.textAlign = 'center';
-                _live_catch_up_badge_element.parentElement.parentElement.insertBefore(_live_catch_up_playbackrate_element, _live_catch_up_badge_element.nextSibling);
+                _live_catch_up_badge_element.parentElement.parentElement.insertBefore(_live_catch_up_playbackrate_element, _live_catch_up_badge_element.parentElement.nextSibling);
             }
         }
 
@@ -114,7 +114,7 @@ if (_live_catch_up_app) {
             if (isAtLiveHead) {
                 _live_catch_up_latency_element.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`;
             } else {
-                _live_catch_up_latency_element.innerHTML = '(DVR)';
+                _live_catch_up_latency_element.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">(DVR)</text></svg>`;
             }
             _live_catch_up_latency_element.style.display = '';
         } else {
