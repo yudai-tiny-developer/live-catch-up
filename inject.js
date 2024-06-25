@@ -127,7 +127,7 @@ if (_live_catch_up_app) {
             let isAtLiveHead;
             let latency;
 
-            if (_live_catch_up_options.enabled || _live_catch_up_options.showLatency) {
+            if (_live_catch_up_options.enabled || _live_catch_up_options.showPlaybackRate || _live_catch_up_options.showLatency) {
                 const stats = _live_catch_up_player_element.getVideoStats();
                 if (stats && (stats.live === 'live' || stats.live === 'dvr' || stats.live === 'lp')) { // stats.live: live, dvr, lp (Premiere), post (Archive), undefined
                     stats_live = stats.live;
