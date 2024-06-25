@@ -59,13 +59,6 @@ function main(common, settings, progress, data) {
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        const note = settings.createNote(cell_class1, inner_cell_class, common.label.smoothThreathold_desc);
-        row.appendChild(note);
-        row.appendChild(settings.createLabel(cell_class2));
-        container.appendChild(row);
-    } {
-        const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode');
         row.appendChild(settings.createLabel(cell_class1, common.label.slowdownAtLiveHead));
         row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'slowdownAtLiveHead', data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead, common.value));
         container.appendChild(row);

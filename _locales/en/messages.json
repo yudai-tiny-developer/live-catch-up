@@ -14,9 +14,6 @@
     "smoothThreathold": {
         "message": "Allowed latency (s)"
     },
-    "smoothThreathold_desc": {
-        "message": "With a stable internet connection, it is possible to achieve even lower latency by further reducing the allowed latency."
-    },
     "slowdownAtLiveHead": {
         "message": "Set the playback rate to 1.05x near the live stream head."
     },
