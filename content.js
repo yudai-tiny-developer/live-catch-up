@@ -98,6 +98,7 @@ function main(common) {
                 {
                     detail: cloneInto(
                         {
+                            enabled: true,
                             playbackRate,
                             smoothThreathold,
                             slowdownAtLiveHead,
@@ -110,6 +111,7 @@ function main(common) {
             document.dispatchEvent(new CustomEvent('_live_catch_up_start',
                 {
                     detail: {
+                        enabled: true,
                         playbackRate,
                         smoothThreathold,
                         slowdownAtLiveHead,

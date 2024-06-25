@@ -1,102 +1,125 @@
 const _live_catch_up_app = document.body.querySelector('ytd-app');
 if (_live_catch_up_app) {
-    const _LIVE_CATCH_UP_TIMEOUT = 200;
+    const _LIVE_CATCH_UP_TIMEOUT = 250;
+    const _LIVE_CATCH_UP_OPTIONS_INIT = {
+        enabled: false,
+        playbackRate: 1.0,
+        smoothThreathold: 43200.0,
+        slowdownAtLiveHead: true,
+        disablePremiere: true,
+    };
 
-    let _live_catch_up_interval;
-    let _live_catch_up_interval_processing;
-    let _live_catch_up_start_processing;
-    let _live_catch_up_stop_processing;
+    let _live_catch_up_options = _LIVE_CATCH_UP_OPTIONS_INIT;
+
     let _live_catch_up_player;
     let _live_catch_up_media;
+    let _live_catch_up_badge;
+    let _live_catch_up_playbackrate;
+    let _live_catch_up_lat;
 
-    function _live_catch_up_calcPlaybackRate(isAtLiveHead, stats_lat, playbackRate, smoothThreathold, slowdownAtLiveHead, disabled) {
+    function _live_catch_up_calcPlaybackRate(isAtLiveHead, stats_lat, useNormalPlaybackRate) {
         if (isAtLiveHead) {
-            if (disabled) {
+            if (useNormalPlaybackRate || stats_lat < _live_catch_up_options.smoothThreathold) {
                 return 1.0;
-            } else if (stats_lat < smoothThreathold) {
-                return 1.0;
-            } else if (slowdownAtLiveHead) {
+            } else if (_live_catch_up_options.slowdownAtLiveHead) {
                 return 1.05;
             } else {
-                return playbackRate;
+                return _live_catch_up_options.playbackRate;
             }
         } else {
-            return playbackRate;
+            return _live_catch_up_options.playbackRate;
         }
     }
 
     function _live_catch_up_detectPlayer() {
-        if (!_live_catch_up_media || !_live_catch_up_player || !_live_catch_up_player.getVideoStats || !_live_catch_up_player.isAtLiveHead) {
+        if (!_live_catch_up_player || !_live_catch_up_player.getVideoStats || !_live_catch_up_player.isAtLiveHead) {
             _live_catch_up_player = _live_catch_up_app.querySelector('div#movie_player');
             if (!_live_catch_up_player || !_live_catch_up_player.getVideoStats || !_live_catch_up_player.isAtLiveHead) {
-                _live_catch_up_media = undefined;
                 return false;
             }
+        }
 
+        if (!_live_catch_up_media) {
             _live_catch_up_media = _live_catch_up_player.querySelector('video.video-stream');
             if (!_live_catch_up_media) {
                 return false;
             }
         }
 
+        if (!_live_catch_up_badge) {
+            _live_catch_up_badge = _live_catch_up_player.querySelector('button.ytp-live-badge');
+            if (!_live_catch_up_badge) {
+                return false;
+            }
+        }
+
+        if (!_live_catch_up_lat) {
+            _live_catch_up_lat = _live_catch_up_player.querySelector('button._live_catch_up_lat');
+            if (!_live_catch_up_lat) {
+                _live_catch_up_lat = document.createElement('button');
+                _live_catch_up_lat.classList.add('_live_catch_up_lat', 'ytp-button');
+                _live_catch_up_lat.style.cursor = 'default';
+                _live_catch_up_lat.style.textAlign = 'center';
+                _live_catch_up_badge.parentElement.insertBefore(_live_catch_up_lat, _live_catch_up_badge.nextSibling);
+            }
+        }
+
+        if (!_live_catch_up_playbackrate) {
+            _live_catch_up_playbackrate = _live_catch_up_player.querySelector('button._live_catch_up_playbackrate');
+            if (!_live_catch_up_playbackrate) {
+                _live_catch_up_playbackrate = document.createElement('button');
+                _live_catch_up_playbackrate.classList.add('_live_catch_up_playbackrate', 'ytp-button');
+                _live_catch_up_playbackrate.style.cursor = 'default';
+                _live_catch_up_playbackrate.style.textAlign = 'center';
+                _live_catch_up_badge.parentElement.insertBefore(_live_catch_up_playbackrate, _live_catch_up_badge.nextSibling);
+            }
+        }
+
         return true;
     }
 
-    document.addEventListener('_live_catch_up_start', e => {
-        const startInterval = setInterval(() => {
-            if (!_live_catch_up_stop_processing) {
-                _live_catch_up_start_processing = true;
+    setInterval(() => {
+        if (_live_catch_up_detectPlayer()) {
+            let playbackrate_text, lat_text;
 
-                const playbackRate = e.detail.playbackRate;
-                const smoothThreathold = e.detail.smoothThreathold;
-                const slowdownAtLiveHead = e.detail.slowdownAtLiveHead;
-                const disablePremiere = e.detail.disablePremiere;
+            const stats = _live_catch_up_player.getVideoStats();
+            if (stats && stats.live) {
+                const isAtLiveHead = _live_catch_up_player.isAtLiveHead();
 
-                clearInterval(_live_catch_up_interval);
-
-                _live_catch_up_interval = setInterval(() => {
-                    _live_catch_up_interval_processing = true;
-                    if (_live_catch_up_detectPlayer()) {
-                        const stats = _live_catch_up_player.getVideoStats();
-                        if (stats && stats.live) {
-                            const disabled = disablePremiere && stats.live === 'lp';
-                            const newPlaybackRate = _live_catch_up_calcPlaybackRate(_live_catch_up_player.isAtLiveHead(), stats.lat, playbackRate, smoothThreathold, slowdownAtLiveHead, disabled);
-                            if (_live_catch_up_media.playbackRate !== newPlaybackRate) {
-                                _live_catch_up_media.playbackRate = newPlaybackRate;
-                            }
-                        }
+                if (_live_catch_up_options.enabled) {
+                    const useNormalPlaybackRate = _live_catch_up_options.disablePremiere && stats.live === 'lp';
+                    const newPlaybackRate = _live_catch_up_calcPlaybackRate(isAtLiveHead, stats.lat, useNormalPlaybackRate);
+                    if (_live_catch_up_media.playbackRate !== newPlaybackRate) {
+                        _live_catch_up_media.playbackRate = newPlaybackRate;
                     }
-                    _live_catch_up_interval_processing = false;
-                }, _LIVE_CATCH_UP_TIMEOUT);
+                }
 
-                clearInterval(startInterval);
-                _live_catch_up_start_processing = false;
+                playbackrate_text = 'x' + _live_catch_up_media.playbackRate.toFixed(2);
+
+                if (isAtLiveHead) {
+                    lat_text = stats.lat.toFixed(2) + 's';
+                } else {
+                    lat_text = '(DVR)';
+                }
+            } else {
+                playbackrate_text = '&nbsp;';
+                lat_text = '&nbsp;';
             }
-        });
+
+            _live_catch_up_playbackrate.innerHTML = playbackrate_text;
+            _live_catch_up_lat.innerHTML = lat_text;
+        }
+    }, _LIVE_CATCH_UP_TIMEOUT);
+
+    document.addEventListener('_live_catch_up_start', e => {
+        _live_catch_up_options = e.detail;
     });
 
     document.addEventListener('_live_catch_up_stop', e => {
-        const stopInterval = setInterval(() => {
-            if (!_live_catch_up_start_processing) {
-                _live_catch_up_stop_processing = true;
-
-                const resetPlaybackRate = e.detail.resetPlaybackRate;
-
-                clearInterval(_live_catch_up_interval);
-
-                if (resetPlaybackRate && _live_catch_up_detectPlayer()) {
-                    const resetInterval = setInterval(() => {
-                        if (!_live_catch_up_interval_processing) {
-                            _live_catch_up_media.playbackRate = _live_catch_up_player.getPlaybackRate();
-                            clearInterval(resetInterval);
-                        }
-                    }, _LIVE_CATCH_UP_TIMEOUT);
-                }
-
-                clearInterval(stopInterval);
-                _live_catch_up_stop_processing = false;
-            }
-        });
+        _live_catch_up_options = _LIVE_CATCH_UP_OPTIONS_INIT;
+        if (e.detail.resetPlaybackRate && _live_catch_up_detectPlayer()) {
+            _live_catch_up_media.playbackRate = _live_catch_up_player.getPlaybackRate();
+        }
     });
 
     document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
