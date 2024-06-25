@@ -35,8 +35,13 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class1));
-        row.appendChild(settings.createLabel(cell_class2));
+        row.appendChild(settings.createLabel(cell_class1, common.label.showPlaybackRate));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'showPlaybackRate', data.showPlaybackRate, common.defaultShowPlaybackRate, common.value));
+        container.appendChild(row);
+    } {
+        const row = settings.createRow(row_class);
+        row.appendChild(settings.createLabel(cell_class1, common.label.showLatency));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'showLatency', data.showLatency, common.defaultShowLatency, common.value));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
@@ -55,13 +60,6 @@ function main(common, settings, progress, data) {
         row.classList.add('aggressive-mode');
         row.appendChild(settings.createLabel(cell_class1, common.label.smoothThreathold));
         row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
-        container.appendChild(row);
-    } {
-        const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode');
-        const note = settings.createNote(cell_class1, inner_cell_class, common.label.smoothThreathold_desc);
-        row.appendChild(note);
-        row.appendChild(settings.createLabel(cell_class2));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);

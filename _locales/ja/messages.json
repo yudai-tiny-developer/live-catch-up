@@ -5,6 +5,12 @@
     "playbackRate": {
         "message": "遅延時の再生速度倍率"
     },
+    "showPlaybackRate": {
+        "message": "再生速度倍率を表示"
+    },
+    "showLatency": {
+        "message": "遅延秒数を表示"
+    },
     "smooth": {
         "message": "積極的モード（高負荷）"
     },
@@ -13,9 +19,6 @@
     },
     "smoothThreathold": {
         "message": "許容する遅延（秒）"
-    },
-    "smoothThreathold_desc": {
-        "message": "安定したインターネット環境がある場合は許容する遅延を下げることで、より低遅延にできる可能性があります。"
     },
     "slowdownAtLiveHead": {
         "message": "ライブの先頭付近では再生速度倍率を1.05倍まで落とす"
