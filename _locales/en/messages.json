@@ -5,6 +5,12 @@
     "playbackRate": {
         "message": "Playback rate"
     },
+    "showPlaybackRate": {
+        "message": "Display current playback rate"
+    },
+    "showLatency": {
+        "message": "Display current live latency"
+    },
     "smooth": {
         "message": "Aggressive mode (High CPU load)"
     },

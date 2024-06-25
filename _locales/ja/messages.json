@@ -5,6 +5,12 @@
     "playbackRate": {
         "message": "遅延時の再生速度倍率"
     },
+    "showPlaybackRate": {
+        "message": "再生速度倍率を表示"
+    },
+    "showLatency": {
+        "message": "遅延秒数を表示"
+    },
     "smooth": {
         "message": "積極的モード（高負荷）"
     },

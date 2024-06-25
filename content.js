@@ -16,29 +16,31 @@ function main(common) {
         chrome.storage.local.get(common.storage, data => {
             const enabled = common.value(data.enabled, common.defaultEnabled);
             const playbackRate = common.limitValue(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
+            const showPlaybackRate = common.value(data.showPlaybackRate, common.defaultShowPlaybackRate);
+            const showLatency = common.value(data.showLatency, common.defaultShowLatency);
             const smooth = common.value(data.smooth, common.defaultSmooth);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
             const slowdownAtLiveHead = common.value(data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead);
             const disablePremiere = common.value(data.disablePremiere, common.defaultDisablePremiere);
 
             if (enabled) {
-                reset();
-                observeBadgeElement(playbackRate, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
+                reset(false);
+                observeBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
             } else {
                 reset(true);
             }
         });
     }
 
-    function observeBadgeElement(playbackRate, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere) {
+    function observeBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere) {
         badge_element_observer = new MutationObserver(() => {
-            checkBadgeElement(playbackRate, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
+            checkBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
         });
         badge_element_observer.observe(app, { childList: true, subtree: true });
-        checkBadgeElement(playbackRate, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
+        checkBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
     }
 
-    function checkBadgeElement(playbackRate, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere) {
+    function checkBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere) {
         if (!badge || !media || !player) {
             player = app.querySelector('div#movie_player');
             if (!player) {
@@ -61,10 +63,8 @@ function main(common) {
 
         if (badge.checkVisibility()) {
             disconnectBadgeElementObserver();
-            if (smooth) {
-                sendStartEvent(playbackRate, smoothThreathold, slowdownAtLiveHead, disablePremiere);
-            } else {
-                sendStopEvent();
+            sendSettingsEvent(smooth, playbackRate, showPlaybackRate, showLatency, smoothThreathold, slowdownAtLiveHead, disablePremiere);
+            if (!smooth) {
                 observeBadgeAttribute(playbackRate, media, badge);
             }
         }
@@ -92,51 +92,29 @@ function main(common) {
         badge_attribute_observer = undefined;
     }
 
-    function sendStartEvent(playbackRate, smoothThreathold, slowdownAtLiveHead, disablePremiere) {
-        if (navigator.userAgent.includes('Firefox')) {
-            document.dispatchEvent(new CustomEvent('_live_catch_up_start',
-                {
-                    detail: cloneInto(
-                        {
-                            enabled: true,
-                            playbackRate,
-                            smoothThreathold,
-                            slowdownAtLiveHead,
-                            disablePremiere
-                        },
-                        document.defaultView)
-                }
-            ));
-        } else {
-            document.dispatchEvent(new CustomEvent('_live_catch_up_start',
-                {
-                    detail: {
-                        enabled: true,
-                        playbackRate,
-                        smoothThreathold,
-                        slowdownAtLiveHead,
-                        disablePremiere
-                    }
-                }
-            ));
-        }
+    function sendSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, smoothThreathold, slowdownAtLiveHead, disablePremiere) {
+        const detailObject = {
+            enabled,
+            playbackRate,
+            showPlaybackRate,
+            showLatency,
+            smoothThreathold,
+            slowdownAtLiveHead,
+            disablePremiere
+        };
+        const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
+        document.dispatchEvent(new CustomEvent('_live_catch_up_activate', { detail }));
     }
 
-    function sendStopEvent(resetPlaybackRate = false) {
-        if (navigator.userAgent.includes('Firefox')) {
-            document.dispatchEvent(new CustomEvent('_live_catch_up_stop', { detail: cloneInto({ resetPlaybackRate }, document.defaultView) }));
-        } else {
-            document.dispatchEvent(new CustomEvent('_live_catch_up_stop', { detail: { resetPlaybackRate } }));
-        }
-    }
-
-    function reset(resetPlaybackRate = false) {
+    function reset(deactivate) {
         badge = undefined;
         media = undefined;
         player = undefined;
         disconnectBadgeElementObserver();
         disconnectBadgeAttributeObserver();
-        sendStopEvent(resetPlaybackRate);
+        if (deactivate) {
+            document.dispatchEvent(new CustomEvent('_live_catch_up_deactivate'));
+        }
     }
 
     document.addEventListener('_live_catch_up_init', e => {

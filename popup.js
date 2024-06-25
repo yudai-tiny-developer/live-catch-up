@@ -40,6 +40,16 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
+        row.appendChild(settings.createLabel(cell_class1, common.label.showPlaybackRate));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'showPlaybackRate', data.showPlaybackRate, common.defaultShowPlaybackRate, common.value));
+        container.appendChild(row);
+    } {
+        const row = settings.createRow(row_class);
+        row.appendChild(settings.createLabel(cell_class1, common.label.showLatency));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'showLatency', data.showLatency, common.defaultShowLatency, common.value));
+        container.appendChild(row);
+    } {
+        const row = settings.createRow(row_class);
         row.appendChild(settings.createLabel(cell_class1, common.label.smooth));
         row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'smooth', data.smooth, common.defaultSmooth, common.value, 'div.aggressive-mode'));
         container.appendChild(row);
