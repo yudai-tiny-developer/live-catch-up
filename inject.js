@@ -1,7 +1,8 @@
 const _live_catch_up_app = document.body.querySelector('ytd-app');
 if (_live_catch_up_app) {
     const _LIVE_CATCH_UP_TIMEOUT = 250;
-    const _LIVE_CATCH_UP_OPTIONS_INIT = {
+
+    let _live_catch_up_options = {
         enabled: false,
         playbackRate: 1.0,
         showPlaybackRate: false,
@@ -10,8 +11,6 @@ if (_live_catch_up_app) {
         slowdownAtLiveHead: false,
         disablePremiere: false,
     };
-
-    let _live_catch_up_options = _LIVE_CATCH_UP_OPTIONS_INIT;
 
     let _live_catch_up_player_element;
     let _live_catch_up_media_element;
@@ -151,11 +150,9 @@ if (_live_catch_up_app) {
     });
 
     document.addEventListener('_live_catch_up_deactivate', e => {
-        _live_catch_up_options = _LIVE_CATCH_UP_OPTIONS_INIT;
+        _live_catch_up_options = e.detail;
         if (_live_catch_up_detectElement()) {
             _live_catch_up_media_element.playbackRate = _live_catch_up_player_element.getPlaybackRate();
-            _live_catch_up_playbackrate_element.style.display = 'none';
-            _live_catch_up_latency_element.style.display = 'none';
         }
     });
 

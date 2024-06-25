@@ -24,10 +24,10 @@ function main(common) {
             const disablePremiere = common.value(data.disablePremiere, common.defaultDisablePremiere);
 
             if (enabled) {
-                reset(false);
+                reset(false, enabled, playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
                 observeBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
             } else {
-                reset(true);
+                reset(true, enabled, playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere);
             }
         });
     }
@@ -106,14 +106,24 @@ function main(common) {
         document.dispatchEvent(new CustomEvent('_live_catch_up_activate', { detail }));
     }
 
-    function reset(deactivate) {
+    function reset(deactivate, enabled, playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, disablePremiere) {
         badge = undefined;
         media = undefined;
         player = undefined;
         disconnectBadgeElementObserver();
         disconnectBadgeAttributeObserver();
         if (deactivate) {
-            document.dispatchEvent(new CustomEvent('_live_catch_up_deactivate'));
+            const detailObject = {
+                enabled: enabled && smooth,
+                playbackRate,
+                showPlaybackRate,
+                showLatency,
+                smoothThreathold,
+                slowdownAtLiveHead,
+                disablePremiere
+            };
+            const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
+            document.dispatchEvent(new CustomEvent('_live_catch_up_deactivate', { detail }));
         }
     }
 
