@@ -93,6 +93,13 @@ if (_live_catch_up_app) {
     function _live_catch_up_setDisplayPlaybackRate() {
         if (_live_catch_up_options.showPlaybackRate) {
             _live_catch_up_playbackrate_element.innerHTML = 'x' + _live_catch_up_media_element.playbackRate.toFixed(2);
+            if (_live_catch_up_media_element.playbackRate > 1.0) {
+                _live_catch_up_playbackrate_element.style.color = 'var(--yt-spec-red-30)';
+                _live_catch_up_playbackrate_element.style.fontWeight = 'bold';
+            } else {
+                _live_catch_up_playbackrate_element.style.color = 'var(--yt-spec-text-primary)';
+                _live_catch_up_playbackrate_element.style.fontWeight = 'normal';
+            }
             _live_catch_up_playbackrate_element.style.display = '';
         } else {
             _live_catch_up_playbackrate_element.style.display = 'none';

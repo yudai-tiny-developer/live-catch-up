@@ -35,11 +35,6 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class1));
-        row.appendChild(settings.createLabel(cell_class2));
-        container.appendChild(row);
-    } {
-        const row = settings.createRow(row_class);
         row.appendChild(settings.createLabel(cell_class1, common.label.showPlaybackRate));
         row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'showPlaybackRate', data.showPlaybackRate, common.defaultShowPlaybackRate, common.value));
         container.appendChild(row);
