@@ -46,6 +46,7 @@ if (_live_catch_up_app) {
             if (!_live_catch_up_latency_element) {
                 _live_catch_up_latency_element = document.createElement('button');
                 _live_catch_up_latency_element.classList.add('_live_catch_up_latency', 'ytp-button');
+                _live_catch_up_latency_element.style.display = 'none';
                 _live_catch_up_latency_element.style.cursor = 'default';
                 _live_catch_up_latency_element.style.textAlign = 'center';
                 _live_catch_up_badge_element.parentElement.insertBefore(_live_catch_up_latency_element, _live_catch_up_badge_element.nextSibling);
@@ -57,6 +58,7 @@ if (_live_catch_up_app) {
             if (!_live_catch_up_playbackrate_element) {
                 _live_catch_up_playbackrate_element = document.createElement('button');
                 _live_catch_up_playbackrate_element.classList.add('_live_catch_up_playbackrate', 'ytp-button');
+                _live_catch_up_playbackrate_element.style.display = 'none';
                 _live_catch_up_playbackrate_element.style.cursor = 'default';
                 _live_catch_up_playbackrate_element.style.textAlign = 'center';
                 _live_catch_up_badge_element.parentElement.insertBefore(_live_catch_up_playbackrate_element, _live_catch_up_badge_element.nextSibling);
@@ -90,8 +92,8 @@ if (_live_catch_up_app) {
         }
     }
 
-    function _live_catch_up_setDisplayPlaybackRate() {
-        if (_live_catch_up_options.showPlaybackRate) {
+    function _live_catch_up_setDisplayPlaybackRate(latency) {
+        if (_live_catch_up_options.showPlaybackRate && latency) {
             _live_catch_up_playbackrate_element.innerHTML = 'x' + _live_catch_up_media_element.playbackRate.toFixed(2);
             if (_live_catch_up_media_element.playbackRate > 1.0) {
                 _live_catch_up_playbackrate_element.style.color = 'var(--yt-spec-red-30)';
@@ -106,10 +108,10 @@ if (_live_catch_up_app) {
         }
     }
 
-    function _live_catch_up_setDisplayLatency(isAtLiveHead, stats_latency) {
-        if (_live_catch_up_options.showLatency && stats_latency) {
+    function _live_catch_up_setDisplayLatency(isAtLiveHead, latency) {
+        if (_live_catch_up_options.showLatency && latency) {
             if (isAtLiveHead) {
-                _live_catch_up_latency_element.innerHTML = stats_latency.toFixed(2) + 's';
+                _live_catch_up_latency_element.innerHTML = latency.toFixed(2) + 's';
             } else {
                 _live_catch_up_latency_element.innerHTML = '(DVR)';
             }
@@ -126,7 +128,7 @@ if (_live_catch_up_app) {
 
             if (_live_catch_up_options.enabled || _live_catch_up_options.showLatency) {
                 const stats = _live_catch_up_player_element.getVideoStats();
-                if (stats && stats.live) {
+                if (stats && (stats.live === 'dvr' || stats.live === 'lp' || stats.live === 'live')) { // stats.live: live, dvr, post, lp
                     isAtLiveHead = _live_catch_up_player_element.isAtLiveHead();
                     latency = stats.lat;
 
@@ -136,7 +138,7 @@ if (_live_catch_up_app) {
                 }
             }
 
-            _live_catch_up_setDisplayPlaybackRate();
+            _live_catch_up_setDisplayPlaybackRate(latency);
             _live_catch_up_setDisplayLatency(isAtLiveHead, latency);
         }
     }, _LIVE_CATCH_UP_TIMEOUT);
@@ -149,6 +151,8 @@ if (_live_catch_up_app) {
         _live_catch_up_options = _LIVE_CATCH_UP_OPTIONS_INIT;
         if (_live_catch_up_detectElement()) {
             _live_catch_up_media_element.playbackRate = _live_catch_up_player_element.getPlaybackRate();
+            _live_catch_up_playbackrate_element.style.display = 'none';
+            _live_catch_up_latency_element.style.display = 'none';
         }
     });
 
