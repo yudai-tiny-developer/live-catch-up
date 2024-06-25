@@ -92,8 +92,8 @@ if (_live_catch_up_app) {
         }
     }
 
-    function _live_catch_up_setDisplayPlaybackRate(latency) {
-        if (_live_catch_up_options.showPlaybackRate && latency) {
+    function _live_catch_up_setDisplayPlaybackRate(stats_live) {
+        if (_live_catch_up_options.showPlaybackRate && stats_live) {
             _live_catch_up_playbackrate_element.innerHTML = 'x' + _live_catch_up_media_element.playbackRate.toFixed(2);
             if (_live_catch_up_media_element.playbackRate > 1.0) {
                 _live_catch_up_playbackrate_element.style.color = 'var(--yt-spec-red-30)';
@@ -108,8 +108,8 @@ if (_live_catch_up_app) {
         }
     }
 
-    function _live_catch_up_setDisplayLatency(isAtLiveHead, latency) {
-        if (_live_catch_up_options.showLatency && latency) {
+    function _live_catch_up_setDisplayLatency(stats_live, isAtLiveHead, latency) {
+        if (_live_catch_up_options.showLatency && stats_live) {
             if (isAtLiveHead) {
                 _live_catch_up_latency_element.innerHTML = latency.toFixed(2) + 's';
             } else {
@@ -123,23 +123,25 @@ if (_live_catch_up_app) {
 
     setInterval(() => {
         if (_live_catch_up_detectElement()) {
+            let stats_live;
             let isAtLiveHead;
             let latency;
 
             if (_live_catch_up_options.enabled || _live_catch_up_options.showLatency) {
                 const stats = _live_catch_up_player_element.getVideoStats();
-                if (stats && (stats.live === 'dvr' || stats.live === 'lp' || stats.live === 'live')) { // stats.live: live, dvr, post, lp
+                if (stats && (stats.live === 'live' || stats.live === 'dvr' || stats.live === 'lp')) { // stats.live: live, dvr, lp (Premiere), post (Archive), undefined
+                    stats_live = stats.live;
                     isAtLiveHead = _live_catch_up_player_element.isAtLiveHead();
                     latency = stats.lat;
 
                     if (_live_catch_up_options.enabled) {
-                        _live_catch_up_setPlaybackRate(stats.live, isAtLiveHead, latency);
+                        _live_catch_up_setPlaybackRate(stats_live, isAtLiveHead, latency);
                     }
                 }
             }
 
-            _live_catch_up_setDisplayPlaybackRate(latency);
-            _live_catch_up_setDisplayLatency(isAtLiveHead, latency);
+            _live_catch_up_setDisplayPlaybackRate(stats_live);
+            _live_catch_up_setDisplayLatency(stats_live, isAtLiveHead, latency);
         }
     }, _LIVE_CATCH_UP_TIMEOUT);
 
