@@ -95,7 +95,7 @@ if (_live_catch_up_app) {
 
     function _live_catch_up_setDisplayPlaybackRate(stats_live) {
         if (_live_catch_up_options.showPlaybackRate && stats_live) {
-            _live_catch_up_playbackrate_element.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">x${_live_catch_up_media_element.playbackRate.toFixed(2)}</text></svg>`;
+            _live_catch_up_playbackrate_element.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${_live_catch_up_media_element.playbackRate.toFixed(2)}x</text></svg>`;
             if (_live_catch_up_media_element.playbackRate > 1.0) {
                 _live_catch_up_playbackrate_element.style.fill = 'var(--yt-spec-red-30)';
                 _live_catch_up_playbackrate_element.style.fontWeight = 'bold';
