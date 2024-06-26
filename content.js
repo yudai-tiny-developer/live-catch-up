@@ -4,12 +4,10 @@ let player;
 let media;
 let badge;
 
-const app = document.querySelector('ytd-app');
-if (app) {
-    import(chrome.runtime.getURL('common.js')).then(common => {
-        main(common);
-    });
-}
+const app = document.querySelector('ytd-app') || document.body;
+import(chrome.runtime.getURL('common.js')).then(common => {
+    main(common);
+});
 
 function main(common) {
     function loadSettings() {
