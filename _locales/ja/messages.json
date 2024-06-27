@@ -21,10 +21,10 @@
         "message": "許容する遅延（秒）"
     },
     "slowdownAtLiveHead": {
-        "message": "ライブの先頭付近では再生速度倍率を1.05倍まで落とす"
+        "message": "ライブの先頭付近では再生速度倍率を最小（1.05倍）にする"
     },
-    "disablePremiere": {
-        "message": "プレミア公開では積極的モードを使用しない"
+    "keepBufferHealth": {
+        "message": "バッファの残量が少ないときは再生速度倍率を等倍（1.0倍）にする"
     },
     "appDesc": {
         "message": "DVR が有効な YouTube のライブ配信で遅延が発生したときに、自動で再生速度を上げてリアルタイムに追いつく機能拡張"

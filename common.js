@@ -7,10 +7,10 @@ export const label = {
     smooth_desc: chrome.i18n.getMessage('smooth_desc'),
     smoothThreathold: chrome.i18n.getMessage('smoothThreathold'),
     slowdownAtLiveHead: chrome.i18n.getMessage('slowdownAtLiveHead'),
-    disablePremiere: chrome.i18n.getMessage('disablePremiere'),
+    keepBufferHealth: chrome.i18n.getMessage('keepBufferHealth'),
 };
 
-export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'smooth', 'smoothThreathold', 'slowdownAtLiveHead', 'disablePremiere'];
+export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'smooth', 'smoothThreathold', 'slowdownAtLiveHead', 'keepBufferHealth'];
 
 export const defaultEnabled = true;
 
@@ -31,7 +31,7 @@ export const stepSmoothThreathold = 0.25;
 
 export const defaultSlowdownAtLiveHead = true;
 
-export const defaultDisablePremiere = true;
+export const defaultKeepBufferHealth = false;
 
 export function value(value, default_value) {
     return value ?? default_value;
