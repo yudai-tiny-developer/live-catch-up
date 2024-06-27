@@ -23,8 +23,8 @@
     "slowdownAtLiveHead": {
         "message": "Set the playback rate to 1.05x near the live stream head."
     },
-    "disablePremiere": {
-        "message": "Disable aggressive mode if the live stream is a premiere."
+    "keepBufferHealth": {
+        "message": "Set the playback rate to 1.0x when the buffer health is low."
     },
     "appDesc": {
         "message": "This extension syncs YouTube live streams in real-time by accelerating viewer-delayed streams caused by data reception delays."

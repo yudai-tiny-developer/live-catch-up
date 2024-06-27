@@ -70,8 +70,8 @@ function main(common, settings, progress, data) {
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class1, common.label.disablePremiere));
-        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'disablePremiere', data.disablePremiere, common.defaultDisablePremiere, common.value));
+        row.appendChild(settings.createLabel(cell_class1, common.label.keepBufferHealth));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'keepBufferHealth', data.keepBufferHealth, common.defaultKeepBufferHealth, common.value));
         container.appendChild(row);
     }
 
