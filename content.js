@@ -124,7 +124,7 @@ function main(common) {
         document.dispatchEvent(new CustomEvent('_live_catch_up_reset_playback_rate'));
     }
 
-    document.addEventListener('_live_catch_up_init', e => {
+    document.addEventListener('_live_catch_up_init', () => {
         loadSettings();
     });
 

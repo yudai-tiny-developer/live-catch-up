@@ -56,6 +56,15 @@ function _live_catch_up_detectElements() {
         }
     }
 
+    if (!_live_catch_up_player_element.getAttribute('_live_catch_up')) {
+        _live_catch_up_player_element.setAttribute('_live_catch_up', true);
+        _live_catch_up_player_element.addEventListener('onPlaybackRateChange', e => {
+            if (e === 1.0) { // Keep the playback rate if it has been manually changed.
+                document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
+            }
+        });
+    }
+
     return true;
 }
 
