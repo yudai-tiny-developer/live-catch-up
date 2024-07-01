@@ -5,9 +5,12 @@ let media;
 let badge;
 
 const app = document.querySelector('ytd-app') || document.body;
-import(chrome.runtime.getURL('common.js')).then(common => {
-    main(common);
-});
+
+if (!window.location.href.startsWith('https://www.youtube.com/live_chat?')) {
+    import(chrome.runtime.getURL('common.js')).then(common => {
+        main(common);
+    });
+}
 
 function main(common) {
     function loadSettings() {
@@ -21,49 +24,54 @@ function main(common) {
             const slowdownAtLiveHead = common.value(data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead);
             const keepBufferHealth = common.value(data.keepBufferHealth, common.defaultKeepBufferHealth);
 
+            disconnectBadgeElementObserver();
+            disconnectBadgeAttributeObserver();
+
+            sendSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth);
+
             if (enabled) {
-                reset(false, enabled, playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth);
-                observeBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth);
+                if (!smooth) {
+                    observeBadgeElement(playbackRate);
+                }
             } else {
-                reset(true, enabled, playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth);
+                setPlaybackRate();
             }
         });
     }
 
-    function observeBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth) {
+    function observeBadgeElement(playbackRate) {
         badge_element_observer = new MutationObserver(() => {
-            checkBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth);
+            observeBadgeAttributeIfVisibled(playbackRate);
         });
         badge_element_observer.observe(app, { childList: true, subtree: true });
-        checkBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth);
+        observeBadgeAttributeIfVisibled(playbackRate);
     }
 
-    function checkBadgeElement(playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth) {
+    function detectElements() {
         if (!badge || !media || !player) {
             player = app.querySelector('div#movie_player');
             if (!player) {
-                media = undefined;
-                badge = undefined;
-                return;
+                return false;
             }
 
             media = player.querySelector('video.video-stream');
             if (!media) {
-                badge = undefined;
-                return;
+                return false;
             }
 
             badge = player.querySelector('button.ytp-live-badge');
             if (!badge) {
-                return;
+                return false;
             }
         }
+        return true;
+    }
 
-        if (badge.checkVisibility()) {
-            disconnectBadgeElementObserver();
-            sendSettingsEvent(smooth, playbackRate, showPlaybackRate, showLatency, smoothThreathold, slowdownAtLiveHead, keepBufferHealth);
-            if (!smooth) {
-                observeBadgeAttribute(playbackRate, media, badge);
+    function observeBadgeAttributeIfVisibled(playbackRate) {
+        if (detectElements()) {
+            if (badge.checkVisibility()) {
+                disconnectBadgeElementObserver();
+                observeBadgeAttribute(playbackRate);
             }
         }
     }
@@ -73,16 +81,24 @@ function main(common) {
         badge_element_observer = undefined;
     }
 
-    function observeBadgeAttribute(playbackRate, media, badge) {
-        badge_attribute_observer = new MutationObserver(() => {
-            setPlaybackRate(playbackRate, media, badge);
-        });
-        badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
-        setPlaybackRate(playbackRate, media, badge);
+    function observeBadgeAttribute(playbackRate) {
+        if (detectElements()) {
+            badge_attribute_observer = new MutationObserver(() => {
+                setPlaybackRate(playbackRate);
+            });
+            badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
+            setPlaybackRate(playbackRate);
+        }
     }
 
-    function setPlaybackRate(playbackRate, media, badge) {
-        media.playbackRate = badge.hasAttribute('disabled') ? 1.0 : playbackRate;
+    function setPlaybackRate(playbackRate) {
+        if (detectElements()) {
+            if (badge.hasAttribute('disabled') || !playbackRate) {
+                sendResetPlaybackRateEvent();
+            } else {
+                media.playbackRate = playbackRate;
+            }
+        }
     }
 
     function disconnectBadgeAttributeObserver() {
@@ -90,9 +106,9 @@ function main(common) {
         badge_attribute_observer = undefined;
     }
 
-    function sendSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, smoothThreathold, slowdownAtLiveHead, keepBufferHealth) {
+    function sendSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth) {
         const detailObject = {
-            enabled,
+            enabled: enabled && smooth,
             playbackRate,
             showPlaybackRate,
             showLatency,
@@ -101,28 +117,11 @@ function main(common) {
             keepBufferHealth
         };
         const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
-        document.dispatchEvent(new CustomEvent('_live_catch_up_activate', { detail }));
+        document.dispatchEvent(new CustomEvent('_live_catch_up_settings', { detail }));
     }
 
-    function reset(deactivate, enabled, playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth) {
-        badge = undefined;
-        media = undefined;
-        player = undefined;
-        disconnectBadgeElementObserver();
-        disconnectBadgeAttributeObserver();
-        if (deactivate) {
-            const detailObject = {
-                enabled: enabled && smooth,
-                playbackRate,
-                showPlaybackRate,
-                showLatency,
-                smoothThreathold,
-                slowdownAtLiveHead,
-                keepBufferHealth
-            };
-            const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
-            document.dispatchEvent(new CustomEvent('_live_catch_up_deactivate', { detail }));
-        }
+    function sendResetPlaybackRateEvent() {
+        document.dispatchEvent(new CustomEvent('_live_catch_up_reset_playback_rate'));
     }
 
     document.addEventListener('_live_catch_up_init', e => {
