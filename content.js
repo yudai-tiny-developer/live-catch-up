@@ -4,13 +4,11 @@ let player;
 let media;
 let badge;
 
-const app = document.querySelector('ytd-app') || document.body;
-
-if (!window.location.href.startsWith('https://www.youtube.com/live_chat?')) {
-    import(chrome.runtime.getURL('common.js')).then(common => {
-        main(common);
-    });
-}
+import(chrome.runtime.getURL('common.js')).then(common => {
+    if (!common.isLiveChat(location.href)) {
+        main(document.querySelector('ytd-app') || document.body, common);
+    }
+});
 
 function main(common) {
     function loadSettings() {
