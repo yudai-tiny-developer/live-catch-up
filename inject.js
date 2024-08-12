@@ -9,9 +9,11 @@ let _live_catch_up_latency_element;
 
 let _live_catch_up_current_interval;
 
-const _live_catch_up_HTMLPolicy = trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", {
+const _live_catch_up_HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", {
     createHTML: (string) => string,
-});
+}) : {
+    createHTML: (string) => string,
+};
 
 function _live_catch_up_detectElements() {
     if (!_live_catch_up_player_element || !_live_catch_up_player_element.getPlaybackRate || !_live_catch_up_player_element.getVideoData || !_live_catch_up_player_element.isAtLiveHead || !_live_catch_up_player_element.getStatsForNerds) {
