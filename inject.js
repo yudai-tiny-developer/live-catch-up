@@ -9,6 +9,10 @@ let _live_catch_up_latency_element;
 
 let _live_catch_up_current_interval;
 
+const _live_catch_up_HTMLPolicy = trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", {
+    createHTML: (string) => string,
+});
+
 function _live_catch_up_detectElements() {
     if (!_live_catch_up_player_element || !_live_catch_up_player_element.getPlaybackRate || !_live_catch_up_player_element.getVideoData || !_live_catch_up_player_element.isAtLiveHead || !_live_catch_up_player_element.getStatsForNerds) {
         _live_catch_up_player_element = _live_catch_up_app.querySelector('div#movie_player');
@@ -117,7 +121,7 @@ function _live_catch_up_setPlaybackRate(settings, isAtLiveHead, latency, stats) 
 
 function _live_catch_up_showPlaybackRate() {
     if (_live_catch_up_detectElements()) {
-        _live_catch_up_playbackrate_element.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${_live_catch_up_media_element.playbackRate.toFixed(2)}x</text></svg>`;
+        _live_catch_up_playbackrate_element.innerHTML = _live_catch_up_HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${_live_catch_up_media_element.playbackRate.toFixed(2)}x</text></svg>`);
         if (_live_catch_up_media_element.playbackRate > 1.0) {
             _live_catch_up_playbackrate_element.style.fill = '#ff8983';
             _live_catch_up_playbackrate_element.style.fontWeight = 'bold';
@@ -138,9 +142,9 @@ function _live_catch_up_hidePlaybackRate() {
 function _live_catch_up_showLatency(isAtLiveHead, latency) {
     if (_live_catch_up_detectElements()) {
         if (isAtLiveHead) {
-            _live_catch_up_latency_element.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`;
+            _live_catch_up_latency_element.innerHTML = _live_catch_up_HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`);
         } else {
-            _live_catch_up_latency_element.innerHTML = `<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">(DVR)</text></svg>`;
+            _live_catch_up_latency_element.innerHTML = _live_catch_up_HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">(DVR)</text></svg>`);
         }
         _live_catch_up_latency_element.style.display = '';
     }
