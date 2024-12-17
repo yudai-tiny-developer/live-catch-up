@@ -46,22 +46,35 @@ function main(app, common) {
     }
 
     function detectElements() {
-        if (!badge || !media || !player) {
+        if (!player) {
             player = app.querySelector('div#movie_player');
             if (!player) {
-                return false;
-            }
-
-            media = player.querySelector('video.video-stream');
-            if (!media) {
-                return false;
-            }
-
-            badge = player.querySelector('button.ytp-live-badge');
-            if (!badge) {
+                sendResetPlaybackRateEvent();
                 return false;
             }
         }
+
+        if (!media) {
+            media = player.querySelector('video.video-stream');
+            if (!media) {
+                sendResetPlaybackRateEvent();
+                return false;
+            }
+        }
+
+        if (!badge) {
+            badge = player.querySelector('button.ytp-live-badge');
+            if (!badge) {
+                sendResetPlaybackRateEvent();
+                return false;
+            }
+        }
+
+        if (badge && is_DisplayNone(badge)) {
+            sendResetPlaybackRateEvent();
+            return false;
+        }
+
         return true;
     }
 
@@ -120,6 +133,12 @@ function main(app, common) {
 
     function sendResetPlaybackRateEvent() {
         document.dispatchEvent(new CustomEvent('_live_catch_up_reset_playback_rate'));
+    }
+
+    function is_DisplayNone(node) {
+        const compStyles = getComputedStyle(node);
+        const propertyValue = compStyles.getPropertyValue('display');
+        return propertyValue === 'none';
     }
 
     document.addEventListener('_live_catch_up_init', () => {
