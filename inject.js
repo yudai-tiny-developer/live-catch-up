@@ -1,5 +1,5 @@
 const _live_catch_up_app = document.body.querySelector('ytd-app') || document.body;
-const _LIVE_CATCH_UP_TIMEOUT = 250;
+const _LIVE_CATCH_UP_TIMEOUT = 500;
 
 let _live_catch_up_player_element;
 let _live_catch_up_media_element;
@@ -19,6 +19,7 @@ function _live_catch_up_detectElements() {
     if (!_live_catch_up_player_element || !_live_catch_up_player_element.getPlaybackRate || !_live_catch_up_player_element.getVideoData || !_live_catch_up_player_element.isAtLiveHead || !_live_catch_up_player_element.getStatsForNerds) {
         _live_catch_up_player_element = _live_catch_up_app.querySelector('div#movie_player');
         if (!_live_catch_up_player_element || !_live_catch_up_player_element.getPlaybackRate || !_live_catch_up_player_element.getVideoData || !_live_catch_up_player_element.isAtLiveHead || !_live_catch_up_player_element.getStatsForNerds) {
+            _live_catch_up_resetPlaybackRate();
             return false;
         }
     }
@@ -26,6 +27,7 @@ function _live_catch_up_detectElements() {
     if (!_live_catch_up_media_element) {
         _live_catch_up_media_element = _live_catch_up_player_element.querySelector('video.video-stream');
         if (!_live_catch_up_media_element) {
+            _live_catch_up_resetPlaybackRate();
             return false;
         }
     }
@@ -33,8 +35,14 @@ function _live_catch_up_detectElements() {
     if (!_live_catch_up_badge_element) {
         _live_catch_up_badge_element = _live_catch_up_player_element.querySelector('button.ytp-live-badge');
         if (!_live_catch_up_badge_element) {
+            _live_catch_up_resetPlaybackRate();
             return false;
         }
+    }
+
+    if (_live_catch_up_badge_element && _live_catch_up_is_DisplayNone(_live_catch_up_badge_element)) {
+        _live_catch_up_resetPlaybackRate();
+        return false;
     }
 
     if (!_live_catch_up_latency_element) {
@@ -196,6 +204,18 @@ function _live_catch_up_runInterval(settings) {
             _live_catch_up_hideLatency();
         }
     }, _LIVE_CATCH_UP_TIMEOUT);
+}
+
+function _live_catch_up_is_DisplayNone(node) {
+    const compStyles = getComputedStyle(node);
+    const propertyValue = compStyles.getPropertyValue('display');
+    return propertyValue === 'none';
+}
+
+function _live_catch_up_resetPlaybackRate() {
+    if (_live_catch_up_media_element) {
+        _live_catch_up_media_element.playbackRate = _live_catch_up_player_element.getPlaybackRate();
+    }
 }
 
 document.addEventListener('_live_catch_up_settings', e => {
