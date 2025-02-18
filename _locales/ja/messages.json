@@ -11,6 +11,9 @@
     "showLatency": {
         "message": "遅延秒数を表示"
     },
+    "showEstimation": {
+        "message": "ライブへの予想到達時刻を表示"
+    },
     "smooth": {
         "message": "積極的モード（高負荷）"
     },
