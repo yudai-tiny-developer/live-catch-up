@@ -1,5 +1,5 @@
 const _live_catch_up_app = document.body.querySelector('ytd-app') || document.body;
-const _LIVE_CATCH_UP_TIMEOUT = 500;
+const _LIVE_CATCH_UP_TIMEOUT = 1000;
 
 let _live_catch_up_player_element;
 let _live_catch_up_media_element;
@@ -7,7 +7,6 @@ let _live_catch_up_badge_element;
 let _live_catch_up_playbackrate_element;
 let _live_catch_up_latency_element;
 let _live_catch_up_estimation_element;
-let _live_catch_up_estimation_delay_count = 0;
 let _live_catch_up_current_interval;
 let _live_catch_up_enabled = false;
 
@@ -185,14 +184,10 @@ function _live_catch_up_hideLatency() {
 function _live_catch_up_showEstimation() {
     if (_live_catch_up_estimation_element) {
         if (_live_catch_up_media_element.playbackRate > 1.0) {
-            if (_live_catch_up_estimation_delay_count++ % 2 === 0) {
-                const progress_state = _live_catch_up_player_element.getProgressState();
-                const estimated_seconds = (progress_state.seekableEnd - progress_state.current) / (_live_catch_up_media_element.playbackRate - 1.0);
-                if (estimated_seconds) {
-                    const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
-                    _live_catch_up_estimation_element.innerHTML = _live_catch_up_HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="middle" text-anchor="start">${estimated_time}</text></svg>`);
-                }
-            }
+            const progress_state = _live_catch_up_player_element.getProgressState();
+            const estimated_seconds = (progress_state.seekableEnd - progress_state.current) / (_live_catch_up_media_element.playbackRate - 1.0);
+            const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
+            _live_catch_up_estimation_element.innerHTML = _live_catch_up_HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="middle" text-anchor="start">${estimated_time}</text></svg>`);
             _live_catch_up_estimation_element.style.display = '';
         } else {
             _live_catch_up_estimation_element.style.display = 'none';
