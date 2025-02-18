@@ -243,12 +243,14 @@ function _live_catch_up_runInterval(settings) {
                 } else {
                     _live_catch_up_hidePlaybackRate();
                     _live_catch_up_hideLatency();
+                    _live_catch_up_hideEstimation();
                 }
             }
         } else {
             clearInterval(interval);
             _live_catch_up_hidePlaybackRate();
             _live_catch_up_hideLatency();
+            _live_catch_up_hideEstimation();
         }
     }, _LIVE_CATCH_UP_TIMEOUT);
 }
