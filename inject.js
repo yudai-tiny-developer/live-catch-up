@@ -189,7 +189,7 @@ function _live_catch_up_showEstimation() {
             const estimated_seconds = (progress_state.seekableEnd - progress_state.current) / (_live_catch_up_media_element.playbackRate - 1.0);
             if (estimated_seconds) {
                 const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
-                _live_catch_up_estimation_element.innerHTML = _live_catch_up_HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${estimated_time}</text></svg>`);
+                _live_catch_up_estimation_element.innerHTML = _live_catch_up_HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="middle" text-anchor="start">${estimated_time}</text></svg>`);
                 _live_catch_up_estimation_element.style.display = '';
                 return;
             }
