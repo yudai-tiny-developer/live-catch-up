@@ -17,6 +17,7 @@ function main(app, common) {
             const playbackRate = common.limitValue(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
             const showPlaybackRate = common.value(data.showPlaybackRate, common.defaultShowPlaybackRate);
             const showLatency = common.value(data.showLatency, common.defaultShowLatency);
+            const showEstimation = common.value(data.showEstimation, common.defaultShowEstimation);
             const smooth = common.value(data.smooth, common.defaultSmooth);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
             const slowdownAtLiveHead = common.value(data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead);
@@ -25,7 +26,7 @@ function main(app, common) {
             disconnectBadgeElementObserver();
             disconnectBadgeAttributeObserver();
 
-            sendSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth);
+            sendSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth);
 
             if (enabled) {
                 if (!smooth) {
@@ -117,12 +118,13 @@ function main(app, common) {
         badge_attribute_observer = undefined;
     }
 
-    function sendSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth) {
+    function sendSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth) {
         const detailObject = {
             enabled: enabled && smooth,
             playbackRate,
             showPlaybackRate,
             showLatency,
+            showEstimation,
             smoothThreathold,
             slowdownAtLiveHead,
             keepBufferHealth

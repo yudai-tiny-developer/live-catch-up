@@ -183,18 +183,20 @@ function _live_catch_up_hideLatency() {
 }
 
 function _live_catch_up_showEstimation() {
-    if (_live_catch_up_estimation_element && _live_catch_up_estimation_delay_count++ % 2 === 0) {
+    if (_live_catch_up_estimation_element) {
         if (_live_catch_up_media_element.playbackRate > 1.0) {
-            const progress_state = _live_catch_up_player_element.getProgressState();
-            const estimated_seconds = (progress_state.seekableEnd - progress_state.current) / (_live_catch_up_media_element.playbackRate - 1.0);
-            if (estimated_seconds) {
-                const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
-                _live_catch_up_estimation_element.innerHTML = _live_catch_up_HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="middle" text-anchor="start">${estimated_time}</text></svg>`);
-                _live_catch_up_estimation_element.style.display = '';
-                return;
+            if (_live_catch_up_estimation_delay_count++ % 2 === 0) {
+                const progress_state = _live_catch_up_player_element.getProgressState();
+                const estimated_seconds = (progress_state.seekableEnd - progress_state.current) / (_live_catch_up_media_element.playbackRate - 1.0);
+                if (estimated_seconds) {
+                    const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
+                    _live_catch_up_estimation_element.innerHTML = _live_catch_up_HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="middle" text-anchor="start">${estimated_time}</text></svg>`);
+                }
             }
+            _live_catch_up_estimation_element.style.display = '';
+        } else {
+            _live_catch_up_estimation_element.style.display = 'none';
         }
-        _live_catch_up_estimation_element.style.display = 'none';
     }
 }
 
@@ -208,7 +210,7 @@ function _live_catch_up_runInterval(settings) {
     const interval = _live_catch_up_current_interval = setInterval(() => {
         if (interval !== _live_catch_up_current_interval) {
             clearInterval(interval);
-        } else if (settings.enabled || settings.showPlaybackRate || settings.showLatency) {
+        } else if (settings.enabled || settings.showPlaybackRate || settings.showLatency || settings.showEstimation) {
             _live_catch_up_enabled = _live_catch_up_detectElements();
             if (_live_catch_up_enabled) {
                 const data = _live_catch_up_player_element.getVideoData();
@@ -233,7 +235,7 @@ function _live_catch_up_runInterval(settings) {
                         _live_catch_up_hideLatency();
                     }
 
-                    if (true) {
+                    if (settings.showEstimation) {
                         _live_catch_up_showEstimation();
                     } else {
                         _live_catch_up_hideEstimation();
