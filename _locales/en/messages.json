@@ -11,6 +11,9 @@
     "showLatency": {
         "message": "Display current live latency"
     },
+    "showEstimation": {
+        "message": "Display estimated arrival at live head"
+    },
     "smooth": {
         "message": "Aggressive mode (High CPU load)"
     },

@@ -6,6 +6,8 @@ let _live_catch_up_media_element;
 let _live_catch_up_badge_element;
 let _live_catch_up_playbackrate_element;
 let _live_catch_up_latency_element;
+let _live_catch_up_estimation_element;
+let _live_catch_up_estimation_delay_count = 0;
 let _live_catch_up_current_interval;
 let _live_catch_up_enabled = false;
 
@@ -43,6 +45,20 @@ function _live_catch_up_detectElements() {
     if (_live_catch_up_badge_element && _live_catch_up_is_DisplayNone(_live_catch_up_badge_element)) {
         _live_catch_up_resetPlaybackRate();
         return false;
+    }
+
+    if (!_live_catch_up_estimation_element) {
+        _live_catch_up_estimation_element = _live_catch_up_player_element.querySelector('button._live_catch_up_estimation');
+        if (!_live_catch_up_estimation_element) {
+            _live_catch_up_estimation_element = document.createElement('button');
+            _live_catch_up_estimation_element.classList.add('_live_catch_up_estimation', 'ytp-button');
+            _live_catch_up_estimation_element.style.display = 'none';
+            _live_catch_up_estimation_element.style.cursor = 'default';
+            _live_catch_up_estimation_element.style.textAlign = 'center';
+            _live_catch_up_estimation_element.style.fill = '#eee';
+            _live_catch_up_estimation_element.style.width = '96px';
+            _live_catch_up_badge_element.parentElement.parentElement.insertBefore(_live_catch_up_estimation_element, _live_catch_up_badge_element.parentElement.nextSibling);
+        }
     }
 
     if (!_live_catch_up_latency_element) {
@@ -166,6 +182,28 @@ function _live_catch_up_hideLatency() {
     }
 }
 
+function _live_catch_up_showEstimation() {
+    if (_live_catch_up_estimation_element && _live_catch_up_estimation_delay_count++ % 2 === 0) {
+        if (_live_catch_up_media_element.playbackRate > 1.0) {
+            const progress_state = _live_catch_up_player_element.getProgressState();
+            const estimated_seconds = (progress_state.seekableEnd - progress_state.current) / (_live_catch_up_media_element.playbackRate - 1.0);
+            if (estimated_seconds) {
+                const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
+                _live_catch_up_estimation_element.innerHTML = _live_catch_up_HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${estimated_time}</text></svg>`);
+                _live_catch_up_estimation_element.style.display = '';
+                return;
+            }
+        }
+        _live_catch_up_estimation_element.style.display = 'none';
+    }
+}
+
+function _live_catch_up_hideEstimation() {
+    if (_live_catch_up_estimation_element) {
+        _live_catch_up_estimation_element.style.display = 'none';
+    }
+}
+
 function _live_catch_up_runInterval(settings) {
     const interval = _live_catch_up_current_interval = setInterval(() => {
         if (interval !== _live_catch_up_current_interval) {
@@ -193,6 +231,12 @@ function _live_catch_up_runInterval(settings) {
                         _live_catch_up_showLatency(isAtLiveHead, latency);
                     } else {
                         _live_catch_up_hideLatency();
+                    }
+
+                    if (true) {
+                        _live_catch_up_showEstimation();
+                    } else {
+                        _live_catch_up_hideEstimation();
                     }
                 } else {
                     _live_catch_up_hidePlaybackRate();

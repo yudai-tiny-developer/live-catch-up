@@ -3,6 +3,7 @@ export const label = {
     playbackRate: chrome.i18n.getMessage('playbackRate'),
     showPlaybackRate: chrome.i18n.getMessage('showPlaybackRate'),
     showLatency: chrome.i18n.getMessage('showLatency'),
+    showEstimation: chrome.i18n.getMessage('showEstimation'),
     smooth: chrome.i18n.getMessage('smooth'),
     smooth_desc: chrome.i18n.getMessage('smooth_desc'),
     smoothThreathold: chrome.i18n.getMessage('smoothThreathold'),
@@ -10,7 +11,7 @@ export const label = {
     keepBufferHealth: chrome.i18n.getMessage('keepBufferHealth'),
 };
 
-export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'smooth', 'smoothThreathold', 'slowdownAtLiveHead', 'keepBufferHealth'];
+export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showEstimation', 'smooth', 'smoothThreathold', 'slowdownAtLiveHead', 'keepBufferHealth'];
 
 export const defaultEnabled = true;
 
@@ -21,6 +22,7 @@ export const stepPlaybackRate = 0.05;
 
 export const defaultShowPlaybackRate = false;
 export const defaultShowLatency = false;
+export const defaultShowEstimation = false;
 
 export const defaultSmooth = false;
 
