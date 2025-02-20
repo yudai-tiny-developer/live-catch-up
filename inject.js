@@ -268,6 +268,7 @@ document.addEventListener('_live_catch_up_settings', e => {
 });
 
 document.addEventListener('_live_catch_up_reset_playback_rate', () => {
+    _live_catch_up_enabled = _live_catch_up_detectElements();
     _live_catch_up_resetPlaybackRate();
 });
 
