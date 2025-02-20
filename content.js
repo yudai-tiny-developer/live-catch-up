@@ -54,9 +54,7 @@ function main(common) {
             if (is_live_head()) {
                 sendResetPlaybackRateEvent();
             } else {
-                if (video) {
-                    video.playbackRate = playbackRate;
-                }
+                sendSetPlaybackRateEvent(playbackRate);
             }
         } else {
             sendResetPlaybackRateEvent();
@@ -69,6 +67,14 @@ function main(common) {
 
     function is_live_head() {
         return badge?.hasAttribute('disabled');
+    }
+
+    function sendSetPlaybackRateEvent(playbackRate) {
+        const detailObject = {
+            playbackRate,
+        };
+        const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
+        document.dispatchEvent(new CustomEvent('_live_catch_up_set_playback_rate', { detail }));
     }
 
     function sendResetPlaybackRateEvent() {

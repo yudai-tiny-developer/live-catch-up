@@ -188,6 +188,15 @@
         }
     });
 
+    document.addEventListener('_live_catch_up_set_playback_rate', e => {
+        if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
+            const newPlaybackRate = e.detail.playbackRate;
+            if (video && video.playbackRate !== newPlaybackRate) {
+                video.playbackRate = newPlaybackRate;
+            }
+        }
+    });
+
     document.addEventListener('_live_catch_up_reset_playback_rate', () => {
         reset_playbackRate();
     });
