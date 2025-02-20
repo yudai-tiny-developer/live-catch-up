@@ -135,9 +135,16 @@
             badge.parentElement.parentElement.appendChild(button_estimation);
             badge.parentElement.parentElement.insertBefore(button_latency, button_estimation);
             badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
+            player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
             return true;
         } else {
             return false;
+        }
+    }
+
+    function onPlaybackRateChange(playbackRate) {
+        if (playbackRate === 1.0) { // Keep the playback rate if it has been manually changed.
+            document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
         }
     }
 
