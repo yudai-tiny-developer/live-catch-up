@@ -1,45 +1,15 @@
 (() => {
-    const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
-
-    function reset_playbackRate() {
-        if (video && player) {
-            video.playbackRate = player.getPlaybackRate();
-        }
-    }
-
-    function set_playbackRate(settings, latency, isAtLiveHead) {
-        if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
-            const newPlaybackRate = calc_playbackRate(settings, latency, isAtLiveHead);
-            if (video && video.playbackRate !== newPlaybackRate) {
-                video.playbackRate = newPlaybackRate;
-            }
-        }
-    }
-
-    function calc_playbackRate(settings, latency, isAtLiveHead) {
-        if (isAtLiveHead) {
-            if (latency < settings.smoothThreathold) {
-                return 1.0;
-            } else {
-                return settings.playbackRate;
-            }
-        } else {
-            return settings.playbackRate;
-        }
-    }
-
     function update_playbackRate() {
-        const button = button_playbackrate;
         if (video) {
-            button.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${video.playbackRate.toFixed(2)}x</text></svg>`);
+            button_playbackrate.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${video.playbackRate.toFixed(2)}x</text></svg>`);
             if (video.playbackRate > 1.0) {
-                button.style.fill = '#ff8983';
-                button.style.fontWeight = 'bold';
+                button_playbackrate.style.fill = '#ff8983';
+                button_playbackrate.style.fontWeight = 'bold';
             } else {
-                button.style.fill = '#eee';
-                button.style.fontWeight = 'normal';
+                button_playbackrate.style.fill = '#eee';
+                button_playbackrate.style.fontWeight = 'normal';
             }
-            button.style.display = '';
+            button_playbackrate.style.display = '';
         }
     }
 
@@ -48,13 +18,12 @@
     }
 
     function update_latency(latency, isAtLiveHead) {
-        const button = button_latency;
         if (isAtLiveHead) {
-            button.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`);
+            button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`);
         } else {
-            button.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">(DVR)</text></svg>`);
+            button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">(DVR)</text></svg>`);
         }
-        button.style.display = '';
+        button_latency.style.display = '';
     }
 
     function hide_latency() {
@@ -62,50 +31,19 @@
     }
 
     function update_estimation() {
-        const button = button_estimation;
         if (video && video.playbackRate > 1.0) {
             const progress_state = player.getProgressState();
             const estimated_seconds = (progress_state.seekableEnd - progress_state.current) / (video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
-            button.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="middle" text-anchor="start">${estimated_time}</text></svg>`);
-            button.style.display = '';
+            button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="middle" text-anchor="start">${estimated_time}</text></svg>`);
+            button_estimation.style.display = '';
         } else {
-            button.style.display = 'none';
+            button_estimation.style.display = 'none';
         }
     }
 
     function hide_estimation() {
         button_estimation.style.display = 'none';
-    }
-
-    function create_button_playbackrate() {
-        const button = document.createElement('button');
-        button.classList.add('_live_catch_up_playbackrate', 'ytp-button');
-        button.style.display = 'none';
-        button.style.cursor = 'default';
-        button.style.textAlign = 'center';
-        return button;
-    }
-
-    function create_button_latency() {
-        const button = document.createElement('button');
-        button.classList.add('_live_catch_up_latency', 'ytp-button');
-        button.style.display = 'none';
-        button.style.cursor = 'default';
-        button.style.textAlign = 'center';
-        button.style.fill = '#eee';
-        return button;
-    }
-
-    function create_button_estimation() {
-        const button = document.createElement('button');
-        button.classList.add('_live_catch_up_estimation', 'ytp-button');
-        button.style.display = 'none';
-        button.style.cursor = 'default';
-        button.style.textAlign = 'center';
-        button.style.fill = '#eee';
-        button.style.width = '96px';
-        return button;
     }
 
     function observe(node, query, callback, param) {
@@ -148,17 +86,65 @@
         }
     }
 
+    function set_playbackRate(settings, latency, isAtLiveHead) {
+        if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
+            const newPlaybackRate = calc_playbackRate(settings, latency, isAtLiveHead);
+            if (video && video.playbackRate !== newPlaybackRate) {
+                video.playbackRate = newPlaybackRate;
+            }
+        }
+    }
+
+    function calc_playbackRate(settings, latency, isAtLiveHead) {
+        if (isAtLiveHead) {
+            if (latency < settings.smoothThreathold) {
+                return 1.0;
+            } else {
+                return settings.playbackRate;
+            }
+        } else {
+            return settings.playbackRate;
+        }
+    }
+
+    function reset_playbackRate() {
+        if (video && player) {
+            video.playbackRate = player.getPlaybackRate();
+        }
+    }
+
+    const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
+
+    const button_playbackrate = document.createElement('button');
+    button_playbackrate.classList.add('_live_catch_up_playbackrate', 'ytp-button');
+    button_playbackrate.style.display = 'none';
+    button_playbackrate.style.cursor = 'default';
+    button_playbackrate.style.textAlign = 'center';
+
+    const button_latency = document.createElement('button');
+    button_latency.classList.add('_live_catch_up_latency', 'ytp-button');
+    button_latency.style.display = 'none';
+    button_latency.style.cursor = 'default';
+    button_latency.style.textAlign = 'center';
+    button_latency.style.fill = '#eee';
+
+    const button_estimation = document.createElement('button');
+    button_estimation.classList.add('_live_catch_up_estimation', 'ytp-button');
+    button_estimation.style.display = 'none';
+    button_estimation.style.cursor = 'default';
+    button_estimation.style.textAlign = 'center';
+    button_estimation.style.fill = '#eee';
+    button_estimation.style.width = '96px';
+
     let player;
     let video;
     let badge;
-    let button_playbackrate;
-    let button_latency;
-    let button_estimation;
     let interval;
+
+    observe_app(document);
 
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
-
         clearInterval(interval);
         if (settings.enabled || settings.showPlaybackRate || settings.showLatency || settings.showEstimation) {
             interval = setInterval(() => {
@@ -200,12 +186,6 @@
     document.addEventListener('_live_catch_up_reset_playback_rate', () => {
         reset_playbackRate();
     });
-
-    button_playbackrate = create_button_playbackrate();
-    button_latency = create_button_latency();
-    button_estimation = create_button_estimation();
-
-    observe_app(document);
 
     document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
 })();
