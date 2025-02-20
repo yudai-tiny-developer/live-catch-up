@@ -8,7 +8,7 @@
     }
 
     function set_playbackRate(settings, latency, isAtLiveHead) {
-        if (player && player.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
+        if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
             const newPlaybackRate = calc_playbackRate(settings, latency, isAtLiveHead);
             if (video && video.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
@@ -17,16 +17,14 @@
     }
 
     function calc_playbackRate(settings, latency, isAtLiveHead) {
-        if (player) {
-            if (isAtLiveHead) {
-                if (latency < settings.smoothThreathold) {
-                    return 1.0;
-                } else {
-                    return settings.playbackRate;
-                }
+        if (isAtLiveHead) {
+            if (latency < settings.smoothThreathold) {
+                return 1.0;
             } else {
                 return settings.playbackRate;
             }
+        } else {
+            return settings.playbackRate;
         }
     }
 

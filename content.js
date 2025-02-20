@@ -64,11 +64,11 @@ function main(common) {
     }
 
     function is_live() {
-        return (badge && badge.getBoundingClientRect()?.width > 0);
+        return badge?.parentNode.classList.contains('ytp-live');
     }
 
     function is_live_head() {
-        return (badge && badge.hasAttribute('disabled'));
+        return badge?.hasAttribute('disabled');
     }
 
     function sendResetPlaybackRateEvent() {
@@ -100,7 +100,8 @@ function main(common) {
         if (badge) {
             badge_observer = new MutationObserver(() => {
                 setPlaybackRate(param);
-            }).observe(badge, { attributeFilter: ['disabled'] });
+            });
+            badge_observer.observe(badge, { attributeFilter: ['disabled'] })
             return true;
         } else {
             return false;
