@@ -66,18 +66,6 @@ function main(common, settings, progress, data) {
         row.appendChild(settings.createLabel(cell_class1, common.label.smoothThreathold));
         row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
         container.appendChild(row);
-    } {
-        const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class1, common.label.slowdownAtLiveHead));
-        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'slowdownAtLiveHead', data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead, common.value));
-        container.appendChild(row);
-    } {
-        const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class1, common.label.keepBufferHealth));
-        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'keepBufferHealth', data.keepBufferHealth, common.defaultKeepBufferHealth, common.value));
-        container.appendChild(row);
     }
 
     settings.registerResetButton(reset_button, progress_div, progress_class, done_class, toggle_class, input_class, progress);

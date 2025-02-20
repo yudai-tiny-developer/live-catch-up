@@ -1,16 +1,10 @@
-let badge_element_observer;
-let badge_attribute_observer;
-let player;
-let media;
-let badge;
-
 import(chrome.runtime.getURL('common.js')).then(common => {
     if (!common.isLiveChat(location.href)) {
-        main(document.querySelector('ytd-app') || document.body, common);
+        main(common);
     }
 });
 
-function main(app, common) {
+function main(common) {
     function loadSettings() {
         chrome.storage.local.get(common.storage, data => {
             const enabled = common.value(data.enabled, common.defaultEnabled);
@@ -20,17 +14,15 @@ function main(app, common) {
             const showEstimation = common.value(data.showEstimation, common.defaultShowEstimation);
             const smooth = common.value(data.smooth, common.defaultSmooth);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
-            const slowdownAtLiveHead = common.value(data.slowdownAtLiveHead, common.defaultSlowdownAtLiveHead);
-            const keepBufferHealth = common.value(data.keepBufferHealth, common.defaultKeepBufferHealth);
 
-            disconnectBadgeElementObserver();
-            disconnectBadgeAttributeObserver();
+            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold);
 
-            sendSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth);
+            badge_observer?.disconnect();
 
             if (enabled) {
+                setPlaybackRate(playbackRate);
                 if (!smooth) {
-                    observeBadgeElement(playbackRate);
+                    observe_app(document, playbackRate);
                 }
             } else {
                 setPlaybackRate();
@@ -38,87 +30,7 @@ function main(app, common) {
         });
     }
 
-    function observeBadgeElement(playbackRate) {
-        badge_element_observer = new MutationObserver(() => {
-            observeBadgeAttributeIfVisibled(playbackRate);
-        });
-        badge_element_observer.observe(app, { childList: true, subtree: true });
-        observeBadgeAttributeIfVisibled(playbackRate);
-    }
-
-    function detectElements() {
-        if (!player) {
-            player = app.querySelector('div#movie_player');
-            if (!player) {
-                sendResetPlaybackRateEvent();
-                return false;
-            }
-        }
-
-        if (!media) {
-            media = player.querySelector('video.video-stream');
-            if (!media) {
-                sendResetPlaybackRateEvent();
-                return false;
-            }
-        }
-
-        if (!badge) {
-            badge = player.querySelector('button.ytp-live-badge');
-            if (!badge) {
-                sendResetPlaybackRateEvent();
-                return false;
-            }
-        }
-
-        if (badge && is_DisplayNone(badge)) {
-            sendResetPlaybackRateEvent();
-            return false;
-        }
-
-        return true;
-    }
-
-    function observeBadgeAttributeIfVisibled(playbackRate) {
-        if (detectElements()) {
-            if (badge.checkVisibility()) {
-                disconnectBadgeElementObserver();
-                observeBadgeAttribute(playbackRate);
-            }
-        }
-    }
-
-    function disconnectBadgeElementObserver() {
-        badge_element_observer?.disconnect();
-        badge_element_observer = undefined;
-    }
-
-    function observeBadgeAttribute(playbackRate) {
-        if (detectElements()) {
-            badge_attribute_observer = new MutationObserver(() => {
-                setPlaybackRate(playbackRate);
-            });
-            badge_attribute_observer.observe(badge, { attributeFilter: ['disabled'] });
-            setPlaybackRate(playbackRate);
-        }
-    }
-
-    function setPlaybackRate(playbackRate) {
-        if (detectElements()) {
-            if (badge.hasAttribute('disabled') || !playbackRate) {
-                sendResetPlaybackRateEvent();
-            } else {
-                media.playbackRate = playbackRate;
-            }
-        }
-    }
-
-    function disconnectBadgeAttributeObserver() {
-        badge_attribute_observer?.disconnect();
-        badge_attribute_observer = undefined;
-    }
-
-    function sendSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold, slowdownAtLiveHead, keepBufferHealth) {
+    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold) {
         const detailObject = {
             enabled: enabled && smooth,
             playbackRate,
@@ -126,30 +38,82 @@ function main(app, common) {
             showLatency,
             showEstimation,
             smoothThreathold,
-            slowdownAtLiveHead,
-            keepBufferHealth
         };
         const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
-        document.dispatchEvent(new CustomEvent('_live_catch_up_settings', { detail }));
+        document.dispatchEvent(new CustomEvent('_live_catch_up_load_settings', { detail }));
+    }
+
+    function setPlaybackRate(playbackRate) {
+        if (playbackRate === undefined) { // force reset
+            if (is_live()) {
+                sendResetPlaybackRateEvent();
+            } else {
+                // do nothing
+            }
+        } else if (is_live()) {
+            if (is_live_head()) {
+                sendResetPlaybackRateEvent();
+            } else {
+                if (video) {
+                    video.playbackRate = playbackRate;
+                }
+            }
+        } else {
+            sendResetPlaybackRateEvent();
+        }
+    }
+
+    function is_live() {
+        return (badge && badge.getBoundingClientRect()?.width > 0);
+    }
+
+    function is_live_head() {
+        return (badge && badge.hasAttribute('disabled'));
     }
 
     function sendResetPlaybackRateEvent() {
         document.dispatchEvent(new CustomEvent('_live_catch_up_reset_playback_rate'));
     }
 
-    function is_DisplayNone(node) {
-        const compStyles = getComputedStyle(node);
-        const propertyValue = compStyles.getPropertyValue('display');
-        return propertyValue === 'none';
+    function observe(node, query, callback, param) {
+        new MutationObserver((mutations, observer) => {
+            const target = document.querySelector(query);
+            if (target && callback(target, param)) {
+                observer.disconnect();
+            }
+        }).observe(node, { childList: true, subtree: true });
     }
 
-    document.addEventListener('_live_catch_up_init', () => {
-        loadSettings();
-    });
+    function observe_app(node, param) {
+        observe(node, 'ytd-app', observe_player, param);
+        return true;
+    }
 
-    chrome.storage.onChanged.addListener(() => {
-        loadSettings();
-    });
+    function observe_player(node, param) {
+        observe(node, 'div#movie_player', observe_main, param);
+        return true;
+    }
+
+    function observe_main(node, param) {
+        video = node.querySelector('video.html5-main-video');
+        badge = node.querySelector('button.ytp-live-badge');
+        if (badge) {
+            badge_observer = new MutationObserver(() => {
+                setPlaybackRate(param);
+            }).observe(badge, { attributeFilter: ['disabled'] });
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    let video;
+    let badge;
+    let badge_observer;
+
+    chrome.storage.onChanged.addListener(loadSettings);
+
+    document.addEventListener('_live_catch_up_init', loadSettings);
 
     const s = document.createElement('script');
     s.id = '_live_catch_up';
