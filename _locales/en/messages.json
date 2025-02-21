@@ -21,7 +21,7 @@
         "message": "<span class=caution><span class=caution-title>CAUTION</span><br>Aggressive mode consumes the buffer as much as possible, so live streams may frequently pause.</span>"
     },
     "smoothThreathold": {
-        "message": "Allowed latency (s)"
+        "message": "Buffer to be maintained (s)"
     },
     "appDesc": {
         "message": "This extension syncs YouTube live streams in real-time by accelerating viewer-delayed streams caused by data reception delays."
