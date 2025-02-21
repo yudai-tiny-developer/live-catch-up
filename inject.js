@@ -146,8 +146,6 @@
     let badge;
     let interval;
 
-    let guruguru = 0;
-
     observe_app(document);
 
     document.addEventListener('_live_catch_up_load_settings', e => {
@@ -160,10 +158,6 @@
                         const progress_state = player.getProgressState();
                         const video_stats = player.getVideoStats();
                         const player_response = player.getPlayerResponse();
-
-                        if (video_stats.state === '9') {
-                            console.log(`guruguru: ${++guruguru}`);
-                        }
 
                         if (settings.enabled) {
                             set_playbackRate(settings.playbackRate, progress_state.loaded - progress_state.current, video_stats.segduration, player_response.videoDetails.isLowLatencyLiveStream, progress_state.isAtLiveHead);
