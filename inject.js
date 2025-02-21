@@ -98,7 +98,7 @@
     function calc_playbackRate(settings, health, loading, isAtLiveHead) {
         if (isAtLiveHead) {
             const cu = health - (settings.playbackRate - loading);
-            if (cu < 0.5) {
+            if (cu < settings.smoothThreathold) {
                 return 1.0;
             } else {
                 return settings.playbackRate;

@@ -24,10 +24,10 @@ export const defaultShowEstimation = false;
 
 export const defaultSmooth = false;
 
-export const defaultSmoothThreathold = 1.25;
-export const minSmoothThreathold = 0.5;
+export const defaultSmoothThreathold = 0.5;
+export const minSmoothThreathold = 0;
 export const maxSmoothThreathold = 20;
-export const stepSmoothThreathold = 0.25;
+export const stepSmoothThreathold = 0.1;
 
 export function value(value, default_value) {
     return value ?? default_value;
