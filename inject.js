@@ -1,7 +1,7 @@
 (() => {
     function update_playbackRate(playbackRate) {
         if (video) {
-            button_playbackrate.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${video.playbackRate.toFixed(2)}x</text></svg>`);
+            button_playbackrate.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${video.playbackRate.toFixed(2)}x</text></svg>`);
             if (video.playbackRate === playbackRate) {
                 button_playbackrate.style.fill = '#ff8983';
                 button_playbackrate.style.fontWeight = 'bold';
@@ -19,9 +19,9 @@
 
     function update_latency(latency, isAtLiveHead, enabled, latency, smoothThreathold) {
         if (isAtLiveHead) {
-            button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`);
+            button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`);
         } else {
-            button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">(DVR)</text></svg>`);
+            button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">(DVR)</text></svg>`);
         }
         if (enabled && (!isAtLiveHead || latency >= smoothThreathold)) {
             button_latency.style.fill = '#ff8983';
@@ -41,7 +41,7 @@
         if (!isAtLiveHead && video && video.playbackRate > 1.0) {
             const estimated_seconds = seekable_buffer / (video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
-            button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="middle" text-anchor="start">${estimated_time}</text></svg>`);
+            button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="central" text-anchor="start">${estimated_time}</text></svg>`);
             button_estimation.style.display = '';
         } else {
             button_estimation.style.display = 'none';
