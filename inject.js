@@ -86,19 +86,19 @@
         }
     }
 
-    function set_playbackRate(settings, health, isAtLiveHead) {
+    function set_playbackRate(settings, health, loading, isAtLiveHead) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
-            const newPlaybackRate = calc_playbackRate(settings, health, isAtLiveHead);
+            const newPlaybackRate = calc_playbackRate(settings, health, loading, isAtLiveHead);
             if (video && video.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
             }
         }
     }
 
-    function calc_playbackRate(settings, health, isAtLiveHead) {
+    function calc_playbackRate(settings, health, loading, isAtLiveHead) {
         if (isAtLiveHead) {
-            const cu = health - (settings.playbackRate - 1);
-            if (cu < 0) {
+            const cu = health - (settings.playbackRate - loading);
+            if (cu < 0.5) {
                 return 1.0;
             } else {
                 return settings.playbackRate;
@@ -144,6 +144,8 @@
     let video;
     let badge;
     let interval;
+    let prev_loaded;
+    let loading = 1.0;
 
     observe_app(document);
 
@@ -156,8 +158,13 @@
                     if (player.getVideoData().isLive) {
                         const progress_state = player.getProgressState();
 
+                        if (prev_loaded) {
+                            loading = progress_state.loaded - prev_loaded;
+                        }
+                        prev_loaded = progress_state.loaded;
+
                         if (settings.enabled) {
-                            set_playbackRate(settings, progress_state.loaded - progress_state.current, progress_state.isAtLiveHead);
+                            set_playbackRate(settings, progress_state.loaded - progress_state.current, loading, progress_state.isAtLiveHead);
                         }
 
                         settings.showPlaybackRate ? update_playbackRate() : hide_playbackRate();
