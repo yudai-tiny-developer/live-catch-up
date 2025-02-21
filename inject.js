@@ -97,7 +97,7 @@
 
     function calc_playbackRate(settings, health, isAtLiveHead) {
         if (isAtLiveHead) {
-            const cu = health - (settings.playbackRate - 1);
+            const cu = health - (settings.playbackRate - 1) / 4;
             if (cu < 0) {
                 return 1.0;
             } else {
@@ -110,7 +110,10 @@
 
     function reset_playbackRate() {
         if (video && player) {
-            video.playbackRate = player.getPlaybackRate();
+            const newPlaybackRate = player.getPlaybackRate();
+            if (video.playbackRate !== newPlaybackRate) {
+                video.playbackRate = newPlaybackRate
+            }
         }
     }
 
