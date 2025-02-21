@@ -30,10 +30,9 @@
         button_latency.style.display = 'none';
     }
 
-    function update_estimation(isAtLiveHead) {
+    function update_estimation(seekable_buffer, isAtLiveHead) {
         if (!isAtLiveHead && video && video.playbackRate > 1.0) {
-            const progress_state = player.getProgressState();
-            const estimated_seconds = (progress_state.seekableEnd - progress_state.current) / (video.playbackRate - 1.0);
+            const estimated_seconds = seekable_buffer / (video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
             button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="middle" text-anchor="start">${estimated_time}</text></svg>`);
             button_estimation.style.display = '';
@@ -154,18 +153,17 @@
         if (settings.enabled || settings.showPlaybackRate || settings.showLatency || settings.showEstimation) {
             interval = setInterval(() => {
                 if (player) {
-                    if (player.getVideoData().isLive) {
+                    const video_stats = player.getVideoStats();
+                    if (video_stats.live === 'live' || video_stats.live === 'dvr' || video_stats.live === 'lp') {
                         const progress_state = player.getProgressState();
-                        const video_stats = player.getVideoStats();
-                        const player_response = player.getPlayerResponse();
 
                         if (settings.enabled) {
-                            set_playbackRate(settings.playbackRate, progress_state.loaded - progress_state.current, video_stats.segduration, player_response.videoDetails.isLowLatencyLiveStream, progress_state.isAtLiveHead);
+                            set_playbackRate(settings.playbackRate, progress_state.loaded - progress_state.current, video_stats.segduration, video_stats.lowlatency, progress_state.isAtLiveHead);
                         }
 
                         settings.showPlaybackRate ? update_playbackRate() : hide_playbackRate();
                         settings.showLatency ? update_latency(video_stats.lat, progress_state.isAtLiveHead) : hide_latency();
-                        settings.showEstimation ? update_estimation(progress_state.isAtLiveHead) : hide_estimation();
+                        settings.showEstimation ? update_estimation(progress_state.seekableEnd - progress_state.current, progress_state.isAtLiveHead) : hide_estimation();
                     } else {
                         hide_playbackRate();
                         hide_latency();
