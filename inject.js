@@ -17,11 +17,18 @@
         button_playbackrate.style.display = 'none';
     }
 
-    function update_latency(latency, isAtLiveHead) {
+    function update_latency(latency, isAtLiveHead, enabled) {
         if (isAtLiveHead) {
             button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`);
         } else {
             button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">(DVR)</text></svg>`);
+        }
+        if (enabled) {
+            button_latency.style.fill = '#ff8983';
+            button_latency.style.fontWeight = 'bold';
+        } else {
+            button_latency.style.fill = '#eee';
+            button_latency.style.fontWeight = 'normal';
         }
         button_latency.style.display = '';
     }
@@ -85,20 +92,18 @@
         }
     }
 
-    function set_playbackRate(playbackRate, buffer, segduration, isLowLatencyLiveStream, isAtLiveHead) {
+    function set_playbackRate(playbackRate, isAtLiveHead, latency, smoothThreathold) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
-            const newPlaybackRate = calc_playbackRate(playbackRate, buffer, segduration, isLowLatencyLiveStream, isAtLiveHead);
+            const newPlaybackRate = calc_playbackRate(playbackRate, isAtLiveHead, latency, smoothThreathold);
             if (video && video.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
             }
         }
     }
 
-    function calc_playbackRate(playbackRate, buffer, segduration, isLowLatencyLiveStream, isAtLiveHead) {
+    function calc_playbackRate(playbackRate, isAtLiveHead, latency, smoothThreathold) {
         if (isAtLiveHead) {
-            const cu = buffer - (playbackRate - 1.0) * segduration;
-            const sd = isLowLatencyLiveStream ? segduration : segduration * 2.0;
-            if (cu < sd) {
+            if (latency < smoothThreathold) {
                 return 1.0;
             } else {
                 return playbackRate;
@@ -144,6 +149,7 @@
     let video;
     let badge;
     let interval;
+    let interval_count = 0;
 
     observe_app(document);
 
@@ -153,24 +159,26 @@
         if (settings.enabled || settings.showPlaybackRate || settings.showLatency || settings.showEstimation) {
             interval = setInterval(() => {
                 if (player) {
-                    const video_stats = player.getVideoStats();
-                    if (video_stats.live === 'live' || video_stats.live === 'dvr' || video_stats.live === 'lp') {
+                    const stats_for_nerds = player.getStatsForNerds();
+                    if (stats_for_nerds.live_latency_style === '') {
                         const progress_state = player.getProgressState();
+                        const latency = Number.parseFloat(stats_for_nerds.live_latency_secs);
 
                         if (settings.enabled) {
-                            set_playbackRate(settings.playbackRate, progress_state.loaded - progress_state.current, video_stats.segduration, video_stats.lowlatency, progress_state.isAtLiveHead);
+                            set_playbackRate(settings.playbackRate, progress_state.isAtLiveHead, latency, settings.smoothThreathold);
                         }
 
-                        settings.showPlaybackRate ? update_playbackRate() : hide_playbackRate();
-                        settings.showLatency ? update_latency(video_stats.lat, progress_state.isAtLiveHead) : hide_latency();
-                        settings.showEstimation ? update_estimation(progress_state.seekableEnd - progress_state.current, progress_state.isAtLiveHead) : hide_estimation();
+                        const want_update = interval_count++ % 5 === 0;
+                        settings.showPlaybackRate ? (want_update && update_playbackRate()) : hide_playbackRate();
+                        settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead, settings.enabled)) : hide_latency();
+                        settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd - progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
                     } else {
                         hide_playbackRate();
                         hide_latency();
                         hide_estimation();
                     }
                 }
-            }, 1000);
+            }, 200);
         } else {
             hide_playbackRate();
             hide_latency();

@@ -13,8 +13,9 @@ function main(common) {
             const showLatency = common.value(data.showLatency, common.defaultShowLatency);
             const showEstimation = common.value(data.showEstimation, common.defaultShowEstimation);
             const smooth = common.value(data.smooth, common.defaultSmooth);
+            const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
 
-            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth);
+            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold);
 
             badge_observer?.disconnect();
 
@@ -29,13 +30,14 @@ function main(common) {
         });
     }
 
-    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth) {
+    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold) {
         const detailObject = {
             enabled: enabled && smooth,
             playbackRate,
             showPlaybackRate,
             showLatency,
             showEstimation,
+            smoothThreathold,
         };
         const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
         document.dispatchEvent(new CustomEvent('_live_catch_up_load_settings', { detail }));
