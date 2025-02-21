@@ -1,8 +1,8 @@
 (() => {
-    function update_playbackRate() {
+    function update_playbackRate(playbackRate) {
         if (video) {
             button_playbackrate.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${video.playbackRate.toFixed(2)}x</text></svg>`);
-            if (video.playbackRate > 1.0) {
+            if (video.playbackRate === playbackRate) {
                 button_playbackrate.style.fill = '#ff8983';
                 button_playbackrate.style.fontWeight = 'bold';
             } else {
@@ -17,13 +17,13 @@
         button_playbackrate.style.display = 'none';
     }
 
-    function update_latency(latency, isAtLiveHead, enabled) {
+    function update_latency(latency, isAtLiveHead, enabled, latency, smoothThreathold) {
         if (isAtLiveHead) {
             button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`);
         } else {
             button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">(DVR)</text></svg>`);
         }
-        if (enabled) {
+        if (enabled && (!isAtLiveHead || latency >= smoothThreathold)) {
             button_latency.style.fill = '#ff8983';
             button_latency.style.fontWeight = 'bold';
         } else {
@@ -169,8 +169,8 @@
                         }
 
                         const want_update = interval_count++ % 5 === 0;
-                        settings.showPlaybackRate ? (want_update && update_playbackRate()) : hide_playbackRate();
-                        settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead, settings.enabled)) : hide_latency();
+                        settings.showPlaybackRate ? (want_update && update_playbackRate(settings.playbackRate)) : hide_playbackRate();
+                        settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead, settings.enabled, latency, settings.smoothThreathold)) : hide_latency();
                         settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd - progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
                     } else {
                         hide_playbackRate();
