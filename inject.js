@@ -97,7 +97,7 @@
 
     function calc_playbackRate(settings, health, isAtLiveHead) {
         if (isAtLiveHead) {
-            const cu = health - (settings.playbackRate - 1) / 4;
+            const cu = health - (settings.playbackRate - 1);
             if (cu < 0) {
                 return 1.0;
             } else {
@@ -144,7 +144,6 @@
     let video;
     let badge;
     let interval;
-    let interval_count = 0;
 
     observe_app(document);
 
@@ -161,17 +160,16 @@
                             set_playbackRate(settings, progress_state.loaded - progress_state.current, progress_state.isAtLiveHead);
                         }
 
-                        const want_update = interval_count++ % 4 === 0;
-                        settings.showPlaybackRate ? (want_update && update_playbackRate()) : hide_playbackRate();
-                        settings.showLatency ? (want_update && update_latency(player.getVideoStats().lat, progress_state.isAtLiveHead)) : hide_latency();
-                        settings.showEstimation ? (want_update && update_estimation()) : hide_estimation();
+                        settings.showPlaybackRate ? update_playbackRate() : hide_playbackRate();
+                        settings.showLatency ? update_latency(player.getVideoStats().lat, progress_state.isAtLiveHead) : hide_latency();
+                        settings.showEstimation ? update_estimation() : hide_estimation();
                     } else {
                         hide_playbackRate();
                         hide_latency();
                         hide_estimation();
                     }
                 }
-            }, 250);
+            }, 1000);
         } else {
             hide_playbackRate();
             hide_latency();
