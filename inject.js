@@ -97,8 +97,8 @@
 
     function calc_playbackRate(playbackRate, buffer, segduration, isLowLatencyLiveStream, isAtLiveHead) {
         if (isAtLiveHead) {
-            const cu = buffer - (playbackRate - 1) * segduration;
-            const sd = isLowLatencyLiveStream ? segduration : segduration * 2;
+            const cu = buffer - (playbackRate - 1.0) * segduration;
+            const sd = isLowLatencyLiveStream ? segduration : segduration * 2.0;
             if (cu < sd) {
                 return 1.0;
             } else {
@@ -146,8 +146,6 @@
     let badge;
     let interval;
 
-    let guruguru = 0;
-
     observe_app(document);
 
     document.addEventListener('_live_catch_up_load_settings', e => {
@@ -160,10 +158,6 @@
                         const progress_state = player.getProgressState();
                         const video_stats = player.getVideoStats();
                         const player_response = player.getPlayerResponse();
-
-                        if (video_stats.state === '9') {
-                            console.log(`guruguru: ${++guruguru}`);
-                        }
 
                         if (settings.enabled) {
                             set_playbackRate(settings.playbackRate, progress_state.loaded - progress_state.current, video_stats.segduration, player_response.videoDetails.isLowLatencyLiveStream, progress_state.isAtLiveHead);
