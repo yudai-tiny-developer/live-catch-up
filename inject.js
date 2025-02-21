@@ -86,18 +86,19 @@
         }
     }
 
-    function set_playbackRate(settings, latency, isAtLiveHead) {
+    function set_playbackRate(settings, health, isAtLiveHead) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
-            const newPlaybackRate = calc_playbackRate(settings, latency, isAtLiveHead);
+            const newPlaybackRate = calc_playbackRate(settings, health, isAtLiveHead);
             if (video && video.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
             }
         }
     }
 
-    function calc_playbackRate(settings, latency, isAtLiveHead) {
+    function calc_playbackRate(settings, health, isAtLiveHead) {
         if (isAtLiveHead) {
-            if (latency < settings.smoothThreathold) {
+            const cu = health - (settings.playbackRate - 1);
+            if (cu < 0) {
                 return 1.0;
             } else {
                 return settings.playbackRate;
@@ -151,16 +152,15 @@
             interval = setInterval(() => {
                 if (player) {
                     if (player.getVideoData().isLive) {
-                        const latency = player.getVideoStats().lat;
-                        const isAtLiveHead = player.isAtLiveHead();
+                        const progress_state = player.getProgressState();
 
                         if (settings.enabled) {
-                            set_playbackRate(settings, latency, isAtLiveHead);
+                            set_playbackRate(settings, progress_state.loaded - progress_state.current, progress_state.isAtLiveHead);
                         }
 
                         const want_update = interval_count++ % 4 === 0;
                         settings.showPlaybackRate ? (want_update && update_playbackRate()) : hide_playbackRate();
-                        settings.showLatency ? (want_update && update_latency(latency, isAtLiveHead)) : hide_latency();
+                        settings.showLatency ? (want_update && update_latency(player.getVideoStats().lat, progress_state.isAtLiveHead)) : hide_latency();
                         settings.showEstimation ? (want_update && update_estimation()) : hide_estimation();
                     } else {
                         hide_playbackRate();
