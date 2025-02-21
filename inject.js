@@ -140,6 +140,7 @@
     let video;
     let badge;
     let interval;
+    let interval_count = 0;
 
     observe_app(document);
 
@@ -157,16 +158,17 @@
                             set_playbackRate(settings, latency, isAtLiveHead);
                         }
 
-                        settings.showPlaybackRate ? update_playbackRate() : hide_playbackRate();
-                        settings.showLatency ? update_latency(latency, isAtLiveHead) : hide_latency();
-                        settings.showEstimation ? update_estimation() : hide_estimation();
+                        const want_update = interval_count++ % 4 === 0;
+                        settings.showPlaybackRate ? (want_update && update_playbackRate()) : hide_playbackRate();
+                        settings.showLatency ? (want_update && update_latency(latency, isAtLiveHead)) : hide_latency();
+                        settings.showEstimation ? (want_update && update_estimation()) : hide_estimation();
                     } else {
                         hide_playbackRate();
                         hide_latency();
                         hide_estimation();
                     }
                 }
-            }, 1000);
+            }, 250);
         } else {
             hide_playbackRate();
             hide_latency();
