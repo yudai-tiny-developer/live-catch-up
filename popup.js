@@ -60,12 +60,6 @@ function main(common, settings, progress, data) {
         row.appendChild(note);
         row.appendChild(settings.createLabel(cell_class2));
         container.appendChild(row);
-    } {
-        const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class1, common.label.smoothThreathold));
-        row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
-        container.appendChild(row);
     }
 
     settings.registerResetButton(reset_button, progress_div, progress_class, done_class, toggle_class, input_class, progress);

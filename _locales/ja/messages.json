@@ -20,9 +20,6 @@
     "smooth_desc": {
         "message": "<span class=caution><span class=caution-title>注意</span><br>積極的モードはバッファを可能な限り消費するため、読み込みのための一時停止が頻繁に発生する可能性があります。</span>"
     },
-    "smoothThreathold": {
-        "message": "維持するバッファ（秒）"
-    },
     "appDesc": {
         "message": "DVR が有効な YouTube のライブ配信で遅延が発生したときに、自動で再生速度を上げてリアルタイムに追いつく機能拡張"
     }

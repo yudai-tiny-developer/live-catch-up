@@ -86,25 +86,26 @@
         }
     }
 
-    function set_playbackRate(settings, health, loading, isAtLiveHead) {
+    function set_playbackRate(playbackRate, buffer, segduration, isLowLatencyLiveStream, isAtLiveHead) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
-            const newPlaybackRate = calc_playbackRate(settings, health, loading, isAtLiveHead);
+            const newPlaybackRate = calc_playbackRate(playbackRate, buffer, segduration, isLowLatencyLiveStream, isAtLiveHead);
             if (video && video.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
             }
         }
     }
 
-    function calc_playbackRate(settings, health, loading, isAtLiveHead) {
+    function calc_playbackRate(playbackRate, buffer, segduration, isLowLatencyLiveStream, isAtLiveHead) {
         if (isAtLiveHead) {
-            const cu = health - (settings.playbackRate - loading);
-            if (cu < settings.smoothThreathold) {
+            const cu = buffer - (playbackRate - 1) * segduration;
+            const sd = isLowLatencyLiveStream ? segduration : segduration * 2;
+            if (cu < sd) {
                 return 1.0;
             } else {
-                return settings.playbackRate;
+                return playbackRate;
             }
         } else {
-            return settings.playbackRate;
+            return playbackRate;
         }
     }
 
@@ -144,8 +145,8 @@
     let video;
     let badge;
     let interval;
-    let prev_loaded;
-    let loading = 1.0;
+
+    let guruguru = 0;
 
     observe_app(document);
 
@@ -157,18 +158,19 @@
                 if (player) {
                     if (player.getVideoData().isLive) {
                         const progress_state = player.getProgressState();
+                        const video_stats = player.getVideoStats();
+                        const player_response = player.getPlayerResponse();
 
-                        if (prev_loaded) {
-                            loading = progress_state.loaded - prev_loaded;
+                        if (video_stats.state === '9') {
+                            console.log(`guruguru: ${++guruguru}`);
                         }
-                        prev_loaded = progress_state.loaded;
 
                         if (settings.enabled) {
-                            set_playbackRate(settings, progress_state.loaded - progress_state.current, loading, progress_state.isAtLiveHead);
+                            set_playbackRate(settings.playbackRate, progress_state.loaded - progress_state.current, video_stats.segduration, player_response.videoDetails.isLowLatencyLiveStream, progress_state.isAtLiveHead);
                         }
 
                         settings.showPlaybackRate ? update_playbackRate() : hide_playbackRate();
-                        settings.showLatency ? update_latency(player.getVideoStats().lat, progress_state.isAtLiveHead) : hide_latency();
+                        settings.showLatency ? update_latency(video_stats.lat, progress_state.isAtLiveHead) : hide_latency();
                         settings.showEstimation ? update_estimation(progress_state.isAtLiveHead) : hide_estimation();
                     } else {
                         hide_playbackRate();
