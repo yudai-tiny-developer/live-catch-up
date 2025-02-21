@@ -97,8 +97,8 @@
 
     function calc_playbackRate(playbackRate, buffer, segduration, isLowLatencyLiveStream, isAtLiveHead) {
         if (isAtLiveHead) {
-            const cu = buffer - (playbackRate - 1) * segduration;
-            const sd = isLowLatencyLiveStream ? segduration : segduration * 2;
+            const cu = buffer - (playbackRate - 1.0) * segduration;
+            const sd = isLowLatencyLiveStream ? segduration : segduration * 2.0;
             if (cu < sd) {
                 return 1.0;
             } else {
