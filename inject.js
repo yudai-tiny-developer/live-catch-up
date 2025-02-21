@@ -30,8 +30,8 @@
         button_latency.style.display = 'none';
     }
 
-    function update_estimation() {
-        if (video && video.playbackRate > 1.0) {
+    function update_estimation(isAtLiveHead) {
+        if (!isAtLiveHead && video && video.playbackRate > 1.0) {
             const progress_state = player.getProgressState();
             const estimated_seconds = (progress_state.seekableEnd - progress_state.current) / (video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
@@ -169,7 +169,7 @@
 
                         settings.showPlaybackRate ? update_playbackRate() : hide_playbackRate();
                         settings.showLatency ? update_latency(player.getVideoStats().lat, progress_state.isAtLiveHead) : hide_latency();
-                        settings.showEstimation ? update_estimation() : hide_estimation();
+                        settings.showEstimation ? update_estimation(progress_state.isAtLiveHead) : hide_estimation();
                     } else {
                         hide_playbackRate();
                         hide_latency();
