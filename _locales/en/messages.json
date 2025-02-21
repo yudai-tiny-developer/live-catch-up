@@ -20,15 +20,6 @@
     "smooth_desc": {
         "message": "<span class=caution><span class=caution-title>CAUTION</span><br>Aggressive mode consumes the buffer as much as possible, so live streams may frequently pause.</span>"
     },
-    "smoothThreathold": {
-        "message": "Allowed latency (s)"
-    },
-    "slowdownAtLiveHead": {
-        "message": "Set the playback rate to 1.05x near the live stream head."
-    },
-    "keepBufferHealth": {
-        "message": "Set the playback rate to 1.0x when the buffer health is low."
-    },
     "appDesc": {
         "message": "This extension syncs YouTube live streams in real-time by accelerating viewer-delayed streams caused by data reception delays."
     }
