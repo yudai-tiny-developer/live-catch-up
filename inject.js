@@ -151,7 +151,7 @@
             interval = setInterval(() => {
                 if (player) {
                     if (player.getVideoData().isLive) {
-                        const latency = Number.parseFloat(player.getStatsForNerds().live_latency_secs);
+                        const latency = player.getVideoStats().lat;
                         const isAtLiveHead = player.isAtLiveHead();
 
                         if (settings.enabled) {
