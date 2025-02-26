@@ -18,11 +18,13 @@ function main(common) {
             sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold);
 
             badge_observer?.disconnect();
+            container_observer?.disconnect();
 
             if (enabled) {
-                setPlaybackRate(playbackRate);
-                if (!smooth) {
-                    observe_app(document, playbackRate);
+                if (smooth) {
+                    setPlaybackRate(playbackRate);
+                } else {
+                    container_observer = is_embedded_player ? observe_player(document, playbackRate) : observe_app(document, playbackRate);
                 }
             } else {
                 setPlaybackRate();
@@ -82,49 +84,77 @@ function main(common) {
     }
 
     function observe(node, query, callback, param) {
-        new MutationObserver((mutations, observer) => {
-            const target = document.querySelector(query);
-            if (target && callback(target, param)) {
-                observer.disconnect();
-            }
-        }).observe(node, { childList: true, subtree: true });
+        const target = node.querySelector(query);
+        if (target) {
+            return callback(target, param);
+        } else {
+            const observer = new MutationObserver((mutations, observer) => {
+                const target = node.querySelector(query);
+                if (target && callback(target, param)) {
+                    observer.disconnect();
+                }
+            });
+            observer.observe(node, { childList: true, subtree: true });
+            return observer;
+        }
     }
 
     function observe_app(node, param) {
-        observe(node, 'ytd-app', observe_player, param);
-        return true;
+        return observe(node, 'ytd-app', observe_player, param);
     }
 
     function observe_player(node, param) {
-        observe(node, 'div#movie_player', observe_main, param);
-        return true;
+        return observe(node, 'div#movie_player', observe_main, param);
     }
 
     function observe_main(node, param) {
         video = node.querySelector('video.html5-main-video');
         badge = node.querySelector('button.ytp-live-badge');
         if (badge) {
+            setPlaybackRate(param);
             badge_observer = new MutationObserver(() => {
                 setPlaybackRate(param);
             });
             badge_observer.observe(badge, { attributeFilter: ['disabled'] })
-            return true;
-        } else {
-            return false;
+            return badge_observer;
         }
+    }
+
+    function inject() {
+        const s = document.createElement('script');
+        s.id = '_live_catch_up';
+        s.src = chrome.runtime.getURL('inject.js');
+        s.onload = () => s.remove();
+        (document.head || document.documentElement).append(s);
     }
 
     let video;
     let badge;
+    let container_observer;
     let badge_observer;
+    let is_embedded_player;
 
     chrome.storage.onChanged.addListener(loadSettings);
 
     document.addEventListener('_live_catch_up_init', loadSettings);
 
-    const s = document.createElement('script');
-    s.id = '_live_catch_up';
-    s.src = chrome.runtime.getURL('inject.js');
-    s.onload = () => s.remove();
-    (document.head || document.documentElement).append(s);
+    const init_interval = setInterval(() => {
+        if (document.readyState === 'complete') {
+            const app = document.querySelector('ytd-app');
+            if (app) { // YouTube.com Player
+                clearInterval(init_interval);
+                is_embedded_player = false;
+                inject();
+                return;
+            }
+
+            const player = document.querySelector('div#movie_player');
+            if (player) { // Embedded Player
+                clearInterval(init_interval);
+                is_embedded_player = true;
+                inject();
+                return;
+            }
+        }
+    }, 200);
 }

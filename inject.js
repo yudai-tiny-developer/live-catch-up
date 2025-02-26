@@ -53,22 +53,27 @@
     }
 
     function observe(node, query, callback, param) {
-        new MutationObserver((mutations, observer) => {
-            const target = document.querySelector(query);
-            if (target && callback(target, param)) {
-                observer.disconnect();
-            }
-        }).observe(node, { childList: true, subtree: true });
+        const target = node.querySelector(query);
+        if (target) {
+            return callback(target, param);
+        } else {
+            const observer = new MutationObserver((mutations, observer) => {
+                const target = node.querySelector(query);
+                if (target && callback(target, param)) {
+                    observer.disconnect();
+                }
+            });
+            observer.observe(node, { childList: true, subtree: true });
+            return observer;
+        }
     }
 
     function observe_app(node, param) {
-        observe(node, 'ytd-app', observe_player, param);
-        return true;
+        return observe(node, 'ytd-app', observe_player, param);
     }
 
     function observe_player(node, param) {
-        observe(node, 'div#movie_player', observe_main, param);
-        return true;
+        return observe(node, 'div#movie_player', observe_main, param);
     }
 
     function observe_main(node, param) {
@@ -147,8 +152,6 @@
     let interval;
     let interval_count = 0;
 
-    observe_app(document);
-
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
         clearInterval(interval);
@@ -196,5 +199,23 @@
         reset_playbackRate();
     });
 
-    document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
+    const init_interval = setInterval(() => {
+        if (document.readyState === 'complete') {
+            const app = document.querySelector('ytd-app');
+            if (app) { // YouTube.com Player
+                clearInterval(init_interval);
+                observe_app(document);
+                document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
+                return;
+            }
+
+            const player = document.querySelector('div#movie_player');
+            if (player) { // Embedded Player
+                clearInterval(init_interval);
+                observe_player(document);
+                document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
+                return;
+            }
+        }
+    }, 200);
 })();
