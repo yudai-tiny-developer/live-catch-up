@@ -108,7 +108,6 @@ function main(common) {
     }
 
     function observe_main(node, param) {
-        video = node.querySelector('video.html5-main-video');
         badge = node.querySelector('button.ytp-live-badge');
         if (badge) {
             setPlaybackRate(param);
@@ -128,7 +127,6 @@ function main(common) {
         (document.head || document.documentElement).append(s);
     }
 
-    let video;
     let badge;
     let container_observer;
     let badge_observer;
