@@ -18,11 +18,13 @@ function main(common) {
             sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold);
 
             badge_observer?.disconnect();
+            container_observer?.disconnect();
 
             if (enabled) {
-                setPlaybackRate(playbackRate);
-                if (!smooth) {
-                    is_embedded_player ? observe_player(document, playbackRate) : observe_app(document, playbackRate);
+                if (smooth) {
+                    setPlaybackRate(playbackRate);
+                } else {
+                    container_observer = is_embedded_player ? observe_player(document, playbackRate) : observe_app(document, playbackRate);
                 }
             } else {
                 setPlaybackRate();
@@ -84,38 +86,37 @@ function main(common) {
     function observe(node, query, callback, param) {
         const target = node.querySelector(query);
         if (target) {
-            callback(target, param);
+            return callback(target, param);
         } else {
-            new MutationObserver((mutations, observer) => {
+            const observer = new MutationObserver((mutations, observer) => {
                 const target = node.querySelector(query);
                 if (target && callback(target, param)) {
                     observer.disconnect();
                 }
-            }).observe(node, { childList: true, subtree: true });
+            });
+            observer.observe(node, { childList: true, subtree: true });
+            return observer;
         }
     }
 
     function observe_app(node, param) {
-        observe(node, 'ytd-app', observe_player, param);
-        return true;
+        return observe(node, 'ytd-app', observe_player, param);
     }
 
     function observe_player(node, param) {
-        observe(node, 'div#movie_player', observe_main, param);
-        return true;
+        return observe(node, 'div#movie_player', observe_main, param);
     }
 
     function observe_main(node, param) {
         video = node.querySelector('video.html5-main-video');
         badge = node.querySelector('button.ytp-live-badge');
         if (badge) {
+            setPlaybackRate(param);
             badge_observer = new MutationObserver(() => {
                 setPlaybackRate(param);
             });
             badge_observer.observe(badge, { attributeFilter: ['disabled'] })
-            return true;
-        } else {
-            return false;
+            return badge_observer;
         }
     }
 
@@ -129,6 +130,7 @@ function main(common) {
 
     let video;
     let badge;
+    let container_observer;
     let badge_observer;
     let is_embedded_player;
 
@@ -154,5 +156,5 @@ function main(common) {
                 return;
             }
         }
-    });
+    }, 200);
 }

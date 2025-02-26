@@ -55,25 +55,25 @@
     function observe(node, query, callback, param) {
         const target = node.querySelector(query);
         if (target) {
-            callback(target, param);
+            return callback(target, param);
         } else {
-            new MutationObserver((mutations, observer) => {
+            const observer = new MutationObserver((mutations, observer) => {
                 const target = node.querySelector(query);
                 if (target && callback(target, param)) {
                     observer.disconnect();
                 }
-            }).observe(node, { childList: true, subtree: true });
+            });
+            observer.observe(node, { childList: true, subtree: true });
+            return observer;
         }
     }
 
     function observe_app(node, param) {
-        observe(node, 'ytd-app', observe_player, param);
-        return true;
+        return observe(node, 'ytd-app', observe_player, param);
     }
 
     function observe_player(node, param) {
-        observe(node, 'div#movie_player', observe_main, param);
-        return true;
+        return observe(node, 'div#movie_player', observe_main, param);
     }
 
     function observe_main(node, param) {
@@ -217,5 +217,5 @@
                 return;
             }
         }
-    });
+    }, 200);
 })();
