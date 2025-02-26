@@ -92,22 +92,18 @@
         }
     }
 
-    function set_playbackRate(playbackRate, isAtLiveHead, latency, smoothThreathold) {
+    function set_playbackRate(playbackRate, isAtLiveHead, latency, latencyThreathold, health) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
-            const newPlaybackRate = calc_playbackRate(playbackRate, isAtLiveHead, latency, smoothThreathold);
+            const newPlaybackRate = calc_playbackRate(playbackRate, isAtLiveHead, latency, latencyThreathold, health);
             if (video && video.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
             }
         }
     }
 
-    function calc_playbackRate(playbackRate, isAtLiveHead, latency, smoothThreathold) {
-        if (isAtLiveHead) {
-            if (latency < smoothThreathold) {
-                return 1.0;
-            } else {
-                return playbackRate;
-            }
+    function calc_playbackRate(playbackRate, isAtLiveHead, latency, latencyThreathold, health) {
+        if (isAtLiveHead && (latency < latencyThreathold || health + 1.0 < playbackRate)) { // If the buffer health after 1.0 second is less than the expected buffer consumption
+            return 1.0;
         } else {
             return playbackRate;
         }
@@ -163,9 +159,10 @@
                     if (stats_for_nerds.live_latency_style === '') {
                         const progress_state = player.getProgressState();
                         const latency = Number.parseFloat(stats_for_nerds.live_latency_secs);
+                        const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
 
                         if (settings.enabled) {
-                            set_playbackRate(settings.playbackRate, progress_state.isAtLiveHead, latency, settings.smoothThreathold);
+                            set_playbackRate(settings.playbackRate, progress_state.isAtLiveHead, latency, settings.smoothThreathold, health);
                         }
 
                         const want_update = interval_count++ % 5 === 0;
