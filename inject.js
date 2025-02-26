@@ -102,7 +102,7 @@
     }
 
     function calc_playbackRate(playbackRate, isAtLiveHead, latency, latencyThreathold, health, healthThreathold) {
-        if (isAtLiveHead || latency < latencyThreathold || health < healthThreathold) {
+        if (isAtLiveHead && (latency < latencyThreathold || health + 1.0 < healthThreathold)) {
             return 1.0;
         } else {
             return playbackRate;
