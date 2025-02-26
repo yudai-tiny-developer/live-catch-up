@@ -151,7 +151,6 @@
     let badge;
     let interval;
     let interval_count = 0;
-    const is_embedded_player = document.querySelector('div#movie_player');
 
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
@@ -200,11 +199,23 @@
         reset_playbackRate();
     });
 
-    if (is_embedded_player) { // embedded player
-        observe_player(document);
-    } else {
-        observe_app(document);
-    }
+    const init_interval = setInterval(() => {
+        if (document.readyState === 'complete') {
+            const app = document.querySelector('ytd-app');
+            if (app) { // YouTube.com Player
+                clearInterval(init_interval);
+                observe_app(document);
+                document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
+                return;
+            }
 
-    document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
+            const player = document.querySelector('div#movie_player');
+            if (player) { // Embedded Player
+                clearInterval(init_interval);
+                observe_player(document);
+                document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
+                return;
+            }
+        }
+    });
 })();

@@ -119,18 +119,40 @@ function main(common) {
         }
     }
 
+    function inject() {
+        const s = document.createElement('script');
+        s.id = '_live_catch_up';
+        s.src = chrome.runtime.getURL('inject.js');
+        s.onload = () => s.remove();
+        (document.head || document.documentElement).append(s);
+    }
+
     let video;
     let badge;
     let badge_observer;
-    const is_embedded_player = document.querySelector('div#movie_player');
+    let is_embedded_player;
 
     chrome.storage.onChanged.addListener(loadSettings);
 
     document.addEventListener('_live_catch_up_init', loadSettings);
 
-    const s = document.createElement('script');
-    s.id = '_live_catch_up';
-    s.src = chrome.runtime.getURL('inject.js');
-    s.onload = () => s.remove();
-    (document.head || document.documentElement).append(s);
+    const init_interval = setInterval(() => {
+        if (document.readyState === 'complete') {
+            const app = document.querySelector('ytd-app');
+            if (app) { // YouTube.com Player
+                clearInterval(init_interval);
+                is_embedded_player = false;
+                inject();
+                return;
+            }
+
+            const player = document.querySelector('div#movie_player');
+            if (player) { // Embedded Player
+                clearInterval(init_interval);
+                is_embedded_player = true;
+                inject();
+                return;
+            }
+        }
+    });
 }
