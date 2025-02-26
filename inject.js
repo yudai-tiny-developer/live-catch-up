@@ -101,13 +101,9 @@
         }
     }
 
-    function calc_playbackRate(playbackRate, isAtLiveHead, latency, latencyThreathold, health, healthThreathold) {
-        if (isAtLiveHead) {
-            if (latency < latencyThreathold || health < healthThreathold) {
-                return 1.0;
-            } else {
-                return playbackRate;
-            }
+    function calc_playbackRate(playbackRate, latency, latencyThreathold, health, healthThreathold) {
+        if (isAtLiveHead && (latency < latencyThreathold || health < healthThreathold)) {
+            return 1.0;
         } else {
             return playbackRate;
         }
