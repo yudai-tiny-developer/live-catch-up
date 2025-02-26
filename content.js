@@ -22,7 +22,7 @@ function main(common) {
             if (enabled) {
                 setPlaybackRate(playbackRate);
                 if (!smooth) {
-                    observe_app(document, playbackRate);
+                    is_embedded_player ? observe_player(document, playbackRate) : observe_app(document, playbackRate);
                 }
             } else {
                 setPlaybackRate();
@@ -82,12 +82,17 @@ function main(common) {
     }
 
     function observe(node, query, callback, param) {
-        new MutationObserver((mutations, observer) => {
-            const target = document.querySelector(query);
-            if (target && callback(target, param)) {
-                observer.disconnect();
-            }
-        }).observe(node, { childList: true, subtree: true });
+        const target = node.querySelector(query);
+        if (target) {
+            callback(target, param);
+        } else {
+            new MutationObserver((mutations, observer) => {
+                const target = node.querySelector(query);
+                if (target && callback(target, param)) {
+                    observer.disconnect();
+                }
+            }).observe(node, { childList: true, subtree: true });
+        }
     }
 
     function observe_app(node, param) {
@@ -117,6 +122,7 @@ function main(common) {
     let video;
     let badge;
     let badge_observer;
+    const is_embedded_player = document.querySelector('div#movie_player');
 
     chrome.storage.onChanged.addListener(loadSettings);
 

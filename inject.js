@@ -53,12 +53,17 @@
     }
 
     function observe(node, query, callback, param) {
-        new MutationObserver((mutations, observer) => {
-            const target = document.querySelector(query);
-            if (target && callback(target, param)) {
-                observer.disconnect();
-            }
-        }).observe(node, { childList: true, subtree: true });
+        const target = node.querySelector(query);
+        if (target) {
+            callback(target, param);
+        } else {
+            new MutationObserver((mutations, observer) => {
+                const target = node.querySelector(query);
+                if (target && callback(target, param)) {
+                    observer.disconnect();
+                }
+            }).observe(node, { childList: true, subtree: true });
+        }
     }
 
     function observe_app(node, param) {
@@ -146,8 +151,7 @@
     let badge;
     let interval;
     let interval_count = 0;
-
-    observe_app(document);
+    const is_embedded_player = document.querySelector('div#movie_player');
 
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
@@ -195,6 +199,12 @@
     document.addEventListener('_live_catch_up_reset_playback_rate', () => {
         reset_playbackRate();
     });
+
+    if (is_embedded_player) { // embedded player
+        observe_player(document);
+    } else {
+        observe_app(document);
+    }
 
     document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
 })();
