@@ -187,20 +187,28 @@
 
     const detect_interval = setInterval(() => {
         player = app.querySelector('div#movie_player');
-        if (player) {
-            video = player.querySelector('video.html5-main-video');
-            badge = player.querySelector('button.ytp-live-badge');
-            if (video && badge) {
-                clearInterval(detect_interval);
-
-                badge.parentElement.parentElement.appendChild(button_estimation);
-                badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
-                badge.parentElement.parentElement.insertBefore(button_latency, button_health);
-                badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
-                player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
-
-                document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
-            }
+        if (!player) {
+            return;
         }
+
+        video = player.querySelector('video.html5-main-video');
+        if (!video) {
+            return;
+        }
+
+        badge = player.querySelector('button.ytp-live-badge');
+        if (!badge) {
+            return;
+        }
+
+        clearInterval(detect_interval);
+
+        badge.parentElement.parentElement.appendChild(button_estimation);
+        badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
+        badge.parentElement.parentElement.insertBefore(button_latency, button_health);
+        badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
+        player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
+
+        document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
     }, 200);
 })();
