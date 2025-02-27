@@ -10,6 +10,8 @@
                 button_playbackrate.style.fontWeight = 'normal';
             }
             button_playbackrate.style.display = '';
+        } else {
+            button_playbackrate.style.display = 'none';
         }
     }
 
@@ -49,7 +51,7 @@
     }
 
     function update_estimation(seekable_buffer, isAtLiveHead) {
-        if (!isAtLiveHead && video && video.playbackRate > 1.0) {
+        if (!isAtLiveHead && video?.playbackRate > 1.0) {
             const estimated_seconds = seekable_buffer / (video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
             button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="central" text-anchor="start">${estimated_time}</text></svg>`);
@@ -63,46 +65,6 @@
         button_estimation.style.display = 'none';
     }
 
-    function observe(node, query, callback, param) {
-        const target = node.querySelector(query);
-        if (target) {
-            return callback(target, param);
-        } else {
-            const observer = new MutationObserver((mutations, observer) => {
-                const target = node.querySelector(query);
-                if (target && callback(target, param)) {
-                    observer.disconnect();
-                }
-            });
-            observer.observe(node, { childList: true, subtree: true });
-            return observer;
-        }
-    }
-
-    function observe_app(node, param) {
-        return observe(node, 'ytd-app', observe_player, param);
-    }
-
-    function observe_player(node, param) {
-        return observe(node, 'div#movie_player', observe_main, param);
-    }
-
-    function observe_main(node, param) {
-        player = node;
-        video = node.querySelector('video.html5-main-video');
-        badge = node.querySelector('button.ytp-live-badge');
-        if (video && badge) {
-            badge.parentElement.parentElement.appendChild(button_estimation);
-            badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
-            badge.parentElement.parentElement.insertBefore(button_latency, button_health);
-            badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
-            player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     function onPlaybackRateChange(playbackRate) {
         if (playbackRate === 1.0) { // Keep the playback rate if it has been manually changed.
             document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
@@ -112,7 +74,7 @@
     function set_playbackRate(playbackRate, health, smoothThreathold) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
             const newPlaybackRate = calc_playbackRate(playbackRate, health, smoothThreathold);
-            if (video && video.playbackRate !== newPlaybackRate) {
+            if (video?.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
             }
         }
@@ -164,6 +126,8 @@
     button_estimation.style.textAlign = 'center';
     button_estimation.style.fill = '#eee';
     button_estimation.style.width = '96px';
+
+    const app = document.querySelector('ytd-app') ?? document.body; // YouTube.com or Embedded Player
 
     let player;
     let video;
@@ -221,22 +185,20 @@
         reset_playbackRate();
     });
 
-    const init_interval = setInterval(() => {
-        if (document.readyState === 'complete') {
-            const app = document.querySelector('ytd-app');
-            if (app) { // YouTube.com Player
-                clearInterval(init_interval);
-                observe_app(document);
-                document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
-                return;
-            }
+    const detect_interval = setInterval(() => {
+        player = app.querySelector('div#movie_player');
+        if (player) {
+            video = player.querySelector('video.html5-main-video');
+            badge = player.querySelector('button.ytp-live-badge');
+            if (video && badge) {
+                clearInterval(detect_interval);
+                badge.parentElement.parentElement.appendChild(button_estimation);
+                badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
+                badge.parentElement.parentElement.insertBefore(button_latency, button_health);
+                badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
+                player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
 
-            const player = document.querySelector('div#movie_player');
-            if (player) { // Embedded Player
-                clearInterval(init_interval);
-                observe_player(document);
                 document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
-                return;
             }
         }
     }, 200);
