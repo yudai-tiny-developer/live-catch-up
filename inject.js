@@ -192,6 +192,7 @@
             badge = player.querySelector('button.ytp-live-badge');
             if (video && badge) {
                 clearInterval(detect_interval);
+
                 badge.parentElement.parentElement.appendChild(button_estimation);
                 badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
                 badge.parentElement.parentElement.insertBefore(button_latency, button_health);
