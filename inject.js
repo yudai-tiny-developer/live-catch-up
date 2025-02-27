@@ -210,5 +210,5 @@
         player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
 
         document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
-    }, 1000);
+    }, 500);
 })();
