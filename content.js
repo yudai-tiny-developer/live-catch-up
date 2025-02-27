@@ -19,9 +19,7 @@ function main(common) {
             sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, smooth, smoothThreathold);
 
             if (enabled) {
-                if (smooth) {
-                    setPlaybackRate(playbackRate);
-                }
+                setPlaybackRate(playbackRate);
             } else {
                 setPlaybackRate();
             }
@@ -86,17 +84,23 @@ function main(common) {
     let playbackRate;
 
     chrome.storage.onChanged.addListener(loadSettings);
-    document.addEventListener('_live_catch_up_init', loadSettings);
 
-    const detect_interval = setInterval(() => {
-        badge = app.querySelector('button.ytp-live-badge');
-        if (badge) {
+    document.addEventListener('_live_catch_up_init', () => {
+        const detect_interval = setInterval(() => {
+            badge = app.querySelector('button.ytp-live-badge');
+            if (!badge) {
+                return;
+            }
+
             clearInterval(detect_interval);
+
             new MutationObserver(() => {
                 setPlaybackRate(playbackRate);
-            }).observe(badge, { attributeFilter: ['disabled'] })
-        }
-    }, 200);
+            }).observe(badge, { attributeFilter: ['disabled'] });
+
+            loadSettings();
+        }, 200);
+    });
 
     const s = document.createElement('script');
     s.id = '_live_catch_up';
