@@ -99,7 +99,7 @@ function main(common) {
             }).observe(badge, { attributeFilter: ['disabled'] });
 
             loadSettings();
-        }, 200);
+        }, 1000);
     });
 
     const s = document.createElement('script');
