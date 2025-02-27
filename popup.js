@@ -45,6 +45,11 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
+        row.appendChild(settings.createLabel(cell_class1, common.label.showHealth));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'showHealth', data.showHealth, common.defaultShowHealth, common.value));
+        container.appendChild(row);
+    } {
+        const row = settings.createRow(row_class);
         row.appendChild(settings.createLabel(cell_class1, common.label.showEstimation));
         row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'showEstimation', data.showEstimation, common.defaultShowEstimation, common.value));
         container.appendChild(row);

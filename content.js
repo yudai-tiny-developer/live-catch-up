@@ -11,11 +11,12 @@ function main(common) {
             const playbackRate = common.limitValue(data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate);
             const showPlaybackRate = common.value(data.showPlaybackRate, common.defaultShowPlaybackRate);
             const showLatency = common.value(data.showLatency, common.defaultShowLatency);
+            const showHealth = common.value(data.showHealth, common.defaultShowHealth);
             const showEstimation = common.value(data.showEstimation, common.defaultShowEstimation);
             const smooth = common.value(data.smooth, common.defaultSmooth);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
 
-            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold);
+            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, smooth, smoothThreathold);
 
             badge_observer?.disconnect();
             container_observer?.disconnect();
@@ -32,12 +33,13 @@ function main(common) {
         });
     }
 
-    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showEstimation, smooth, smoothThreathold) {
+    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, smooth, smoothThreathold) {
         const detailObject = {
             enabled: enabled && smooth,
             playbackRate,
             showPlaybackRate,
             showLatency,
+            showHealth,
             showEstimation,
             smoothThreathold,
         };

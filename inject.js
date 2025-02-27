@@ -17,24 +17,35 @@
         button_playbackrate.style.display = 'none';
     }
 
-    function update_latency(latency, isAtLiveHead, enabled, latency, smoothThreathold) {
+    function update_latency(latency, isAtLiveHead) {
         if (isAtLiveHead) {
             button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`);
         } else {
             button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">(DVR)</text></svg>`);
         }
-        if (enabled && (!isAtLiveHead || latency >= smoothThreathold)) {
-            button_latency.style.fill = '#ff8983';
-            button_latency.style.fontWeight = 'bold';
-        } else {
-            button_latency.style.fill = '#eee';
-            button_latency.style.fontWeight = 'normal';
-        }
+        button_latency.style.fill = '#eee';
+        button_latency.style.fontWeight = 'normal';
         button_latency.style.display = '';
     }
 
     function hide_latency() {
         button_latency.style.display = 'none';
+    }
+
+    function update_health(health, enabled, smoothThreathold) {
+        button_health.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${health.toFixed(2)}s</text></svg>`);
+        if (enabled && health >= smoothThreathold) {
+            button_health.style.fill = '#ff8983';
+            button_health.style.fontWeight = 'bold';
+        } else {
+            button_health.style.fill = '#eee';
+            button_health.style.fontWeight = 'normal';
+        }
+        button_health.style.display = '';
+    }
+
+    function hide_health() {
+        button_health.style.display = 'none';
     }
 
     function update_estimation(seekable_buffer, isAtLiveHead) {
@@ -82,7 +93,8 @@
         badge = node.querySelector('button.ytp-live-badge');
         if (video && badge) {
             badge.parentElement.parentElement.appendChild(button_estimation);
-            badge.parentElement.parentElement.insertBefore(button_latency, button_estimation);
+            badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
+            badge.parentElement.parentElement.insertBefore(button_latency, button_health);
             badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
             player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
             return true;
@@ -97,17 +109,17 @@
         }
     }
 
-    function set_playbackRate(playbackRate, isAtLiveHead, latency, latencyThreathold, health) {
+    function set_playbackRate(playbackRate, health, smoothThreathold) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
-            const newPlaybackRate = calc_playbackRate(playbackRate, isAtLiveHead, latency, latencyThreathold, health);
+            const newPlaybackRate = calc_playbackRate(playbackRate, health, smoothThreathold);
             if (video && video.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
             }
         }
     }
 
-    function calc_playbackRate(playbackRate, isAtLiveHead, latency, latencyThreathold, health) {
-        if (isAtLiveHead && (latency < latencyThreathold || health + 1.0 < playbackRate)) { // If the buffer health after 1.0 second is less than the expected buffer consumption
+    function calc_playbackRate(playbackRate, health, smoothThreathold) {
+        if (health < smoothThreathold) {
             return 1.0;
         } else {
             return playbackRate;
@@ -138,6 +150,13 @@
     button_latency.style.textAlign = 'center';
     button_latency.style.fill = '#eee';
 
+    const button_health = document.createElement('button');
+    button_health.classList.add('_live_catch_up_health', 'ytp-button');
+    button_health.style.display = 'none';
+    button_health.style.cursor = 'default';
+    button_health.style.textAlign = 'center';
+    button_health.style.fill = '#eee';
+
     const button_estimation = document.createElement('button');
     button_estimation.classList.add('_live_catch_up_estimation', 'ytp-button');
     button_estimation.style.display = 'none';
@@ -155,7 +174,7 @@
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
         clearInterval(interval);
-        if (settings.enabled || settings.showPlaybackRate || settings.showLatency || settings.showEstimation) {
+        if (settings.enabled || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation) {
             interval = setInterval(() => {
                 if (player) {
                     const stats_for_nerds = player.getStatsForNerds();
@@ -165,16 +184,18 @@
                         const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
 
                         if (settings.enabled) {
-                            set_playbackRate(settings.playbackRate, progress_state.isAtLiveHead, latency, settings.smoothThreathold, health);
+                            set_playbackRate(settings.playbackRate, health, settings.smoothThreathold);
                         }
 
                         const want_update = interval_count++ % 5 === 0;
                         settings.showPlaybackRate ? (want_update && update_playbackRate(settings.playbackRate)) : hide_playbackRate();
-                        settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead, settings.enabled, latency, settings.smoothThreathold)) : hide_latency();
+                        settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead)) : hide_latency();
+                        settings.showHealth ? (want_update && update_health(health, settings.enabled, settings.smoothThreathold)) : hide_health();
                         settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd - progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
                     } else {
                         hide_playbackRate();
                         hide_latency();
+                        hide_health();
                         hide_estimation();
                     }
                 }
@@ -182,6 +203,7 @@
         } else {
             hide_playbackRate();
             hide_latency();
+            hide_health();
             hide_estimation();
         }
     });
