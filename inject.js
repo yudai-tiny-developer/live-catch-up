@@ -92,7 +92,7 @@
         if (video && player) {
             const newPlaybackRate = player.getPlaybackRate();
             if (video.playbackRate !== newPlaybackRate) {
-                video.playbackRate = newPlaybackRate
+                video.playbackRate = newPlaybackRate;
             }
         }
     }

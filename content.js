@@ -20,8 +20,13 @@ function main(common) {
 
             if (enabled) {
                 setPlaybackRate(playbackRate);
+                if (smooth) {
+                    badge_observer?.disconnect();
+                } else {
+                    badge_observer?.observe(badge, { attributeFilter: ['disabled'] });
+                }
             } else {
-                setPlaybackRate();
+                resetPlaybackRate();
             }
         });
     }
@@ -41,19 +46,17 @@ function main(common) {
     }
 
     function setPlaybackRate(playbackRate) {
-        if (playbackRate === undefined) { // force reset
-            if (is_live()) {
-                sendResetPlaybackRateEvent();
-            } else {
-                // do nothing
-            }
-        } else if (is_live()) {
+        if (is_live()) {
             if (is_live_head()) {
                 sendResetPlaybackRateEvent();
             } else {
                 sendSetPlaybackRateEvent(playbackRate);
             }
-        } else {
+        }
+    }
+
+    function resetPlaybackRate() {
+        if (is_live()) {
             sendResetPlaybackRateEvent();
         }
     }
@@ -81,6 +84,7 @@ function main(common) {
     const app = document.querySelector('ytd-app') ?? document.body; // YouTube.com or Embedded Player
 
     let badge;
+    let badge_observer;
     let playbackRate;
 
     chrome.storage.onChanged.addListener(loadSettings);
@@ -94,9 +98,9 @@ function main(common) {
 
             clearInterval(detect_interval);
 
-            new MutationObserver(() => {
+            badge_observer = new MutationObserver(() => {
                 setPlaybackRate(playbackRate);
-            }).observe(badge, { attributeFilter: ['disabled'] });
+            });
 
             loadSettings();
         }, 500);
