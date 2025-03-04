@@ -65,12 +65,6 @@
         button_estimation.style.display = 'none';
     }
 
-    function onPlaybackRateChange(playbackRate) {
-        if (playbackRate === 1.0) { // Keep the playback rate if it has been manually changed.
-            document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
-        }
-    }
-
     function set_playbackRate(playbackRate, health, smoothThreathold) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
             const newPlaybackRate = calc_playbackRate(playbackRate, health, smoothThreathold);
@@ -94,6 +88,30 @@
             if (video.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
             }
+        }
+    }
+
+    function calc_threathold() {
+        if (player) {
+            return (player.getVideoStats ? player.getVideoStats().segduration : calc_segduration());
+        } else {
+            return 120.0;
+        }
+    }
+
+    function calc_segduration() {
+        if (player) {
+            const latencyClass = player.getPlayerResponse ? player.getPlayerResponse().videoDetails.latencyClass : 'MDE_STREAM_OPTIMIZATIONS_RENDERER_LATENCY_UNKNOWN';
+            switch (latencyClass) {
+                case 'MDE_STREAM_OPTIMIZATIONS_RENDERER_LATENCY_ULTRA_LOW':
+                    return 1.0;
+                case 'MDE_STREAM_OPTIMIZATIONS_RENDERER_LATENCY_LOW':
+                    return 2.0;
+                default:
+                    return 5.0;
+            }
+        } else {
+            return 120.0;
         }
     }
 
@@ -146,15 +164,16 @@
                         const progress_state = player.getProgressState();
                         const latency = Number.parseFloat(stats_for_nerds.live_latency_secs);
                         const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
+                        const smoothThreathold = settings.smoothAuto ? calc_threathold() : settings.smoothThreathold;
 
                         if (settings.enabled) {
-                            set_playbackRate(settings.playbackRate, health, settings.smoothThreathold);
+                            set_playbackRate(settings.playbackRate, health, smoothThreathold);
                         }
 
                         const want_update = interval_count++ % 5 === 0;
                         settings.showPlaybackRate ? (want_update && update_playbackRate(settings.playbackRate)) : hide_playbackRate();
                         settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead)) : hide_latency();
-                        settings.showHealth ? (want_update && update_health(health, settings.enabled, settings.smoothThreathold)) : hide_health();
+                        settings.showHealth ? (want_update && update_health(health, settings.enabled, smoothThreathold)) : hide_health();
                         settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd - progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
                     } else {
                         hide_playbackRate();
@@ -207,7 +226,6 @@
         badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
         badge.parentElement.parentElement.insertBefore(button_latency, button_health);
         badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
-        player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
 
         document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
     }, 500);

@@ -8,9 +8,10 @@ export const label = {
     smooth: chrome.i18n.getMessage('smooth'),
     smooth_desc: chrome.i18n.getMessage('smooth_desc'),
     smoothThreathold: chrome.i18n.getMessage('smoothThreathold'),
+    smoothAuto: chrome.i18n.getMessage('smoothAuto'),
 };
 
-export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'smooth', 'smoothThreathold'];
+export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'smooth', 'smoothThreathold', 'smoothAuto'];
 
 export const defaultEnabled = true;
 
@@ -28,8 +29,10 @@ export const defaultSmooth = false;
 
 export const defaultSmoothThreathold = 3.0;
 export const minSmoothThreathold = 0.0;
-export const maxSmoothThreathold = 120;
-export const stepSmoothThreathold = 0.1;
+export const maxSmoothThreathold = 120.0;
+export const stepSmoothThreathold = 0.05;
+
+export const defaultSmoothAuto = false;
 
 export function value(value, default_value) {
     return value ?? default_value;

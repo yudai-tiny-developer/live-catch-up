@@ -15,8 +15,9 @@ function main(common) {
             const showEstimation = common.value(data.showEstimation, common.defaultShowEstimation);
             const smooth = common.value(data.smooth, common.defaultSmooth);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
+            const smoothAuto = common.value(data.smoothAuto, common.defaultSmoothAuto);
 
-            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, smooth, smoothThreathold);
+            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, smooth, smoothThreathold, smoothAuto);
 
             if (enabled) {
                 setPlaybackRate(playbackRate);
@@ -31,7 +32,7 @@ function main(common) {
         });
     }
 
-    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, smooth, smoothThreathold) {
+    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, smooth, smoothThreathold, smoothAuto) {
         const detailObject = {
             enabled: enabled && smooth,
             playbackRate,
@@ -40,6 +41,7 @@ function main(common) {
             showHealth,
             showEstimation,
             smoothThreathold,
+            smoothAuto,
         };
         const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
         document.dispatchEvent(new CustomEvent('_live_catch_up_load_settings', { detail }));

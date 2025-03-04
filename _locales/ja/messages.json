@@ -26,7 +26,10 @@
     "smoothThreathold": {
         "message": "許容するバッファ（秒）"
     },
+    "smoothAuto": {
+        "message": "許容するバッファを自動調整"
+    },
     "appDesc": {
-        "message": "DVR が有効な YouTube のライブ配信で遅延が発生したときに、自動で再生速度を上げてリアルタイムに追いつく機能拡張"
+        "message": "DVR が有効な YouTube のライブ配信で遅延が発生したときに、自動で再生速度を上げてリアルタイムに追いつく拡張機能"
     }
 }
