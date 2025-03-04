@@ -65,12 +65,6 @@
         button_estimation.style.display = 'none';
     }
 
-    function onPlaybackRateChange(playbackRate) {
-        if (playbackRate === 1.0) { // Keep the playback rate if it has been manually changed.
-            document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
-        }
-    }
-
     function set_playbackRate(playbackRate, health, smoothThreathold) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
             const newPlaybackRate = calc_playbackRate(playbackRate, health, smoothThreathold);
@@ -232,7 +226,6 @@
         badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
         badge.parentElement.parentElement.insertBefore(button_latency, button_health);
         badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
-        player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
 
         document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
     }, 500);
