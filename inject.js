@@ -97,6 +97,30 @@
         }
     }
 
+    function calc_threathold() {
+        if (player) {
+            return (player.getVideoStats ? player.getVideoStats().segduration : calc_segduration());
+        } else {
+            return 120.0;
+        }
+    }
+
+    function calc_segduration() {
+        if (player) {
+            const latencyClass = player.getPlayerResponse ? player.getPlayerResponse().videoDetails.latencyClass : 'MDE_STREAM_OPTIMIZATIONS_RENDERER_LATENCY_UNKNOWN';
+            switch (latencyClass) {
+                case 'MDE_STREAM_OPTIMIZATIONS_RENDERER_LATENCY_ULTRA_LOW':
+                    return 1.0;
+                case 'MDE_STREAM_OPTIMIZATIONS_RENDERER_LATENCY_LOW':
+                    return 2.0;
+                default:
+                    return 5.0;
+            }
+        } else {
+            return 120.0;
+        }
+    }
+
     const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
 
     const button_playbackrate = document.createElement('button');
@@ -146,15 +170,16 @@
                         const progress_state = player.getProgressState();
                         const latency = Number.parseFloat(stats_for_nerds.live_latency_secs);
                         const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
+                        const smoothThreathold = settings.smoothAuto ? calc_threathold() : settings.smoothThreathold;
 
                         if (settings.enabled) {
-                            set_playbackRate(settings.playbackRate, health, settings.smoothThreathold);
+                            set_playbackRate(settings.playbackRate, health, smoothThreathold);
                         }
 
                         const want_update = interval_count++ % 5 === 0;
                         settings.showPlaybackRate ? (want_update && update_playbackRate(settings.playbackRate)) : hide_playbackRate();
                         settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead)) : hide_latency();
-                        settings.showHealth ? (want_update && update_health(health, settings.enabled, settings.smoothThreathold)) : hide_health();
+                        settings.showHealth ? (want_update && update_health(health, settings.enabled, smoothThreathold)) : hide_health();
                         settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd - progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
                     } else {
                         hide_playbackRate();
