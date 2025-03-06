@@ -9,6 +9,8 @@ export const label = {
     smooth_desc: chrome.i18n.getMessage('smooth_desc'),
     smoothThreathold: chrome.i18n.getMessage('smoothThreathold'),
     smoothAuto: chrome.i18n.getMessage('smoothAuto'),
+    smoothThreathold_desc: chrome.i18n.getMessage('smoothThreatholdDesc'),
+    smoothAuto_desc: chrome.i18n.getMessage('smoothAutoDesc'),
 };
 
 export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'smooth', 'smoothThreathold', 'smoothAuto'];

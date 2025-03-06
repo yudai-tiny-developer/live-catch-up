@@ -24,10 +24,16 @@
         "message": "<span class=caution><span class=caution-title>注意</span><br>積極的モードはバッファを可能な限り消費するため、読み込みのための一時停止が頻繁に発生する可能性があります。</span>"
     },
     "smoothThreathold": {
-        "message": "許容するバッファ（秒）"
+        "message": "バッファ閾値（秒）"
+    },
+    "smoothThreatholdDesc": {
+        "message": "バッファ残量がバッファ閾値を下回ったら、再生速度を 1.0 倍に戻します。"
     },
     "smoothAuto": {
-        "message": "許容するバッファを自動調整"
+        "message": "バッファ閾値を自動調整"
+    },
+    "smoothAutoDesc": {
+        "message": "バッファ閾値を、超低遅延ライブ配信の場合は 1 秒、低遅延ライブ配信の場合は 2 秒、通常遅延ライブ配信とPremiere公開動画の場合は 5 秒に設定します。この秒数はYouTubeのプレーヤーが一度にダウンロードするストリームの秒数です。"
     },
     "appDesc": {
         "message": "DVR が有効な YouTube のライブ配信で遅延が発生したときに、自動で再生速度を上げてリアルタイムに追いつく拡張機能"

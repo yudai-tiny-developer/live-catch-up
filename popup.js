@@ -68,13 +68,13 @@ function main(common, settings, progress, data) {
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class1, common.label.smoothThreathold));
+        row.appendChild(settings.createLabel(cell_class1, common.label.smoothThreathold, common.label.smoothThreathold_desc));
         row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.classList.add('aggressive-mode');
-        row.appendChild(settings.createLabel(cell_class1, common.label.smoothAuto));
+        row.appendChild(settings.createLabel(cell_class1, common.label.smoothAuto, common.label.smoothAuto_desc));
         row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'smoothAuto', data.smoothAuto, common.defaultSmoothAuto, common.value));
         container.appendChild(row);
     }
