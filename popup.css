@@ -116,6 +116,19 @@ div#reset_progress.done {
     width: 100%;
 }
 
+span.help {
+    margin-left: 1em;
+}
+
+button.help {
+    display: none;
+    text-align: left;
+    position: fixed;
+    width: 200px;
+    left: 2em;
+    transform: translateY(-100%);
+}
+
 @media (prefers-color-scheme: light) {
     body {
         background-color: rgb(255, 255, 255);
@@ -164,6 +177,15 @@ div#reset_progress.done {
 
     div#reset_progress.done {
         background-color: rgb(73, 249, 73);
+    }
+
+    svg.help {
+        fill: rgb(73, 73, 73);
+    }
+
+    button.help {
+        background-color: rgb(187, 187, 187);
+        color: rgb(0, 0, 0);
     }
 }
 
@@ -215,5 +237,14 @@ div#reset_progress.done {
 
     div#reset_progress.done {
         background-color: rgb(73, 249, 73);
+    }
+
+    svg.help {
+        fill: rgb(187, 187, 187);
+    }
+
+    button.help {
+        background-color: rgb(73, 73, 73);
+        color: rgb(255, 255, 255);
     }
 }
