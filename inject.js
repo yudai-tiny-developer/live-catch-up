@@ -222,6 +222,10 @@
 
         clearInterval(detect_interval);
 
+        player.addEventListener('onPlaybackRateChange', () => {
+            document.dispatchEvent(new CustomEvent('_live_catch_up_onPlaybackRateChange'));
+        });
+
         badge.parentElement.parentElement.appendChild(button_estimation);
         badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
         badge.parentElement.parentElement.insertBefore(button_latency, button_health);
