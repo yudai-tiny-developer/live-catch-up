@@ -102,6 +102,7 @@ function main(common) {
 
             clearInterval(detect_interval);
 
+            badge_observer?.disconnect();
             badge_observer = new MutationObserver(() => {
                 setPlaybackRate(playbackRate);
             });

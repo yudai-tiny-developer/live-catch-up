@@ -115,6 +115,10 @@
         }
     }
 
+    function onPlaybackRateChange() {
+        document.dispatchEvent(new CustomEvent('_live_catch_up_onPlaybackRateChange'));
+    }
+
     const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
 
     const button_playbackrate = document.createElement('button');
@@ -222,9 +226,7 @@
 
         clearInterval(detect_interval);
 
-        player.addEventListener('onPlaybackRateChange', () => {
-            document.dispatchEvent(new CustomEvent('_live_catch_up_onPlaybackRateChange'));
-        });
+        player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
 
         badge.parentElement.parentElement.appendChild(button_estimation);
         badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
