@@ -90,17 +90,18 @@ function main(common) {
     let enabled;
     let playbackRate;
     let smooth;
+    let detect_interval;
 
     chrome.storage.onChanged.addListener(loadSettings);
 
     document.addEventListener('_live_catch_up_init', () => {
-        const detect_interval = setInterval(() => {
-            badge = app.querySelector('button.ytp-live-badge');
-            if (!badge) {
+        clearInterval(detect_interval);
+        detect_interval = setInterval(() => {
+            const badge_c = app.querySelector('button.ytp-live-badge');
+            if (!badge_c || badge_c === badge) {
                 return;
             }
-
-            clearInterval(detect_interval);
+            badge = badge_c;
 
             badge_observer?.disconnect();
             badge_observer = new MutationObserver(() => {
@@ -108,7 +109,7 @@ function main(common) {
             });
 
             loadSettings();
-        }, 500);
+        }, 1000);
     });
 
     document.addEventListener('_live_catch_up_onPlaybackRateChange', () => {

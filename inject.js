@@ -208,11 +208,12 @@
         reset_playbackRate();
     });
 
-    const detect_interval = setInterval(() => {
-        player = app.querySelector('div#movie_player');
-        if (!player) {
+    setInterval(() => {
+        const player_c = app.querySelector('div#movie_player');
+        if (!player_c || player_c === player) {
             return;
         }
+        player = player_c;
 
         video = player.querySelector('video.html5-main-video');
         if (!video) {
@@ -224,8 +225,6 @@
             return;
         }
 
-        clearInterval(detect_interval);
-
         player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
 
         badge.parentElement.parentElement.appendChild(button_estimation);
@@ -234,5 +233,5 @@
         badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
 
         document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
-    }, 500);
+    }, 1000);
 })();
