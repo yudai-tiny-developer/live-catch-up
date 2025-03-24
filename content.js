@@ -90,18 +90,22 @@ function main(common) {
     let enabled;
     let playbackRate;
     let smooth;
-    let detect_interval;
 
     chrome.storage.onChanged.addListener(loadSettings);
 
     document.addEventListener('_live_catch_up_init', () => {
-        clearInterval(detect_interval);
-        detect_interval = setInterval(() => {
-            const badge_c = app.querySelector('button.ytp-live-badge');
-            if (!badge_c || badge_c === badge) {
+        const detect_interval = setInterval(() => {
+            const player = app.querySelector('div#movie_player');
+            if (!player) {
                 return;
             }
-            badge = badge_c;
+
+            badge = player.querySelector('button.ytp-live-badge');
+            if (!badge) {
+                return;
+            }
+
+            clearInterval(detect_interval);
 
             badge_observer?.disconnect();
             badge_observer = new MutationObserver(() => {
@@ -109,7 +113,7 @@ function main(common) {
             });
 
             loadSettings();
-        }, 1000);
+        }, 500);
     });
 
     document.addEventListener('_live_catch_up_onPlaybackRateChange', () => {
