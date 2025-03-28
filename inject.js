@@ -1,5 +1,6 @@
 (() => {
     function update_playbackRate(playbackRate) {
+        refresh_video();
         if (video) {
             button_playbackrate.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${video.playbackRate.toFixed(2)}x</text></svg>`);
             if (video.playbackRate === playbackRate) {
@@ -51,6 +52,7 @@
     }
 
     function update_estimation(seekable_buffer, isAtLiveHead) {
+        refresh_video();
         if (!isAtLiveHead && video?.playbackRate > 1.0) {
             const estimated_seconds = seekable_buffer / (video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
@@ -68,6 +70,7 @@
     function set_playbackRate(playbackRate, health, smoothThreathold) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
             const newPlaybackRate = calc_playbackRate(playbackRate, health, smoothThreathold);
+            refresh_video();
             if (video?.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
             }
@@ -83,6 +86,7 @@
     }
 
     function reset_playbackRate() {
+        refresh_video();
         if (video && player) {
             const newPlaybackRate = player.getPlaybackRate();
             if (video.playbackRate !== newPlaybackRate) {
@@ -117,6 +121,12 @@
 
     function onPlaybackRateChange() {
         document.dispatchEvent(new CustomEvent('_live_catch_up_onPlaybackRateChange'));
+    }
+
+    function refresh_video() {
+        if (!player || !video || !video.parentNode) {
+            video = player.querySelector('video.html5-main-video');
+        }
     }
 
     const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
@@ -198,6 +208,7 @@
     document.addEventListener('_live_catch_up_set_playback_rate', e => {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
             const newPlaybackRate = e.detail.playbackRate;
+            refresh_video();
             if (video && video.playbackRate !== newPlaybackRate) {
                 video.playbackRate = newPlaybackRate;
             }
@@ -214,7 +225,7 @@
             return;
         }
 
-        video = player.querySelector('video.html5-main-video');
+        refresh_video();
         if (!video) {
             return;
         }
