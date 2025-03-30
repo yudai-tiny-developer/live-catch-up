@@ -124,7 +124,7 @@
     }
 
     function video_instance() {
-        if (player && (!video || !video.parentNode)) {
+        if (!video?.parentNode && player) {
             video = player.querySelector('video.html5-main-video');
         }
         return video;
