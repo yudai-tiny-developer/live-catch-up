@@ -64,7 +64,7 @@ function main(common) {
     }
 
     function is_live() {
-        return badge?.parentNode.classList.contains('ytp-live');
+        return badge?.parentNode?.classList.contains('ytp-live');
     }
 
     function is_live_head() {
