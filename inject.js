@@ -56,7 +56,7 @@
         if (!isAtLiveHead && video?.playbackRate > 1.0) {
             const estimated_seconds = seekable_buffer / (video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
-            button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="central" text-anchor="start">${estimated_time}</text></svg>`);
+            button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 80 72"><text font-size="20" x="0%" y="50%" dominant-baseline="central" text-anchor="start">${estimated_time}</text></svg>`);
             button_estimation.style.display = '';
         } else {
             button_estimation.style.display = 'none';
@@ -69,7 +69,7 @@
 
     function update_current(current) {
         const time = format_time(current);
-        button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="central" text-anchor="start">${time}</text></svg>`);
+        button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 80 72"><text font-size="20" x="0%" y="50%" dominant-baseline="central" text-anchor="start">${time}</text></svg>`);
         button_current.style.display = '';
     }
 
@@ -141,17 +141,15 @@
     }
 
     function format_time(seconds) {
-        const rs = Math.round(seconds);
+        const hs = Math.floor(seconds / 3600.0);
+        const ms = Math.floor((seconds % 3600) / 60.0);
+        const ss = Math.floor(seconds % 60);
 
-        const hs = Math.floor(rs / 3600);
-        const ms = Math.floor((rs % 3600) / 60);
-        const ss = rs % 60;
-
-        const h = hs > 0 ? `${String(hs).padStart(1, '0')}:` : '';
-        const m = ms > 0 ? `${String(ms).padStart(2, '0')}:` : '';
+        const h = hs > 0 ? `${String(hs)}:` : '';
+        const m = String(ms).padStart(hs > 0 ? 2 : 1, '0');
         const s = String(ss).padStart(2, '0');
 
-        return `${h}${m}${s}`;
+        return `${h}${m}:${s}`;
     }
 
     const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
@@ -180,17 +178,15 @@
     button_estimation.classList.add('_live_catch_up_estimation', 'ytp-button');
     button_estimation.style.display = 'none';
     button_estimation.style.cursor = 'default';
-    button_estimation.style.textAlign = 'center';
+    button_estimation.style.width = 'auto';
     button_estimation.style.fill = '#eee';
-    button_estimation.style.width = '96px';
 
     const button_current = document.createElement('button');
     button_current.classList.add('_live_catch_up_estimation', 'ytp-button');
     button_current.style.display = 'none';
     button_current.style.cursor = 'default';
-    button_current.style.textAlign = 'center';
+    button_current.style.width = 'auto';
     button_current.style.fill = '#eee';
-    button_current.style.width = '96px';
     button_current.addEventListener('click', () => {
         navigator.clipboard.writeText(button_current.textContent);
     });
