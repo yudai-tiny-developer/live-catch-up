@@ -5,6 +5,7 @@ export const label = {
     showLatency: chrome.i18n.getMessage('showLatency'),
     showHealth: chrome.i18n.getMessage('showHealth'),
     showEstimation: chrome.i18n.getMessage('showEstimation'),
+    showCurrent: chrome.i18n.getMessage('showCurrent'),
     smooth: chrome.i18n.getMessage('smooth'),
     smooth_desc: chrome.i18n.getMessage('smooth_desc'),
     smoothThreathold: chrome.i18n.getMessage('smoothThreathold'),
@@ -13,7 +14,7 @@ export const label = {
     smoothAuto_desc: chrome.i18n.getMessage('smoothAutoDesc'),
 };
 
-export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'smooth', 'smoothThreathold', 'smoothAuto'];
+export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'showCurrent', 'smooth', 'smoothThreathold', 'smoothAuto'];
 
 export const defaultEnabled = true;
 
@@ -26,6 +27,7 @@ export const defaultShowPlaybackRate = false;
 export const defaultShowLatency = false;
 export const defaultShowHealth = false;
 export const defaultShowEstimation = false;
+export const defaultShowCurrent = false;
 
 export const defaultSmooth = false;
 
