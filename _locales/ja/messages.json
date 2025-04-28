@@ -17,6 +17,9 @@
     "showEstimation": {
         "message": "ライブへの予想到達時刻を表示"
     },
+    "showCurrent": {
+        "message": "ライブの経過時刻を表示"
+    },
     "smooth": {
         "message": "積極的モード（高負荷）"
     },

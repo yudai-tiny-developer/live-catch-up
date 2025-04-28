@@ -17,6 +17,9 @@
     "showEstimation": {
         "message": "Display estimated arrival at live head"
     },
+    "showCurrent": {
+        "message": "Display elapsed time"
+    },
     "smooth": {
         "message": "Aggressive mode (High CPU load)"
     },

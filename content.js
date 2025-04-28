@@ -13,11 +13,12 @@ function main(common) {
             const showLatency = common.value(data.showLatency, common.defaultShowLatency);
             const showHealth = common.value(data.showHealth, common.defaultShowHealth);
             const showEstimation = common.value(data.showEstimation, common.defaultShowEstimation);
+            const showCurrent = common.value(data.showCurrent, common.defaultShowCurrent);
             smooth = common.value(data.smooth, common.defaultSmooth);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
             const smoothAuto = common.value(data.smoothAuto, common.defaultSmoothAuto);
 
-            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, smooth, smoothThreathold, smoothAuto);
+            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, showCurrent, smooth, smoothThreathold, smoothAuto);
 
             if (enabled) {
                 if (smooth) {
@@ -32,7 +33,7 @@ function main(common) {
         });
     }
 
-    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, smooth, smoothThreathold, smoothAuto) {
+    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, showCurrent, smooth, smoothThreathold, smoothAuto) {
         const detailObject = {
             enabled: enabled && smooth,
             playbackRate,
@@ -40,6 +41,7 @@ function main(common) {
             showLatency,
             showHealth,
             showEstimation,
+            showCurrent,
             smoothThreathold,
             smoothAuto,
         };

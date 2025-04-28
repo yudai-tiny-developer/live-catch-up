@@ -56,7 +56,8 @@
         if (!isAtLiveHead && video?.playbackRate > 1.0) {
             const estimated_seconds = seekable_buffer / (video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
-            button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 144 72"><text font-size="20" x="0%" y="50%" dominant-baseline="central" text-anchor="start">${estimated_time}</text></svg>`);
+            const length = String(estimated_time).length;
+            button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${estimated_time}</text></svg>`);
             button_estimation.style.display = '';
         } else {
             button_estimation.style.display = 'none';
@@ -65,6 +66,17 @@
 
     function hide_estimation() {
         button_estimation.style.display = 'none';
+    }
+
+    function update_current(current) {
+        const current_time = format_time(current);
+        const length = String(current_time).length;
+        button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time}</text></svg>`);
+        button_current.style.display = '';
+    }
+
+    function hide_current() {
+        button_current.style.display = 'none';
     }
 
     function set_playbackRate(playbackRate, health, smoothThreathold) {
@@ -130,6 +142,18 @@
         return video;
     }
 
+    function format_time(seconds) {
+        const hs = Math.floor(seconds / 3600.0);
+        const ms = Math.floor((seconds % 3600) / 60.0);
+        const ss = Math.floor(seconds % 60);
+
+        const h = hs > 0 ? `${String(hs)}:` : '';
+        const m = String(ms).padStart(hs > 0 ? 2 : 1, '0');
+        const s = String(ss).padStart(2, '0');
+
+        return `${h}${m}:${s}`;
+    }
+
     const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
 
     const button_playbackrate = document.createElement('button');
@@ -156,9 +180,18 @@
     button_estimation.classList.add('_live_catch_up_estimation', 'ytp-button');
     button_estimation.style.display = 'none';
     button_estimation.style.cursor = 'default';
-    button_estimation.style.textAlign = 'center';
+    button_estimation.style.width = 'auto';
     button_estimation.style.fill = '#eee';
-    button_estimation.style.width = '96px';
+
+    const button_current = document.createElement('button');
+    button_current.classList.add('_live_catch_up_estimation', 'ytp-button');
+    button_current.style.display = 'none';
+    button_current.style.cursor = 'default';
+    button_current.style.width = 'auto';
+    button_current.style.fill = '#eee';
+    button_current.addEventListener('click', () => {
+        navigator.clipboard.writeText(button_current.textContent);
+    });
 
     const app = document.querySelector('ytd-app') ?? document.body; // YouTube.com or Embedded Player
 
@@ -171,7 +204,7 @@
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
         clearInterval(interval);
-        if (settings.enabled || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation) {
+        if (settings.enabled || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation || settings.showCurrent) {
             interval = setInterval(() => {
                 if (player) {
                     const stats_for_nerds = player.getStatsForNerds();
@@ -179,30 +212,34 @@
                         const progress_state = player.getProgressState();
                         const latency = Number.parseFloat(stats_for_nerds.live_latency_secs);
                         const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
+                        const current = progress_state.current;
                         const smoothThreathold = settings.smoothAuto ? calc_threathold() : settings.smoothThreathold;
 
                         if (settings.enabled) {
                             set_playbackRate(settings.playbackRate, health, smoothThreathold);
                         }
 
-                        const want_update = interval_count++ % 5 === 0;
-                        settings.showPlaybackRate ? (want_update && update_playbackRate(settings.playbackRate)) : hide_playbackRate();
+                        const want_update = interval_count++ % 4 === 0;
+                        settings.showPlaybackRate ? update_playbackRate(settings.playbackRate) : hide_playbackRate();
                         settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead)) : hide_latency();
                         settings.showHealth ? (want_update && update_health(health, settings.enabled, smoothThreathold)) : hide_health();
                         settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd - progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
+                        settings.showCurrent ? update_current(current) : hide_current();
                     } else {
                         hide_playbackRate();
                         hide_latency();
                         hide_health();
                         hide_estimation();
+                        hide_current();
                     }
                 }
-            }, 200);
+            }, 250);
         } else {
             hide_playbackRate();
             hide_latency();
             hide_health();
             hide_estimation();
+            hide_current();
         }
     });
 
@@ -240,7 +277,8 @@
 
         player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
 
-        badge.parentElement.parentElement.appendChild(button_estimation);
+        badge.parentElement.parentElement.appendChild(button_current);
+        badge.parentElement.parentElement.insertBefore(button_estimation, button_current);
         badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
         badge.parentElement.parentElement.insertBefore(button_latency, button_health);
         badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
