@@ -20,6 +20,9 @@
     "showCurrent": {
         "message": "Display elapsed time"
     },
+    "showCurrentDesc": {
+        "message": "Clicking the displayed elapsed time copies the timestamp to the clipboard."
+    },
     "smooth": {
         "message": "Aggressive mode (High CPU load)"
     },
