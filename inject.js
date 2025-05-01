@@ -70,11 +70,16 @@
         button_estimation.style.display = 'none';
     }
 
-    function update_current(current, seekableEnd) {
+    function update_current(current, seekableEnd, isAtLiveHead) {
         const current_time = format_time(current);
-        const seekableEnd_time = format_time(seekableEnd);
-        const length = String(current_time).length + String(seekableEnd_time).length;
-        button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time} / ${seekableEnd_time}</text></svg>`);
+        if (isAtLiveHead) {
+            const length = String(current_time).length;
+            button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time}</text></svg>`);
+        } else {
+            const seekableEnd_time = format_time(seekableEnd);
+            const length = String(current_time).length + String(seekableEnd_time).length;
+            button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time} / ${seekableEnd_time}</text></svg>`);
+        }
         button_current.setAttribute('current', current_time);
         button_current.style.display = '';
     }
@@ -250,6 +255,7 @@
                         const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
                         const current = progress_state.current;
                         const seekableEnd = progress_state.seekableEnd;
+                        const isAtLiveHead = progress_state.isAtLiveHead;
                         const smoothThreathold = settings.smoothAuto ? calc_threathold() : settings.smoothThreathold;
 
                         if (settings.enabled) {
@@ -258,10 +264,10 @@
 
                         const want_update = interval_count++ % 4 === 0;
                         settings.showPlaybackRate ? update_playbackRate(settings.playbackRate) : hide_playbackRate();
-                        settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead)) : hide_latency();
+                        settings.showLatency ? (want_update && update_latency(latency, isAtLiveHead)) : hide_latency();
                         settings.showHealth ? (want_update && update_health(health, settings.enabled, smoothThreathold)) : hide_health();
-                        settings.showEstimation ? (want_update && update_estimation(seekableEnd, current, progress_state.isAtLiveHead)) : hide_estimation();
-                        settings.showCurrent ? update_current(current, seekableEnd) : hide_current();
+                        settings.showEstimation ? (want_update && update_estimation(seekableEnd, current, isAtLiveHead)) : hide_estimation();
+                        settings.showCurrent ? update_current(current, seekableEnd, isAtLiveHead) : hide_current();
                     } else {
                         hide_playbackRate();
                         hide_latency();
