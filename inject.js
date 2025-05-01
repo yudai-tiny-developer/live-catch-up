@@ -51,10 +51,12 @@
         button_health.style.display = 'none';
     }
 
-    function update_estimation(seekable_buffer, isAtLiveHead) {
+    function update_estimation(seekableEnd, current, isAtLiveHead) {
+        addWithLimit(seekableEnds, seekableEnd);
+        const streamHasProbablyEnded = allElementsEqual(seekableEnds);
         const video = video_instance();
         if (!isAtLiveHead && video?.playbackRate > 1.0) {
-            const estimated_seconds = seekable_buffer / (video.playbackRate - 1.0);
+            const estimated_seconds = streamHasProbablyEnded ? (seekableEnd - current) : (seekableEnd - current) / (video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
             const length = String(estimated_time).length;
             button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${estimated_time}</text></svg>`);
@@ -68,10 +70,17 @@
         button_estimation.style.display = 'none';
     }
 
-    function update_current(current) {
+    function update_current(current, seekableEnd, isAtLiveHead) {
         const current_time = format_time(current);
-        const length = String(current_time).length;
-        button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time}</text></svg>`);
+        if (isAtLiveHead) {
+            const length = String(current_time).length;
+            button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time}</text></svg>`);
+        } else {
+            const seekableEnd_time = format_time(seekableEnd);
+            const length = String(current_time).length + String(seekableEnd_time).length;
+            button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time} / ${seekableEnd_time}</text></svg>`);
+        }
+        button_current.setAttribute('current', current_time);
         button_current.style.display = '';
     }
 
@@ -154,6 +163,19 @@
         return `${h}${m}:${s}`;
     }
 
+    function addWithLimit(arr, newElement, limit = 5) {
+        arr.push(newElement);
+        if (arr.length > limit) {
+            arr.splice(0, arr.length - limit);
+        }
+        return arr;
+    }
+
+    function allElementsEqual(arr, limit = 5) {
+        if (arr.length < limit) return false;
+        return arr.every(el => el === arr[0]);
+    }
+
     const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
 
     const button_playbackrate = document.createElement('button');
@@ -197,7 +219,7 @@
     button_current.style.width = 'auto';
     button_current.style.fill = '#eee';
     button_current.addEventListener('click', () => {
-        navigator.clipboard.writeText(button_current.textContent);
+        navigator.clipboard.writeText(button_current.getAttribute('current'));
 
         const rect = button_current.getBoundingClientRect();
         msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
@@ -218,6 +240,7 @@
     let badge;
     let interval;
     let interval_count = 0;
+    let seekableEnds = [];
 
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
@@ -231,6 +254,8 @@
                         const latency = Number.parseFloat(stats_for_nerds.live_latency_secs);
                         const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
                         const current = progress_state.current;
+                        const seekableEnd = progress_state.seekableEnd;
+                        const isAtLiveHead = progress_state.isAtLiveHead;
                         const smoothThreathold = settings.smoothAuto ? calc_threathold() : settings.smoothThreathold;
 
                         if (settings.enabled) {
@@ -239,10 +264,10 @@
 
                         const want_update = interval_count++ % 4 === 0;
                         settings.showPlaybackRate ? update_playbackRate(settings.playbackRate) : hide_playbackRate();
-                        settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead)) : hide_latency();
+                        settings.showLatency ? (want_update && update_latency(latency, isAtLiveHead)) : hide_latency();
                         settings.showHealth ? (want_update && update_health(health, settings.enabled, smoothThreathold)) : hide_health();
-                        settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd - progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
-                        settings.showCurrent ? update_current(current) : hide_current();
+                        settings.showEstimation ? (want_update && update_estimation(seekableEnd, current, isAtLiveHead)) : hide_estimation();
+                        settings.showCurrent ? update_current(current, seekableEnd, isAtLiveHead) : hide_current();
                     } else {
                         hide_playbackRate();
                         hide_latency();
