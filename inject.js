@@ -183,6 +183,13 @@
     button_estimation.style.width = 'auto';
     button_estimation.style.fill = '#eee';
 
+    const msg_current = document.createElement('div');
+    msg_current.textContent = 'Copied!';
+    msg_current.style.display = 'none';
+    msg_current.style.position = 'fixed';
+
+    let msg_current_timeout;
+
     const button_current = document.createElement('button');
     button_current.classList.add('_live_catch_up_estimation', 'ytp-button');
     button_current.style.display = 'none';
@@ -191,6 +198,17 @@
     button_current.style.fill = '#eee';
     button_current.addEventListener('click', () => {
         navigator.clipboard.writeText(button_current.textContent);
+
+        const rect = button_current.getBoundingClientRect();
+        msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
+        msg_current.style.top = `${rect.top - 16}px`;
+        msg_current.style.display = 'block';
+        const timeout_id = setTimeout(() => {
+            if (msg_current_timeout === timeout_id) {
+                msg_current.style.display = 'none';
+            }
+        }, 4000);
+        msg_current_timeout = timeout_id;
     });
 
     const app = document.querySelector('ytd-app') ?? document.body; // YouTube.com or Embedded Player
@@ -277,7 +295,8 @@
 
         player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
 
-        badge.parentElement.parentElement.appendChild(button_current);
+        badge.parentElement.parentElement.appendChild(msg_current);
+        badge.parentElement.parentElement.insertBefore(button_current, msg_current);
         badge.parentElement.parentElement.insertBefore(button_estimation, button_current);
         badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
         badge.parentElement.parentElement.insertBefore(button_latency, button_health);
