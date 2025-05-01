@@ -51,10 +51,12 @@
         button_health.style.display = 'none';
     }
 
-    function update_estimation(seekable_buffer, isAtLiveHead) {
+    function update_estimation(seekableEnd, current, isAtLiveHead) {
+        addWithLimit(seekableEnds, seekableEnd);
+        const streamHasProbablyEnded = allElementsEqual(seekableEnds);
         const video = video_instance();
         if (!isAtLiveHead && video?.playbackRate > 1.0) {
-            const estimated_seconds = seekable_buffer / (video.playbackRate - 1.0);
+            const estimated_seconds = streamHasProbablyEnded ? (seekableEnd - current) : (seekableEnd - current) / (video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
             const length = String(estimated_time).length;
             button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${estimated_time}</text></svg>`);
@@ -154,6 +156,19 @@
         return `${h}${m}:${s}`;
     }
 
+    function addWithLimit(arr, newElement, limit = 10) {
+        arr.push(newElement);
+        if (arr.length > limit) {
+            arr.splice(0, arr.length - limit);
+        }
+        return arr;
+    }
+
+    function allElementsEqual(arr, limit = 10) {
+        if (arr.length < limit) return false;
+        return arr.every(el => el === arr[0]);
+    }
+
     const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
 
     const button_playbackrate = document.createElement('button');
@@ -218,6 +233,7 @@
     let badge;
     let interval;
     let interval_count = 0;
+    let seekableEnds = [];
 
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
@@ -241,7 +257,7 @@
                         settings.showPlaybackRate ? update_playbackRate(settings.playbackRate) : hide_playbackRate();
                         settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead)) : hide_latency();
                         settings.showHealth ? (want_update && update_health(health, settings.enabled, smoothThreathold)) : hide_health();
-                        settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd - progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
+                        settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd, progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
                         settings.showCurrent ? update_current(current) : hide_current();
                     } else {
                         hide_playbackRate();
