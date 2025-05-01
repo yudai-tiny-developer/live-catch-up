@@ -158,7 +158,7 @@
         return `${h}${m}:${s}`;
     }
 
-    function addWithLimit(arr, newElement, limit = 10) {
+    function addWithLimit(arr, newElement, limit = 5) {
         arr.push(newElement);
         if (arr.length > limit) {
             arr.splice(0, arr.length - limit);
@@ -166,7 +166,7 @@
         return arr;
     }
 
-    function allElementsEqual(arr, limit = 10) {
+    function allElementsEqual(arr, limit = 5) {
         if (arr.length < limit) return false;
         return arr.every(el => el === arr[0]);
     }
