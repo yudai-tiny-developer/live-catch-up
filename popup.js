@@ -55,7 +55,7 @@ function main(common, settings, progress, data) {
         container.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.appendChild(settings.createLabel(cell_class1, common.label.showCurrent));
+        row.appendChild(settings.createLabel(cell_class1, common.label.showCurrent, common.label.showCurrentDesc));
         row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'showCurrent', data.showCurrent, common.defaultShowCurrent, common.value));
         container.appendChild(row);
     } {

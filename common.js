@@ -6,6 +6,7 @@ export const label = {
     showHealth: chrome.i18n.getMessage('showHealth'),
     showEstimation: chrome.i18n.getMessage('showEstimation'),
     showCurrent: chrome.i18n.getMessage('showCurrent'),
+    showCurrentDesc: chrome.i18n.getMessage('showCurrentDesc'),
     smooth: chrome.i18n.getMessage('smooth'),
     smooth_desc: chrome.i18n.getMessage('smooth_desc'),
     smoothThreathold: chrome.i18n.getMessage('smoothThreathold'),
@@ -36,7 +37,7 @@ export const minSmoothThreathold = 0.0;
 export const maxSmoothThreathold = 120.0;
 export const stepSmoothThreathold = 0.05;
 
-export const defaultSmoothAuto = false;
+export const defaultSmoothAuto = true;
 
 export function value(value, default_value) {
     return value ?? default_value;
