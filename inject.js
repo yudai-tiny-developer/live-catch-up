@@ -83,7 +83,7 @@
         }
 
         const current_time_url = addParamsToUrl('https://www.youtube.com/watch', { v: videoId, t: format_time_hms(current) });
-        button_current.setAttribute('current', `${current_time}\n${current_time_url}`);
+        button_current.setAttribute('current', `${current_time_url}#\n${current_time}`);
 
         button_current.style.display = '';
     }
