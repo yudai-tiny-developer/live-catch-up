@@ -10,8 +10,19 @@ div.table {
     width: max-content;
 }
 
+div.inner-table {
+    display: table;
+    width: max-content;
+}
+
 div.row {
     display: table-row;
+}
+
+div.inner-table-cell {
+    display: table-cell;
+    vertical-align: top;
+    padding: 8px;
 }
 
 div.cell1 {
