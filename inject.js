@@ -72,6 +72,8 @@
 
     function update_current(current, seekableEnd, isAtLiveHead) {
         const current_time = format_time(current);
+        const current_time_url = addParamsToUrl(location.href, { t: format_time_hms(current) });
+
         if (isAtLiveHead) {
             const length = String(current_time).length;
             button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time}</text></svg>`);
@@ -80,7 +82,8 @@
             const length = String(current_time).length + String(seekableEnd_time).length;
             button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time} / ${seekableEnd_time}</text></svg>`);
         }
-        button_current.setAttribute('current', current_time);
+
+        button_current.setAttribute('current', `${current_time}\n${current_time_url}`);
         button_current.style.display = '';
     }
 
@@ -163,6 +166,18 @@
         return `${h}${m}:${s}`;
     }
 
+    function format_time_hms(seconds) {
+        const hs = Math.floor(seconds / 3600.0);
+        const ms = Math.floor((seconds % 3600) / 60.0);
+        const ss = Math.floor(seconds % 60);
+
+        const h = hs > 0 ? `${String(hs)}h` : '';
+        const m = String(ms).padStart(hs > 0 ? 2 : 1, '0');
+        const s = String(ss).padStart(2, '0');
+
+        return `${h}${m}m${s}s`;
+    }
+
     function addWithLimit(arr, newElement, limit = 5) {
         arr.push(newElement);
         if (arr.length > limit) {
@@ -174,6 +189,14 @@
     function allElementsEqual(arr, limit = 5) {
         if (arr.length < limit) return false;
         return arr.every(el => el === arr[0]);
+    }
+
+    function addParamsToUrl(url, params) {
+        const urlObj = new URL(url);
+        for (const [key, value] of Object.entries(params)) {
+            urlObj.searchParams.set(key, value);
+        }
+        return urlObj.toString();
     }
 
     const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
