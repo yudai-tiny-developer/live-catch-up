@@ -70,9 +70,8 @@
         button_estimation.style.display = 'none';
     }
 
-    function update_current(current, seekableEnd, isAtLiveHead) {
+    function update_current(current, seekableEnd, isAtLiveHead, videoId) {
         const current_time = format_time(current);
-        const current_time_url = addParamsToUrl(location.href, { t: format_time_hms(current) });
 
         if (isAtLiveHead) {
             const length = String(current_time).length;
@@ -83,7 +82,9 @@
             button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time} / ${seekableEnd_time}</text></svg>`);
         }
 
+        const current_time_url = addParamsToUrl('https://www.youtube.com/watch', { v: videoId, t: format_time_hms(current) });
         button_current.setAttribute('current', `${current_time}\n${current_time_url}`);
+
         button_current.style.display = '';
     }
 
@@ -273,12 +274,9 @@
                 if (player) {
                     const stats_for_nerds = player.getStatsForNerds();
                     if (stats_for_nerds.live_latency_style === '') {
-                        const progress_state = player.getProgressState();
                         const latency = Number.parseFloat(stats_for_nerds.live_latency_secs);
                         const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
-                        const current = progress_state.current;
-                        const seekableEnd = progress_state.seekableEnd;
-                        const isAtLiveHead = progress_state.isAtLiveHead;
+                        const progress_state = player.getProgressState();
                         const smoothThreathold = settings.smoothAuto ? calc_threathold() : settings.smoothThreathold;
 
                         if (settings.enabled) {
@@ -287,10 +285,10 @@
 
                         const want_update = interval_count++ % 4 === 0;
                         settings.showPlaybackRate ? update_playbackRate(settings.playbackRate) : hide_playbackRate();
-                        settings.showLatency ? (want_update && update_latency(latency, isAtLiveHead)) : hide_latency();
+                        settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead)) : hide_latency();
                         settings.showHealth ? (want_update && update_health(health, settings.enabled, smoothThreathold)) : hide_health();
-                        settings.showEstimation ? (want_update && update_estimation(seekableEnd, current, isAtLiveHead)) : hide_estimation();
-                        settings.showCurrent ? update_current(current, seekableEnd, isAtLiveHead) : hide_current();
+                        settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd, progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
+                        settings.showCurrent ? update_current(progress_state.current, progress_state.seekableEnd, progress_state.isAtLiveHead, player.getVideoData()?.video_id) : hide_current();
                     } else {
                         hide_playbackRate();
                         hide_latency();
