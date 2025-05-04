@@ -55,8 +55,8 @@
         addWithLimit(seekableEnds, seekableEnd);
         const streamHasProbablyEnded = allElementsEqual(seekableEnds);
         const video = video_instance();
-        if (!isAtLiveHead && video?.playbackRate > 1.0) {
-            const estimated_seconds = (seekableEnd - current) / (streamHasProbablyEnded ? video.playbackRate : video.playbackRate - 1.0);
+        const estimated_seconds = (seekableEnd - current) / (streamHasProbablyEnded ? video.playbackRate : video.playbackRate - 1.0);
+        if (!isAtLiveHead && isFinite(estimated_seconds)) {
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
             const length = String(estimated_time).length;
             button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${estimated_time}</text></svg>`);
