@@ -56,7 +56,7 @@
         const streamHasProbablyEnded = allElementsEqual(seekableEnds);
         const video = video_instance();
         if (!isAtLiveHead && video?.playbackRate > 1.0) {
-            const estimated_seconds = streamHasProbablyEnded ? (seekableEnd - current) : (seekableEnd - current) / (video.playbackRate - 1.0);
+            const estimated_seconds = (seekableEnd - current) / (streamHasProbablyEnded ? video.playbackRate : video.playbackRate - 1.0);
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
             const length = String(estimated_time).length;
             button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${estimated_time}</text></svg>`);
@@ -200,6 +200,35 @@
         return urlObj.toString();
     }
 
+    function bonus_features() {
+        const time_display = player.querySelector('div.ytp-time-display');
+        if (time_display && !time_display.hasAttribute('_live_catch_up_bonus_features')) {
+            time_display.addEventListener('click', () => {
+                if (showCurrent) {
+                    const videoId = player.getVideoData()?.video_id;
+                    const current = player.getProgressState()?.current;
+
+                    const current_time = format_time(current);
+                    const current_time_url = addParamsToUrl('https://www.youtube.com/watch', { v: videoId, t: format_time_hms(current) });
+
+                    navigator.clipboard.writeText(`${current_time_url}#\n${current_time}`);
+
+                    const rect = time_display.getBoundingClientRect();
+                    msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
+                    msg_current.style.top = `${rect.top - 16}px`;
+                    msg_current.style.display = 'block';
+                    const timeout_id = setTimeout(() => {
+                        if (msg_current_timeout === timeout_id) {
+                            msg_current.style.display = 'none';
+                        }
+                    }, 4000);
+                    msg_current_timeout = timeout_id;
+                }
+            });
+            time_display.setAttribute('_live_catch_up_bonus_features', '');
+        }
+    }
+
     const HTMLPolicy = window.trustedTypes ? window.trustedTypes.createPolicy("_live_catch_up_HTMLPolicy", { createHTML: (string) => string }) : { createHTML: (string) => string };
 
     const button_playbackrate = document.createElement('button');
@@ -234,8 +263,6 @@
     msg_current.style.display = 'none';
     msg_current.style.position = 'fixed';
 
-    let msg_current_timeout;
-
     const button_current = document.createElement('button');
     button_current.classList.add('_live_catch_up_estimation', 'ytp-button');
     button_current.style.display = 'none';
@@ -265,10 +292,13 @@
     let interval;
     let interval_count = 0;
     let seekableEnds = [];
+    let msg_current_timeout;
+    let showCurrent;
 
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
         clearInterval(interval);
+        showCurrent = settings.showCurrent;
         if (settings.enabled || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation || settings.showCurrent) {
             interval = setInterval(() => {
                 if (player) {
@@ -326,6 +356,8 @@
         if (!player) {
             return;
         }
+
+        bonus_features();
 
         const video = video_instance();
         if (!video) {
