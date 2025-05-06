@@ -10,11 +10,6 @@ div.table {
     width: max-content;
 }
 
-div.inner-table {
-    display: table;
-    width: max-content;
-}
-
 div.row {
     display: table-row;
 }
