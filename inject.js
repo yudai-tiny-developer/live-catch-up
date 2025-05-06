@@ -270,18 +270,21 @@
     button_current.style.width = 'auto';
     button_current.style.fill = '#eee';
     button_current.addEventListener('click', () => {
-        navigator.clipboard.writeText(button_current.getAttribute('current'));
+        const current = button_current.getAttribute('current');
+        if (current) {
+            navigator.clipboard.writeText(current);
 
-        const rect = button_current.getBoundingClientRect();
-        msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
-        msg_current.style.top = `${rect.top - 16}px`;
-        msg_current.style.display = 'block';
-        const timeout_id = setTimeout(() => {
-            if (msg_current_timeout === timeout_id) {
-                msg_current.style.display = 'none';
-            }
-        }, 4000);
-        msg_current_timeout = timeout_id;
+            const rect = button_current.getBoundingClientRect();
+            msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
+            msg_current.style.top = `${rect.top - 16}px`;
+            msg_current.style.display = 'block';
+            const timeout_id = setTimeout(() => {
+                if (msg_current_timeout === timeout_id) {
+                    msg_current.style.display = 'none';
+                }
+            }, 4000);
+            msg_current_timeout = timeout_id;
+        }
     });
 
     const app = document.querySelector('ytd-app') ?? document.body; // YouTube.com or Embedded Player
