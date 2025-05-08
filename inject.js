@@ -204,27 +204,25 @@
         const time_display = player.querySelector('div.ytp-time-display');
         if (time_display && !time_display.hasAttribute('_live_catch_up_bonus_features')) {
             time_display.addEventListener('click', () => {
-                if (showCurrent) {
+                if (showCurrent && !time_display.classList.contains('ytp-live')) {
                     const current = player.getProgressState()?.current;
-                    if (isFinite(current)) {
-                        const videoId = player.getVideoData()?.video_id;
+                    const videoId = player.getVideoData()?.video_id;
 
-                        const current_time = format_time(current);
-                        const current_time_url = addParamsToUrl('https://www.youtube.com/watch', { v: videoId, t: format_time_hms(current) });
+                    const current_time = format_time(current);
+                    const current_time_url = addParamsToUrl('https://www.youtube.com/watch', { v: videoId, t: format_time_hms(current) });
 
-                        navigator.clipboard.writeText(`${current_time_url}#\n${current_time}`);
+                    navigator.clipboard.writeText(`${current_time_url}#\n${current_time}`);
 
-                        const rect = time_display.getBoundingClientRect();
-                        msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
-                        msg_current.style.top = `${rect.top - 16}px`;
-                        msg_current.style.display = 'block';
-                        const timeout_id = setTimeout(() => {
-                            if (msg_current_timeout === timeout_id) {
-                                msg_current.style.display = 'none';
-                            }
-                        }, 4000);
-                        msg_current_timeout = timeout_id;
-                    }
+                    const rect = time_display.getBoundingClientRect();
+                    msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
+                    msg_current.style.top = `${rect.top - 16}px`;
+                    msg_current.style.display = 'block';
+                    const timeout_id = setTimeout(() => {
+                        if (msg_current_timeout === timeout_id) {
+                            msg_current.style.display = 'none';
+                        }
+                    }, 4000);
+                    msg_current_timeout = timeout_id;
                 }
             });
             time_display.setAttribute('_live_catch_up_bonus_features', '');
