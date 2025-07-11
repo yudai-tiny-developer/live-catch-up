@@ -17,8 +17,10 @@ function main(common) {
             smooth = common.value(data.smooth, common.defaultSmooth);
             const smoothThreathold = common.limitValue(data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold);
             const smoothAuto = common.value(data.smoothAuto, common.defaultSmoothAuto);
+            const skip = common.value(data.skip, common.defaultSkip);
+            const skipThreathold = common.value(data.skipThreathold, common.defaultSkipThreathold);
 
-            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, showCurrent, smooth, smoothThreathold, smoothAuto);
+            sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, showCurrent, smooth, smoothThreathold, smoothAuto, skip, skipThreathold);
 
             if (enabled) {
                 if (smooth) {
@@ -33,7 +35,7 @@ function main(common) {
         });
     }
 
-    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, showCurrent, smooth, smoothThreathold, smoothAuto) {
+    function sendLoadSettingsEvent(enabled, playbackRate, showPlaybackRate, showLatency, showHealth, showEstimation, showCurrent, smooth, smoothThreathold, smoothAuto, skip, skipThreathold) {
         const detailObject = {
             enabled: enabled && smooth,
             playbackRate,
@@ -44,6 +46,8 @@ function main(common) {
             showCurrent,
             smoothThreathold,
             smoothAuto,
+            skip,
+            skipThreathold,
         };
         const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
         document.dispatchEvent(new CustomEvent('_live_catch_up_load_settings', { detail }));

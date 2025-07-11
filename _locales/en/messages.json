@@ -41,6 +41,12 @@
     "smoothAutoDesc": {
         "message": "Set the Buffer Health Threshold to 1 second for ultra-low latency live streaming, 2 seconds for low-latency live streaming, and 5 seconds for normal latency live streaming and Premiere videos. This value is determined by the segment duration of the stream, which refers to the number of seconds of data that the player downloads at a time."
     },
+    "skip": {
+        "message": "Seek to the live head if delay exceeds the maximum"
+    },
+    "skipThreathold": {
+        "message": "Maximum delay (seconds)"
+    },
     "appDesc": {
         "message": "This extension syncs YouTube live streams in real-time by accelerating viewer-delayed streams caused by data reception delays."
     }
