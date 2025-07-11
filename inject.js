@@ -148,6 +148,12 @@
         document.dispatchEvent(new CustomEvent('_live_catch_up_onPlaybackRateChange'));
     }
 
+    function skip_if_over_threathold(latency, skipThreathold) {
+        if (player && latency >= skipThreathold) {
+            player.seekToLiveHead();
+        }
+    }
+
     function video_instance() {
         if (!video?.parentNode && player) {
             video = player.querySelector('video.html5-main-video');
@@ -299,7 +305,7 @@
         const settings = e.detail;
         clearInterval(interval);
         showCurrent = settings.showCurrent;
-        if (settings.enabled || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation || settings.showCurrent) {
+        if (settings.enabled || settings.skip || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation || settings.showCurrent) {
             interval = setInterval(() => {
                 if (player) {
                     const stats_for_nerds = player.getStatsForNerds();
@@ -311,6 +317,10 @@
 
                         if (settings.enabled) {
                             set_playbackRate(settings.playbackRate, health, smoothThreathold);
+                        }
+
+                        if (settings.skip) {
+                            skip_if_over_threathold(progress_state.seekableEnd - progress_state.current, settings.skipThreathold);
                         }
 
                         const want_update = interval_count++ % 4 === 0;

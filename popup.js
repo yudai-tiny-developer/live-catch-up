@@ -58,6 +58,17 @@ function main(common, settings, progress, data) {
         row.appendChild(settings.createLabel(cell_class1, common.label.smoothAuto, common.label.smoothAuto_desc));
         row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'smoothAuto', data.smoothAuto, common.defaultSmoothAuto, common.value));
         container1.appendChild(row);
+    } {
+        const row = settings.createRow(row_class);
+        row.appendChild(settings.createLabel(cell_class1, common.label.skip));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'skip', data.skip, common.defaultSkip, common.value, 'div.skip-mode'));
+        container1.appendChild(row);
+    } {
+        const row = settings.createRow(row_class);
+        row.classList.add('skip-mode');
+        row.appendChild(settings.createLabel(cell_class1, common.label.skipThreathold));
+        row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'skipThreathold', data.skipThreathold, common.defaultSkipThreathold, common.minSkipThreathold, common.maxSkipThreathold, common.stepSkipThreathold, common.limitValue));
+        container1.appendChild(row);
     }
 
     {
@@ -91,6 +102,10 @@ function main(common, settings, progress, data) {
 
     for (const div of document.querySelectorAll('div.aggressive-mode')) {
         div.style.display = data.smooth ? '' : 'none';
+    }
+
+    for (const div of document.querySelectorAll('div.skip-mode')) {
+        div.style.display = data.skip ? '' : 'none';
     }
 
     const smoothThreathold = document.querySelector('input#smoothThreathold');

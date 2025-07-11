@@ -13,9 +13,11 @@ export const label = {
     smoothAuto: chrome.i18n.getMessage('smoothAuto'),
     smoothThreathold_desc: chrome.i18n.getMessage('smoothThreatholdDesc'),
     smoothAuto_desc: chrome.i18n.getMessage('smoothAutoDesc'),
+    skip: chrome.i18n.getMessage('skip'),
+    skipThreathold: chrome.i18n.getMessage('skipThreathold'),
 };
 
-export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'showCurrent', 'smooth', 'smoothThreathold', 'smoothAuto'];
+export const storage = ['enabled', 'playbackRate', 'showPlaybackRate', 'showLatency', 'showHealth', 'showEstimation', 'showCurrent', 'smooth', 'smoothThreathold', 'smoothAuto', 'skip', 'skipThreathold'];
 
 export const defaultEnabled = true;
 
@@ -38,6 +40,12 @@ export const maxSmoothThreathold = 120.0;
 export const stepSmoothThreathold = 0.05;
 
 export const defaultSmoothAuto = true;
+
+export const defaultSkip = false;
+export const defaultSkipThreathold = 300.0;
+export const minSkipThreathold = 1.0;
+export const maxSkipThreathold = 999999.0;
+export const stepSkipThreathold = 1.0;
 
 export function value(value, default_value) {
     return value ?? default_value;

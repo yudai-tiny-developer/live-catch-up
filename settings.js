@@ -132,5 +132,9 @@ function resetSettings(args) { // FIXME: selector args
         div.style.display = 'none';
     }
 
+    for (const div of document.body.querySelectorAll('div.skip-mode')) {
+        div.style.display = 'none';
+    }
+
     chrome.storage.local.clear();
 }
