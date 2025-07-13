@@ -381,7 +381,7 @@
 
         clearInterval(detect_interval);
 
-        player.addEventListener('onPlaybackRateChange', onPlaybackRateChange);
+        video.addEventListener('ratechange', onPlaybackRateChange);
 
         badge.parentElement.parentElement.appendChild(msg_current);
         badge.parentElement.parentElement.insertBefore(button_current, msg_current);
