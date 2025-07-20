@@ -27,41 +27,43 @@ function main(common, settings, progress, data) {
     {
         const row = settings.createRow(row_class);
         row.appendChild(settings.createLabel(cell_class1, common.label.enabled));
-        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'enabled', data.enabled, common.defaultEnabled, common.value));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'enabled', data.enabled, common.defaultEnabled, common.value, common));
         container1.appendChild(row);
     } {
         const row = settings.createRow(row_class);
+        row.classList.add('enabled');
         row.appendChild(settings.createLabel(cell_class1, `${common.label.playbackRate} (${common.minPlaybackRate.toFixed(2)} ~ ${common.maxPlaybackRate.toFixed(2)})`));
         row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'playbackRate', data.playbackRate, common.defaultPlaybackRate, common.minPlaybackRate, common.maxPlaybackRate, common.stepPlaybackRate, common.limitValue));
         container1.appendChild(row);
     } {
         const row = settings.createRow(row_class);
+        row.classList.add('enabled');
         row.appendChild(settings.createLabel(cell_class1, common.label.smooth));
-        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'smooth', data.smooth, common.defaultSmooth, common.value, 'div.aggressive-mode'));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'smooth', data.smooth, common.defaultSmooth, common.value, common));
         container1.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode');
+        row.classList.add('enabled', 'aggressive-mode');
         const note = settings.createNote(cell_class1, inner_cell_class, common.label.smooth_desc);
         row.appendChild(note);
         row.appendChild(settings.createLabel(cell_class2));
         container1.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode');
+        row.classList.add('enabled', 'aggressive-mode');
         row.appendChild(settings.createLabel(cell_class1, common.label.smoothThreathold, common.label.smoothThreathold_desc));
         row.appendChild(settings.createNumberStepInput(cell_class2, input_class, 'smoothThreathold', data.smoothThreathold, common.defaultSmoothThreathold, common.minSmoothThreathold, common.maxSmoothThreathold, common.stepSmoothThreathold, common.limitValue));
         container1.appendChild(row);
     } {
         const row = settings.createRow(row_class);
-        row.classList.add('aggressive-mode');
+        row.classList.add('enabled', 'aggressive-mode');
         row.appendChild(settings.createLabel(cell_class1, common.label.smoothAuto, common.label.smoothAuto_desc));
         row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'smoothAuto', data.smoothAuto, common.defaultSmoothAuto, common.value));
         container1.appendChild(row);
     } {
         const row = settings.createRow(row_class);
         row.appendChild(settings.createLabel(cell_class1, common.label.skip));
-        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'skip', data.skip, common.defaultSkip, common.value, 'div.skip-mode'));
+        row.appendChild(settings.createToggle(cell_class2, toggle_class, label_class, 'skip', data.skip, common.defaultSkip, common.value, common));
         container1.appendChild(row);
     } {
         const row = settings.createRow(row_class);
@@ -100,13 +102,7 @@ function main(common, settings, progress, data) {
 
     settings.registerResetButton(reset_button, progress_div, progress_class, done_class, toggle_class, input_class, progress);
 
-    for (const div of document.querySelectorAll('div.aggressive-mode')) {
-        div.style.display = data.smooth ? '' : 'none';
-    }
-
-    for (const div of document.querySelectorAll('div.skip-mode')) {
-        div.style.display = data.skip ? '' : 'none';
-    }
+    settings.collapse(common.value(data.enabled, common.defaultEnabled), common.value(data.smooth, common.defaultSmooth), common.value(data.skip, common.defaultSkip));
 
     const smoothThreathold = document.querySelector('input#smoothThreathold');
     const smoothAuto = document.querySelector('input#smoothAuto');

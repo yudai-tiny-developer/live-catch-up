@@ -47,7 +47,7 @@ export function createNote(cell_class, inner_cell_class, label) {
     return div;
 }
 
-export function createToggle(cell_class, toggle_class, label_class, key, checked, defaultValue, checkForDefault, selector) {
+export function createToggle(cell_class, toggle_class, label_class, key, checked, defaultValue, checkForDefault, common) {
     const div = document.createElement('div');
     div.classList.add(cell_class);
 
@@ -59,11 +59,11 @@ export function createToggle(cell_class, toggle_class, label_class, key, checked
 
     input.setAttribute('defaultValue', defaultValue);
     input.addEventListener('change', () => {
-        chrome.storage.local.set({ [key]: input.checked });
-
-        for (const div of document.querySelectorAll(selector)) {
-            div.style.display = input.checked ? '' : 'none';
-        }
+        chrome.storage.local.set({ [key]: input.checked }, () => {
+            if (common) {
+                chrome.storage.local.get(common.storage, data => collapse(common.value(data.enabled, common.defaultEnabled), common.value(data.smooth, common.defaultSmooth), common.value(data.skip, common.defaultSkip)));
+            }
+        });
     });
     div.appendChild(input);
 
@@ -120,21 +120,47 @@ export function registerResetButton(reset_button, progress_div, progress_class, 
 }
 
 function resetSettings(args) { // FIXME: selector args
-    for (const input of document.body.querySelectorAll('input.' + args.toggle_class)) {
+    for (const input of document.querySelectorAll('input.' + args.toggle_class)) {
         input.checked = input.getAttribute('defaultValue') === 'true';
     }
 
-    for (const input of document.body.querySelectorAll('input.' + args.input_class)) {
+    for (const input of document.querySelectorAll('input.' + args.input_class)) {
         input.value = input.getAttribute('defaultValue');
     }
 
-    for (const div of document.body.querySelectorAll('div.aggressive-mode')) {
-        div.style.display = 'none';
-    }
-
-    for (const div of document.body.querySelectorAll('div.skip-mode')) {
-        div.style.display = 'none';
-    }
+    collapse(true, false, false);
 
     chrome.storage.local.clear();
+}
+
+export function collapse(enabled, smooth, skip) {
+    for (const div of document.querySelectorAll('div.enabled, div.aggressive-mode, div.skip-mode')) {
+        div.setAttribute('display', 'true');
+    }
+
+    for (const div of document.querySelectorAll('div.enabled')) {
+        if (div.getAttribute('display') === 'true' && !enabled) {
+            div.setAttribute('display', 'false');
+        }
+    }
+
+    for (const div of document.querySelectorAll('div.aggressive-mode')) {
+        if (div.getAttribute('display') === 'true' && !smooth) {
+            div.setAttribute('display', 'false');
+        }
+    }
+
+    for (const div of document.querySelectorAll('div.skip-mode')) {
+        if (div.getAttribute('display') === 'true' && !skip) {
+            div.setAttribute('display', 'false');
+        }
+    }
+
+    for (const div of document.querySelectorAll('div.enabled, div.aggressive-mode, div.skip-mode')) {
+        if (div.getAttribute('display') === 'true') {
+            div.style.display = '';
+        } else {
+            div.style.display = 'none';
+        }
+    }
 }

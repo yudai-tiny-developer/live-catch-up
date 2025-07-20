@@ -150,7 +150,10 @@
 
     function skip_if_over_threathold(latency, skipThreathold) {
         if (player && latency >= skipThreathold) {
-            player.seekToLiveHead();
+            if (player.getPlayerStateObject()?.isPlaying) {
+                player.seekToLiveHead();
+                player.playVideo();
+            }
         }
     }
 
@@ -383,12 +386,15 @@
 
         video.addEventListener('ratechange', onPlaybackRateChange);
 
-        badge.parentElement.parentElement.appendChild(msg_current);
-        badge.parentElement.parentElement.insertBefore(button_current, msg_current);
-        badge.parentElement.parentElement.insertBefore(button_estimation, button_current);
-        badge.parentElement.parentElement.insertBefore(button_health, button_estimation);
-        badge.parentElement.parentElement.insertBefore(button_latency, button_health);
-        badge.parentElement.parentElement.insertBefore(button_playbackrate, button_latency);
+        let prev = undefined;
+        for (const elem of [button_playbackrate, button_latency, button_health, button_current, msg_current, button_estimation].reverse()) {
+            if (prev) {
+                badge.parentElement.parentElement.insertBefore(elem, prev);
+            } else {
+                badge.parentElement.parentElement.appendChild(elem);
+            }
+            prev = elem;
+        }
 
         document.dispatchEvent(new CustomEvent('_live_catch_up_init'));
     }, 500);
