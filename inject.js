@@ -2,7 +2,12 @@
     function update_playbackRate(playbackRate) {
         const video = video_instance();
         if (video) {
-            button_playbackrate.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${video.playbackRate.toFixed(2)}x</text></svg>`);
+            if (new_style) {
+                button_playbackrate.innerHTML = HTMLPolicy.createHTML(`<svg width="90%" height="90%" viewBox="0 0 72 72"><text font-size="20" x="0%" y="35%">${video.playbackRate.toFixed(2)}x</text></svg>`);
+            } else {
+                button_playbackrate.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${video.playbackRate.toFixed(2)}x</text></svg>`);
+            }
+
             if (video.playbackRate === playbackRate) {
                 button_playbackrate.style.fill = '#ff8983';
                 button_playbackrate.style.fontWeight = 'bold';
@@ -10,6 +15,7 @@
                 button_playbackrate.style.fill = '#eee';
                 button_playbackrate.style.fontWeight = 'normal';
             }
+
             button_playbackrate.style.display = '';
         } else {
             button_playbackrate.style.display = 'none';
@@ -22,10 +28,19 @@
 
     function update_latency(latency, isAtLiveHead) {
         if (isAtLiveHead) {
-            button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`);
+            if (new_style) {
+                button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="90%" height="90%" viewBox="0 0 72 72"><text font-size="20" x="0%" y="35%">${latency.toFixed(2)}s</text></svg>`);
+            } else {
+                button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${latency.toFixed(2)}s</text></svg>`);
+            }
         } else {
-            button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">(DVR)</text></svg>`);
+            if (new_style) {
+                button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="90%" height="90%" viewBox="0 0 72 72"><text font-size="20" x="0%" y="35%">(DVR)</text></svg>`);
+            } else {
+                button_latency.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">(DVR)</text></svg>`);
+            }
         }
+
         button_latency.style.fill = '#eee';
         button_latency.style.fontWeight = 'normal';
         button_latency.style.display = '';
@@ -36,7 +51,12 @@
     }
 
     function update_health(health, enabled, smoothThreathold) {
-        button_health.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${health.toFixed(2)}s</text></svg>`);
+        if (new_style) {
+            button_health.innerHTML = HTMLPolicy.createHTML(`<svg width="90%" height="90%" viewBox="0 0 72 72"><text font-size="20" x="0%" y="35%">${health.toFixed(2)}s</text></svg>`);
+        } else {
+            button_health.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 72 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${health.toFixed(2)}s</text></svg>`);
+        }
+
         if (enabled && health >= smoothThreathold) {
             button_health.style.fill = '#ff8983';
             button_health.style.fontWeight = 'bold';
@@ -44,6 +64,7 @@
             button_health.style.fill = '#eee';
             button_health.style.fontWeight = 'normal';
         }
+
         button_health.style.display = '';
     }
 
@@ -59,7 +80,13 @@
         if (!isAtLiveHead && isFinite(estimated_seconds)) {
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
             const length = String(estimated_time).length;
-            button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${estimated_time}</text></svg>`);
+
+            if (new_style) {
+                button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="90%" height="90%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="0%" y="35%">${estimated_time}</text></svg>`);
+            } else {
+                button_estimation.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${estimated_time}</text></svg>`);
+            }
+
             button_estimation.style.display = '';
         } else {
             button_estimation.style.display = 'none';
@@ -75,11 +102,19 @@
 
         if (isAtLiveHead) {
             const length = String(current_time).length;
-            button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time}</text></svg>`);
+            if (new_style) {
+                button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="90%" height="90%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="0%" y="35%">${current_time}</text></svg>`);
+            } else {
+                button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time}</text></svg>`);
+            }
         } else {
             const seekableEnd_time = format_time(seekableEnd);
             const length = String(current_time).length + String(seekableEnd_time).length;
-            button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time} / ${seekableEnd_time}</text></svg>`);
+            if (new_style) {
+                button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="90%" height="90%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="0%" y="35%">${current_time} / ${seekableEnd_time}</text></svg>`);
+            } else {
+                button_current.innerHTML = HTMLPolicy.createHTML(`<svg width="100%" height="100%" viewBox="0 0 ${length * 12} 72"><text font-size="20" x="50%" y="50%" dominant-baseline="central" text-anchor="middle">${current_time} / ${seekableEnd_time}</text></svg>`);
+            }
         }
 
         const current_time_url = addParamsToUrl('https://www.youtube.com/watch', { v: videoId, t: format_time_hms(current) });
@@ -308,6 +343,7 @@
     let player;
     let video;
     let badge;
+    let new_style;
     let interval;
     let interval_count = 0;
     let seekableEnds = [];
@@ -399,12 +435,19 @@
 
         video.addEventListener('ratechange', onPlaybackRateChange);
 
+        if (player.querySelector('div.ytp-right-controls-left')) {
+            new_style = true;
+        } else {
+            new_style = false;
+        }
+
+        const area = new_style ? badge.parentElement.parentElement.parentElement : badge.parentElement.parentElement;
         let prev = undefined;
         for (const elem of [button_playbackrate, button_latency, button_health, button_current, msg_current, button_estimation].reverse()) {
             if (prev) {
-                badge.parentElement.parentElement.insertBefore(elem, prev);
+                area.insertBefore(elem, prev);
             } else {
-                badge.parentElement.parentElement.appendChild(elem);
+                area.appendChild(elem);
             }
             prev = elem;
         }
