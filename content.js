@@ -1,5 +1,5 @@
 import(chrome.runtime.getURL('common.js')).then(common => {
-    if (common.isPlayer(location.href)) {
+    if (!common.isLiveChat(location.href)) {
         main(common);
     }
 });

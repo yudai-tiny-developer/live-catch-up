@@ -72,9 +72,8 @@ function step(value, step_value) {
     return Math.round(value * step) / step;
 }
 
-export function isPlayer(url) {
-    return url.startsWith('https://www.youtube.com/watch')
-        || url.startsWith('https://www.youtube.com/live/')
-        || url.startsWith('https://www.youtube.com/embed/')
+export function isLiveChat(url) {
+    return url.startsWith('https://www.youtube.com/live_chat?')
+        || url.startsWith('https://www.youtube.com/live_chat_replay?')
         ;
 }
