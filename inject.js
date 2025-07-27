@@ -92,29 +92,39 @@
         button_current.style.display = 'none';
     }
 
-    function set_playbackRate(playbackRate, health, smoothThreathold) {
+    function set_playbackRate(playbackRate, health, smooth, smoothThreathold, isAtLiveHead) {
         if (player?.getPlaybackRate() === 1.0) { // Keep the playback rate if it has been manually changed.
-            const newPlaybackRate = calc_playbackRate(playbackRate, health, smoothThreathold);
+            const newPlaybackRate = calc_playbackRate(playbackRate, health, smooth, smoothThreathold, isAtLiveHead);
             const video = video_instance();
             if (video && video?.playbackRate !== newPlaybackRate) {
+                video.setAttribute('_live_catch_up', 'true');
                 video.playbackRate = newPlaybackRate;
             }
         }
     }
 
-    function calc_playbackRate(playbackRate, health, smoothThreathold) {
-        if (health < smoothThreathold) {
-            return 1.0;
+    function calc_playbackRate(playbackRate, health, smooth, smoothThreathold, isAtLiveHead) {
+        if (smooth) {
+            if (health < smoothThreathold) {
+                return 1.0;
+            } else {
+                return playbackRate;
+            }
         } else {
-            return playbackRate;
+            if (isAtLiveHead) {
+                return 1.0;
+            } else {
+                return playbackRate;
+            }
         }
     }
 
     function reset_playbackRate() {
         const video = video_instance();
-        if (video && player) {
+        if (video && player && video.getAttribute('_live_catch_up') === 'true') {
             const newPlaybackRate = player.getPlaybackRate();
             if (video.playbackRate !== newPlaybackRate) {
+                video.setAttribute('_live_catch_up', 'false');
                 video.playbackRate = newPlaybackRate;
             }
         }
@@ -319,7 +329,9 @@
                         const smoothThreathold = settings.smoothAuto ? calc_threathold() : settings.smoothThreathold;
 
                         if (settings.enabled) {
-                            set_playbackRate(settings.playbackRate, health, smoothThreathold);
+                            set_playbackRate(settings.playbackRate, health, settings.smooth, smoothThreathold, progress_state.isAtLiveHead);
+                        } else {
+                            reset_playbackRate();
                         }
 
                         if (settings.skip) {
@@ -342,6 +354,7 @@
                 }
             }, 250);
         } else {
+            reset_playbackRate();
             hide_playbackRate();
             hide_latency();
             hide_health();
