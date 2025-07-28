@@ -287,8 +287,6 @@
 
     const button_current = create_elem('button', ['_live_catch_up_current', 'ytp-button']);
     button_current.addEventListener('click', () => {
-        console.log('button_current');
-
         navigator.clipboard.writeText(button_current.getAttribute('current'));
 
         if (new_style) {
