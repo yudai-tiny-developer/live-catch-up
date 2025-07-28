@@ -226,7 +226,6 @@
                     }
 
                     e.stopPropagation();
-                    e.preventDefault();
 
                     const current = player.getProgressState()?.current;
                     const videoId = player.getVideoData()?.video_id;
