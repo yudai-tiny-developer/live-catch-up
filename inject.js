@@ -219,10 +219,15 @@
         const time_display = player.querySelector('div.ytp-time-contents');
         if (time_display && !time_display.hasAttribute('_live_catch_up_bonus_features')) {
             time_display.addEventListener('click', e => {
-                e.stopPropagation();
-                e.preventDefault();
+                if (showCurrent) {
+                    const button = time_display.querySelector('button._live_catch_up_current');
+                    if (button && button.style.display !== 'none') {
+                        return;
+                    }
 
-                if (showCurrent && !time_display.classList.contains('ytp-live')) {
+                    e.stopPropagation();
+                    e.preventDefault();
+
                     const current = player.getProgressState()?.current;
                     const videoId = player.getVideoData()?.video_id;
 
@@ -280,8 +285,10 @@
     msg_current.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">Copied!</span>`);
     msg_current.style.position = 'fixed';
 
-    const button_current = create_elem('button', ['_live_catch_up_estimation', 'ytp-button']);
+    const button_current = create_elem('button', ['_live_catch_up_current', 'ytp-button']);
     button_current.addEventListener('click', () => {
+        console.log('button_current');
+
         navigator.clipboard.writeText(button_current.getAttribute('current'));
 
         if (new_style) {
