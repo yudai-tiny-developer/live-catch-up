@@ -24,7 +24,7 @@
         "message": "Clicking the displayed elapsed time copies the timestamp to the clipboard."
     },
     "smooth": {
-        "message": "Aggressive mode (High CPU load)"
+        "message": "Aggressive mode"
     },
     "smooth_desc": {
         "message": "<span class=caution><span class=caution-title>CAUTION</span><br>Aggressive mode consumes the buffer as much as possible, so live streams may frequently pause.</span>"
