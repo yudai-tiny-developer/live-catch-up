@@ -238,7 +238,7 @@
                     if (new_style) {
                         msg_current.style.translate = '-32px -16px';
                     } else {
-                        const rect = button_current.getBoundingClientRect();
+                        const rect = time_display.getBoundingClientRect();
                         msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
                         msg_current.style.top = `${rect.top - 16}px`;
                     }
