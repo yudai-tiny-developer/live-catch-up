@@ -43,10 +43,13 @@ function main(common) {
         document.dispatchEvent(new CustomEvent('_live_catch_up_load_settings', { detail }));
     }
 
+    let detect_interval;
+
     chrome.storage.onChanged.addListener(loadSettings);
 
     document.addEventListener('_live_catch_up_init', () => {
-        const detect_interval = setInterval(() => {
+        clearInterval(detect_interval);
+        detect_interval = setInterval(() => {
             const player = document.body.querySelector('div#movie_player');
             if (!player) {
                 return;
