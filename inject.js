@@ -69,12 +69,12 @@
     }
 
     function update_current(current, seekableEnd, isAtLiveHead, videoId) {
-        const current_time = format_time(current);
+        const current_time = isFinite(current) ? format_time(current) : '--:--';
 
         if (isAtLiveHead) {
             button_current.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">${current_time}</span>`);
         } else {
-            const seekableEnd_time = format_time(seekableEnd);
+            const seekableEnd_time = isFinite(seekableEnd) ? format_time(seekableEnd) : '--:--';
             button_current.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">${current_time} / ${seekableEnd_time}</span>`);
         }
 
