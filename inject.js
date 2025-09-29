@@ -2,7 +2,7 @@
     function update_playbackRate(playbackRate) {
         const video = video_instance();
         if (video) {
-            button_playbackrate.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">${video.playbackRate.toFixed(2)}x</span>`);
+            button_playbackrate.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live" translate="no">${video.playbackRate.toFixed(2)}x</span>`);
 
             if (video.playbackRate === playbackRate) {
                 button_playbackrate.style.color = '#ff8983';
@@ -22,9 +22,9 @@
 
     function update_latency(latency, isAtLiveHead) {
         if (isAtLiveHead) {
-            button_latency.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">${latency.toFixed(2)}s</span>`);
+            button_latency.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live" translate="no">${latency.toFixed(2)}s</span>`);
         } else {
-            button_latency.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">(DVR)</span>`);
+            button_latency.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live" translate="no">(DVR)</span>`);
         }
 
         button_latency.style.display = 'inline-block';
@@ -35,7 +35,7 @@
     }
 
     function update_health(health, enabled, smoothThreathold) {
-        button_health.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">${health.toFixed(2)}s</span>`);
+        button_health.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live" translate="no">${health.toFixed(2)}s</span>`);
 
         if (enabled && health >= smoothThreathold) {
             button_health.style.color = '#ff8983';
@@ -57,7 +57,7 @@
         const estimated_seconds = (seekableEnd - current) / (streamHasProbablyEnded ? video.playbackRate : video.playbackRate - 1.0);
         if (!isAtLiveHead && isFinite(estimated_seconds)) {
             const estimated_time = new Date(Date.now() + estimated_seconds * 1000.0).toLocaleTimeString();
-            button_estimation.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">(${estimated_time})</span>`);
+            button_estimation.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live" translate="no">(${estimated_time})</span>`);
             button_estimation.style.display = 'inline-block';
         } else {
             button_estimation.style.display = 'none';
@@ -72,10 +72,10 @@
         const current_time = isFinite(current) ? format_time(current) : '--:--';
 
         if (isAtLiveHead) {
-            button_current.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">${current_time}</span>`);
+            button_current.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live" translate="no">${current_time}</span>`);
         } else {
             const seekableEnd_time = isFinite(seekableEnd) ? format_time(seekableEnd) : '--:--';
-            button_current.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">${current_time} / ${seekableEnd_time}</span>`);
+            button_current.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live" translate="no">${current_time} / ${seekableEnd_time}</span>`);
         }
 
         const current_time_url = addParamsToUrl('https://www.youtube.com/watch', { v: videoId, t: format_time_hms(current) });
@@ -281,7 +281,7 @@
     const button_estimation = create_elem('button', ['_live_catch_up_estimation', 'ytp-button']);
 
     const msg_current = create_elem('button', ['_live_catch_up_msg_current', 'ytp-button']);
-    msg_current.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live">Copied!</span>`);
+    msg_current.innerHTML = HTMLPolicy.createHTML(`<span class="ytp-live" translate="no">Copied!</span>`);
     msg_current.style.position = 'fixed';
 
     const button_current = create_elem('button', ['_live_catch_up_current', 'ytp-button']);
