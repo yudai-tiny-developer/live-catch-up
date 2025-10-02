@@ -130,7 +130,7 @@
         if (player) {
             return (player.getVideoStats ? player.getVideoStats().segduration : calc_segduration());
         } else {
-            return 120.0;
+            return 5.0;
         }
     }
 
@@ -146,7 +146,7 @@
                     return 5.0;
             }
         } else {
-            return 120.0;
+            return 5.0;
         }
     }
 
@@ -327,7 +327,7 @@
                         const latency = Number.parseFloat(stats_for_nerds.live_latency_secs);
                         const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
                         const progress_state = player.getProgressState();
-                        const smoothThreathold = settings.smoothAuto ? calc_threathold() : settings.smoothThreathold;
+                        const smoothThreathold = settings.smoothAuto ? calc_threathold() * 2 : settings.smoothThreathold;
 
                         if (settings.enabled) {
                             set_playbackRate(settings.playbackRate, health, settings.smooth, smoothThreathold, progress_state.isAtLiveHead);
