@@ -1,6 +1,6 @@
 {
     "enabled": {
-        "message": "Enabled/Disabled"
+        "message": "Enable/Disable rate change"
     },
     "playbackRate": {
         "message": "Playback rate"

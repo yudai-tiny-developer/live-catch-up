@@ -1,6 +1,6 @@
 {
     "enabled": {
-        "message": "有効/無効"
+        "message": "再生速度変更の有効/無効"
     },
     "playbackRate": {
         "message": "遅延時の再生速度倍率"
