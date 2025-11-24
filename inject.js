@@ -391,7 +391,7 @@
             return;
         }
 
-        let area = player.querySelector('div.ytp-time-contents:has(button.ytp-live-badge)'); // new style
+        let area = player.querySelector('div.ytp-time-display:has(button.ytp-live-badge) div.ytp-time-wrapper'); // new style
         if (!area) {
             area = player.querySelector('div.ytp-left-controls:has(button.ytp-live-badge)'); // old style
             if (!area) {
@@ -402,6 +402,7 @@
         } else {
             new_style = true;
         }
+        console.log(new_style);
 
         clearInterval(detect_interval);
 
