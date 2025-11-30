@@ -235,14 +235,7 @@
 
                     navigator.clipboard.writeText(`${current_time_url}#\n${current_time}`);
 
-                    if (new_style) {
-                        msg_current.style.translate = '-32px -16px';
-                    } else {
-                        const rect = time_display.getBoundingClientRect();
-                        msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
-                        msg_current.style.top = `${rect.top - 16}px`;
-                    }
-
+                    msg_current.style.translate = '-32px -16px';
                     msg_current.style.display = 'inline-block';
 
                     clearTimeout(msg_current_timeout);
@@ -288,14 +281,7 @@
     button_current.addEventListener('click', () => {
         navigator.clipboard.writeText(button_current.getAttribute('current'));
 
-        if (new_style) {
-            msg_current.style.translate = '-32px -16px';
-        } else {
-            const rect = button_current.getBoundingClientRect();
-            msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
-            msg_current.style.top = `${rect.top - 16}px`;
-        }
-
+        msg_current.style.translate = '-32px -16px';
         msg_current.style.display = 'inline-block';
 
         clearTimeout(msg_current_timeout);
@@ -308,7 +294,6 @@
 
     let player;
     let video;
-    let new_style;
     let interval;
     let interval_count = 0;
     let seekableEnds = [];
@@ -391,16 +376,14 @@
             return;
         }
 
-        let area = player.querySelector('div.ytp-time-display:has(button.ytp-live-badge) div.ytp-time-wrapper'); // new style
+        let area = player.querySelector('div.ytp-time-display:has(button.ytp-live-badge) div.ytp-time-wrapper');
         if (!area) {
-            area = player.querySelector('div.ytp-left-controls:has(button.ytp-live-badge)'); // old style
-            if (!area) {
-                return;
-            } else {
-                new_style = false;
-            }
-        } else {
-            new_style = true;
+            return;
+        }
+
+        const button_live_badge = player.querySelector('button.ytp-live-badge');
+        if (!button_live_badge) {
+            return;
         }
 
         clearInterval(detect_interval);
@@ -408,7 +391,7 @@
         video.addEventListener('ratechange', onPlaybackRateChange);
 
         let prev = undefined;
-        for (const elem of [button_playbackrate, button_latency, button_health, button_current, msg_current, button_estimation].reverse()) {
+        for (const elem of [button_live_badge, button_playbackrate, button_latency, button_health, button_current, msg_current, button_estimation].reverse()) {
             area.insertBefore(elem, prev);
             prev = elem;
         }
