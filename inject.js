@@ -235,7 +235,9 @@
 
                     navigator.clipboard.writeText(`${current_time_url}#\n${current_time}`);
 
-                    msg_current.style.translate = '-32px -16px';
+                    const rect = time_display.getBoundingClientRect();
+                    msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
+                    msg_current.style.top = `${rect.top - 16}px`;
                     msg_current.style.display = 'inline-block';
 
                     clearTimeout(msg_current_timeout);
