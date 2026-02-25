@@ -50,7 +50,7 @@ function main(common) {
     document.addEventListener('_live_catch_up_init', () => {
         clearInterval(detect_interval);
         detect_interval = setInterval(() => {
-            const player = document.body.querySelector('div#movie_player');
+            const player = document.getElementById("movie_player");
             if (!player) {
                 return;
             }
