@@ -12,8 +12,9 @@ When a live stream with DVR enabled starts to drift, this extension can temporar
 - Optional auto-adjusted buffer threshold based on the stream's latency class
 - Optional skip-to-live behavior when delay exceeds a configured maximum
 - Optional on-player indicators for playback rate, live latency, buffer health, estimated arrival time, and elapsed time
+- Added controls are integrated into YouTube's standard player interface, so they remain available even in fullscreen playback
+- Works with the YouTube Embedded Player as well
 - Click-to-copy timestamp support from the elapsed time display
-- Localized UI in English and Japanese
 
 ## Settings
 
