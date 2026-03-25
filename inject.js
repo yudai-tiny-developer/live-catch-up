@@ -215,41 +215,6 @@
         return urlObj.toString();
     }
 
-    function bonus_features() {
-        const time_display = player.querySelector('div.ytp-time-contents');
-        if (time_display && !time_display.hasAttribute('_live_catch_up_bonus_features')) {
-            time_display.addEventListener('click', e => {
-                if (showCurrent) {
-                    const button = time_display.querySelector('button._live_catch_up_current');
-                    if (button && button.style.display !== 'none') {
-                        return;
-                    }
-
-                    e.stopPropagation();
-
-                    const current = player.getProgressState()?.current;
-                    const videoId = player.getVideoData()?.video_id;
-
-                    const current_time = format_time(current);
-                    const current_time_url = addParamsToUrl('https://www.youtube.com/watch', { v: videoId, t: format_time_hms(current) });
-
-                    navigator.clipboard.writeText(`${current_time_url}#\n${current_time}`);
-
-                    const rect = time_display.getBoundingClientRect();
-                    msg_current.style.left = `${rect.left + rect.width / 2.0}px`;
-                    msg_current.style.top = `${rect.top - 16}px`;
-                    msg_current.style.display = 'inline-block';
-
-                    clearTimeout(msg_current_timeout);
-                    msg_current_timeout = setTimeout(() => {
-                        msg_current.style.display = 'none';
-                    }, 4000);
-                }
-            });
-            time_display.setAttribute('_live_catch_up_bonus_features', '');
-        }
-    }
-
     function create_elem(elem_name, elem_classes) {
         const elem = document.createElement(elem_name);
         elem.classList.add(...elem_classes);
@@ -355,25 +320,26 @@
 
     const detect_interval = setInterval(() => {
         player = document.getElementById("movie_player");
-        if (!player) {
-            return;
-        }
-
-        bonus_features();
+        if (!player) return;
 
         const video = video_instance();
-        if (!video) {
-            return;
-        }
+        if (!video) return;
 
-        let area = player.querySelector('div.ytp-time-display:has(button.ytp-live-badge) div.ytp-time-wrapper');
-        if (!area) {
-            return;
-        }
+        const time_display = document.getElementsByTagName('player-time-display')?.[0];
+        let area;
+        let button_live_badge;
+        if (time_display) { // new-style YouTube embedded player
+            area = time_display.querySelector('div.ytwPlayerTimeDisplayLiveDot');
+            if (!area) return;
 
-        const button_live_badge = player.querySelector('button.ytp-live-badge');
-        if (!button_live_badge) {
-            return;
+            button_live_badge = time_display.querySelector('div.ytwPlayerTimeDisplayLiveDot > div');
+            if (!button_live_badge) return;
+        } else {
+            area = player.querySelector('div.ytp-time-display:has(button.ytp-live-badge) div.ytp-time-wrapper')
+            if (!area) return;
+
+            button_live_badge = player.querySelector('button.ytp-live-badge')
+            if (!button_live_badge) return;
         }
 
         clearInterval(detect_interval);
