@@ -268,6 +268,9 @@
     document.addEventListener('_live_catch_up_load_settings', e => {
         const settings = e.detail;
         clearInterval(interval);
+        if (settings.copied) {
+            msg_current.innerHTML = HTMLPolicy.createHTML(`<span translate="no">${settings.copied}</span>`);
+        }
         showCurrent = settings.showCurrent;
         if (settings.enabled || settings.skip || settings.showPlaybackRate || settings.showLatency || settings.showHealth || settings.showEstimation || settings.showCurrent) {
             interval = setInterval(() => {

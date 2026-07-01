@@ -38,6 +38,7 @@ function main(common) {
             smoothAuto,
             skip,
             skipThreathold,
+            copied: chrome.i18n.getMessage('copied'),
         };
         const detail = navigator.userAgent.includes('Firefox') ? cloneInto(detailObject, document.defaultView) : detailObject;
         document.dispatchEvent(new CustomEvent('_live_catch_up_load_settings', { detail }));

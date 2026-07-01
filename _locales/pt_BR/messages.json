@@ -47,6 +47,9 @@
     "skipThreathold": {
         "message": "Atraso máximo (segundos)"
     },
+    "copied": {
+        "message": "Copiado!"
+    },
     "appDesc": {
         "message": "Esta extensão sincroniza transmissões ao vivo do YouTube em tempo real acelerando transmissões atrasadas devido a atrasos na recepção de dados."
     }
