@@ -47,6 +47,9 @@
     "skipThreathold": {
         "message": "Maximum delay (seconds)"
     },
+    "copied": {
+        "message": "Copied!"
+    },
     "appDesc": {
         "message": "This extension syncs YouTube live streams in real-time by accelerating viewer-delayed streams caused by data reception delays."
     }
