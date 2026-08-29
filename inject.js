@@ -1,4 +1,21 @@
 (() => {
+    function show_bottom() {
+        const bottom = document.querySelector('.ytp-chrome-bottom');
+        if (!bottom) return;
+        bottom.style.opacity = "1.0";
+        const wrapper = bottom.querySelector(".ytp-time-wrapper");
+        if (!wrapper) return;
+        wrapper.style.background = "rgba(0,0,0)";
+    }
+    function reset_bottom() {
+        const bottom = document.querySelector('.ytp-chrome-bottom');
+        if (!bottom) return;
+        bottom.style.opacity = "";
+        const wrapper = bottom.querySelector(".ytp-time-wrapper");
+        if (!wrapper) return;
+        wrapper.style.background = "";
+    }
+
     function update_playbackRate(playbackRate) {
         const video = video_instance();
         if (video) {
@@ -273,7 +290,11 @@
             interval = setInterval(() => {
                 if (player) {
                     const stats_for_nerds = player.getStatsForNerds();
-                    if (stats_for_nerds.live_latency_style === '') {
+                    //this property exists only for now live streaming, not archive
+                    let live_latency_secs = stats_for_nerds.live_latency_secs;
+
+                    const live_button = player.querySelector(".ytp-live-badge");
+                    if (live_latency_secs && !live_button.classList.contains("ytp-live-badge-is-livehead")) {
                         const latency = Number.parseFloat(stats_for_nerds.live_latency_secs);
                         const health = Number.parseFloat(stats_for_nerds.buffer_health_seconds);
                         const progress_state = player.getProgressState();
@@ -290,12 +311,15 @@
                         }
 
                         const want_update = interval_count++ % 4 === 0;
+                        show_bottom();
                         settings.showPlaybackRate ? update_playbackRate(settings.playbackRate) : hide_playbackRate();
                         settings.showLatency ? (want_update && update_latency(latency, progress_state.isAtLiveHead)) : hide_latency();
                         settings.showHealth ? (want_update && update_health(health, settings.enabled, smoothThreathold)) : hide_health();
                         settings.showEstimation ? (want_update && update_estimation(progress_state.seekableEnd, progress_state.current, progress_state.isAtLiveHead)) : hide_estimation();
                         settings.showCurrent ? update_current(progress_state.current, progress_state.seekableEnd, progress_state.isAtLiveHead, player.getVideoData()?.video_id) : hide_current();
                     } else {
+                        reset_bottom();
+                        reset_playbackRate();
                         hide_playbackRate();
                         hide_latency();
                         hide_health();
@@ -305,6 +329,7 @@
                 }
             }, 250);
         } else {
+            reset_bottom();
             reset_playbackRate();
             hide_playbackRate();
             hide_latency();
